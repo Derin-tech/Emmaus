@@ -313,6 +313,7 @@ export function AppNew({ theme, toggleTheme }: { theme: string, toggleTheme: () 
             practiceSheets={practiceSheets}
             doubts={doubts}
             faqs={INITIAL_FAQS}
+            announcements={announcements}
             onAddDoubt={handleAddDoubt}
             onIncrementNoteDownload={handleIncrementNoteDownload}
           />
