@@ -11,8 +11,8 @@ interface NavbarProps {
   onNavigate: (view: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact') => void;
   userRole: 'student' | 'professor' | null;
   onRoleChange: (role: 'student' | 'professor' | null) => void;
-  theme: string;
-  toggleTheme: () => void;
+  darkMode: boolean;
+  onToggleDarkMode: () => void;
 }
 
 export default function Navbar({
@@ -20,8 +20,8 @@ export default function Navbar({
   onNavigate,
   userRole,
   onRoleChange,
-  theme,
-  toggleTheme
+  darkMode,
+  onToggleDarkMode
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -38,8 +38,8 @@ export default function Navbar({
   };
 
   return (
-    <nav className="sticky top-5 z-50 mx-auto mt-5 w-[90%] max-w-7xl rounded-full border border-[#E5E5EA] bg-[rgba(255,255,255,0.8)] backdrop-blur-[20px] shadow-[0_8px_32px_rgba(0,0,0,0.05)] transition-all duration-300">
-      <div className="mx-auto px-6 sm:px-8 lg:px-10">
+    <nav className="sticky top-0 z-50 w-full border-b-2 border-gray-800 bg-[#1c1c1e] transition-colors duration-300">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           
           {/* Logo Brand */}
@@ -56,10 +56,10 @@ export default function Navbar({
               />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-display font-bold tracking-tight text-[#1D1D1F]">
+              <span className="text-base font-display font-bold tracking-tight text-white">
                 Prof. Ajesh Joe
               </span>
-              <span className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-[#0071E3]">
+              <span className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-[#F1E194]">
                 Academic Library
               </span>
             </div>
@@ -78,30 +78,40 @@ export default function Navbar({
                   <button
                     key={item.label}
                     onClick={() => handleNavClick(item.view)}
-                    className={`relative py-2 text-[10px] uppercase tracking-[0.1em] font-black transition-colors duration-200 hover:text-[#1D1D1F] ${
+                    className={`relative py-2 text-[10px] uppercase tracking-[0.1em] font-black transition-colors duration-200 hover:text-white ${
                       isActive 
-                        ? 'text-[#1D1D1F]' 
-                        : 'text-[#86868B]'
+                        ? 'text-white' 
+                        : 'text-gray-500'
                     }`}
                     id={`nav-item-${item.label.toLowerCase().replace(' ', '-')}`}
                   >
                     {item.label}
                     {isActive && (
-                      <span className="absolute bottom-[-22px] left-0 h-1 w-full bg-[#0071E3]" />
+                      <span className="absolute bottom-[-22px] left-0 h-1 w-full bg-[#5B0E14]" />
                     )}
                   </button>
                 );
               })}
             </div>
 
-            <div className="h-4 w-px bg-gray-200 " />
+            <div className="h-4 w-px bg-gray-200 dark:bg-slate-700" />
 
             <div className="flex items-center space-x-4">
+              {/* Dark mode button */}
+              <button
+                onClick={onToggleDarkMode}
+                className="rounded-lg border-2 border-gray-800 bg-[#111112] p-2 text-gray-400 hover:bg-[#232325] hover:text-[#F1E194] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] transition-all"
+                aria-label="Toggle theme"
+                id="theme-toggle-btn"
+              >
+                {darkMode ? <Sun size={14} /> : <Moon size={14} />}
+              </button>
+
               {/* Portal Access Badge */}
               {userRole ? (
                 <div className="flex items-center space-x-2">
-                  <span className="flex items-center space-x-1 border-2 border-[#E5E5EA] bg-[#F5F5F7] px-2.5 py-1 font-sans text-[9px] uppercase tracking-[0.2em] font-black text-[#86868B]">
-                    <UserCheck size={12} className="text-[#0071E3]" />
+                  <span className="flex items-center space-x-1 border-2 border-gray-800 bg-[#111112] px-2.5 py-1 font-sans text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">
+                    <UserCheck size={12} className="text-[#F1E194]" />
                     <span>Role: {userRole === 'professor' ? 'Professor' : 'Student'}</span>
                   </span>
                   <button
@@ -109,7 +119,7 @@ export default function Navbar({
                       onRoleChange(null);
                       handleNavClick('selection');
                     }}
-                    className="text-[9px] font-black uppercase tracking-wider text-[#86868B] hover:text-red-500 transition-colors"
+                    className="text-[9px] font-black uppercase tracking-wider text-gray-500 hover:text-red-500 transition-colors"
                     id="switch-role-btn"
                   >
                     Switch
@@ -118,7 +128,7 @@ export default function Navbar({
               ) : (
                 <button
                   onClick={() => handleNavClick('selection')}
-                  className="rounded-lg bg-[#0071E3] px-4 py-2 text-[10px] uppercase font-black tracking-wider text-white border-2 border-[#005bb5] shadow-[inset_0_-3px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] transition-all hover:bg-[#005bb5]"
+                  className="rounded-lg bg-[#5B0E14] px-4 py-2 text-[10px] uppercase font-black tracking-wider text-white border-2 border-red-950 shadow-[inset_0_-3px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] transition-all hover:bg-red-900"
                   id="nav-get-started-btn"
                 >
                   Enter Portal
@@ -130,8 +140,16 @@ export default function Navbar({
           {/* Mobile menu button */}
           <div className="flex items-center space-x-3 md:hidden">
             <button
+              onClick={onToggleDarkMode}
+              className="rounded-xl p-2 text-gray-400 hover:bg-gray-50 dark:text-slate-400 dark:hover:bg-slate-800"
+              aria-label="Toggle theme"
+              id="theme-toggle-mobile-btn"
+            >
+              {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
+            <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="rounded-xl p-2 text-[#86868B] hover:bg-gray-50  :bg-slate-800"
+              className="rounded-xl p-2 text-gray-400 hover:bg-gray-50 dark:text-slate-400 dark:hover:bg-slate-800"
               id="mobile-menu-toggle-btn"
             >
               {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
@@ -143,7 +161,7 @@ export default function Navbar({
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="absolute left-0 right-0 top-full mt-2 rounded-2xl border border-gray-100 bg-white px-4 pt-2 pb-4 shadow-xl transition-colors duration-300   md:hidden">
+        <div className="border-b border-gray-100 bg-white px-4 pt-2 pb-4 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900 md:hidden">
           <div className="space-y-1.5">
             {navItems.map((item) => {
               const isActive = 
@@ -157,8 +175,8 @@ export default function Navbar({
                   onClick={() => handleNavClick(item.view)}
                   className={`block w-full rounded-xl px-4 py-2.5 text-left text-sm font-medium transition-colors ${
                     isActive 
-                      ? 'bg-blue-50/50 text-blue-600  ' 
-                      : 'text-gray-600 hover:bg-gray-50  :bg-slate-800/50'
+                      ? 'bg-blue-50/50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' 
+                      : 'text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-800/50'
                   }`}
                   id={`mobile-nav-item-${item.label.toLowerCase().replace(' ', '-')}`}
                 >
@@ -168,12 +186,12 @@ export default function Navbar({
             })}
           </div>
 
-          <div className="my-3 h-px bg-gray-100 " />
+          <div className="my-3 h-px bg-gray-100 dark:bg-slate-800" />
 
           <div>
             {userRole ? (
-              <div className="flex items-center justify-between px-4 py-2 bg-gray-50  rounded-xl border border-gray-100 ">
-                <span className="font-mono text-xs font-medium text-gray-600 ">
+              <div className="flex items-center justify-between px-4 py-2 bg-gray-50 dark:bg-slate-800 rounded-xl border border-gray-100 dark:border-slate-700">
+                <span className="font-mono text-xs font-medium text-gray-600 dark:text-slate-300">
                   Role: {userRole === 'professor' ? 'Professor' : 'Student'}
                 </span>
                 <button
@@ -181,7 +199,7 @@ export default function Navbar({
                     onRoleChange(null);
                     handleNavClick('selection');
                   }}
-                  className="text-xs font-semibold text-blue-600 "
+                  className="text-xs font-semibold text-blue-600 dark:text-blue-400"
                   id="mobile-switch-role-btn"
                 >
                   Switch Role
@@ -190,7 +208,7 @@ export default function Navbar({
             ) : (
               <button
                 onClick={() => handleNavClick('selection')}
-                className="w-full rounded-xl bg-gray-900 py-2.5 text-center text-sm font-semibold text-white transition-all  "
+                className="w-full rounded-xl bg-gray-900 py-2.5 text-center text-sm font-semibold text-white transition-all dark:bg-slate-100 dark:text-slate-900"
                 id="mobile-get-started-btn"
               >
                 Enter Portal
