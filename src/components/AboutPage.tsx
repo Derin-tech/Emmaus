@@ -4,148 +4,219 @@
  */
 
 import React from 'react';
-import { BookOpen, GraduationCap, MapPin, Building, Calendar, Mail } from 'lucide-react';
+import {
+  GraduationCap,
+  Building2,
+  MapPin,
+  CalendarClock,
+  BookOpen,
+  Sparkles,
+  Quote,
+  FlaskConical,
+  Atom,
+  Layers,
+  Waves,
+  ArrowRight
+} from 'lucide-react';
 
-export default function AboutPage() {
+/* Design tokens — shared "Professor's Study" system (see DESIGN_SYSTEM.md) */
+const CARD =
+  'rounded-2xl border border-[#EAE1D2] bg-white shadow-[0_1px_2px_rgba(34,32,31,0.04),0_18px_36px_-26px_rgba(34,32,31,0.35)]';
+const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]';
+
+type View = 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact';
+
+interface AboutPageProps {
+  onNavigate?: (view: View) => void;
+}
+
+const FACTS = [
+  { icon: <CalendarClock size={17} />, value: '20+', label: 'Years teaching' },
+  { icon: <BookOpen size={17} />, value: '5', label: 'Exam tracks covered' },
+  { icon: <GraduationCap size={17} />, value: 'IISc', label: 'Ph.D. — IISc' },
+  { icon: <Sparkles size={17} />, value: 'Free', label: 'Always open-access' }
+];
+
+const INTERESTS = [
+  { icon: <FlaskConical size={16} />, label: 'Advanced Organic Synthesis & Reaction Mechanisms' },
+  { icon: <Atom size={16} />, label: 'Quantum Chemistry & Molecular Dynamics' },
+  { icon: <Layers size={16} />, label: 'Solid-State Chemistry & Materials Science' },
+  { icon: <Waves size={16} />, label: 'Spectroscopic Methods in Chemical Analysis' }
+];
+
+const EXPERIENCE = [
+  { year: '2015 — Present', title: 'Senior Professor of Chemistry', place: 'University Science Department' },
+  { year: '2008 — 2015', title: 'Associate Researcher', place: 'National Chemical Laboratory' },
+  { year: '2005 — 2008', title: 'Postdoctoral Fellow', place: 'University of Cambridge, UK' }
+];
+
+export default function AboutPage({ onNavigate }: AboutPageProps) {
   return (
-    <section className="bg-[#F7F3EC] py-16 md:py-20 text-[#22201F]">
-      <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-        
-        {/* Profile Card Header */}
-        <div className="flex flex-col items-center gap-8 border-b border-[#D9C2A2]/30 pb-12  md:flex-row md:items-start">
-          
-          {/* Elegant Avatar / Professor Placeholder */}
-          <div className="relative h-44 w-44 flex-shrink-0">
-            <div className="absolute inset-0 translate-x-2 translate-y-2 bg-[#D9C2A2]/20 rounded-xl" />
-            <div className="relative flex h-44 w-44 items-center justify-center rounded-xl border border-[#D9C2A2]/40 bg-white shadow-soft-sm">
-              <svg viewBox="0 0 100 100" className="h-28 w-28 text-[#4A0E1B]" fill="currentColor">
-                <path d="M50 20c8.28 0 15 6.72 15 15s-6.72 15-15 15-15-6.72-15-15 6.72-15 15-15zm0 35c16.57 0 30 9.4 30 21v4H20v-4c0-11.6 13.43-21 30-21z"/>
-              </svg>
+    <div className="dash-root min-h-screen bg-[#F6F2EA] text-[#22201F]">
+      <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8 sm:py-14">
+
+        {/* ================= HERO ================= */}
+        <div className="relative overflow-hidden rounded-3xl bg-[#4A0E1B] p-7 text-white shadow-[0_22px_44px_-24px_rgba(74,14,27,0.75)] sm:p-10">
+          <div className="pointer-events-none absolute -right-16 -top-20 h-60 w-60 rounded-full bg-[#D9C2A2]/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 left-20 h-52 w-52 rounded-full bg-[#D9C2A2]/10 blur-3xl" />
+
+          <div className="relative flex flex-col items-center gap-7 text-center md:flex-row md:items-center md:gap-9 md:text-left">
+            {/* Monogram avatar */}
+            <div className="relative shrink-0">
+              <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-[#EAD3AE] to-[#D9C2A2] shadow-lg sm:h-32 sm:w-32">
+                <span className="dash-serif text-4xl font-semibold text-[#4A0E1B] sm:text-5xl">AJ</span>
+              </div>
+              <span className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl border-4 border-[#4A0E1B] bg-white text-[#4A0E1B]">
+                <GraduationCap size={18} />
+              </span>
             </div>
-            <div className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center bg-[#C9A13B] border border-[#C9A13B]/40 text-white rounded-lg shadow-soft-sm">
-              <GraduationCap size={18} />
+
+            {/* Identity */}
+            <div className="max-w-xl">
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#D9C2A2]">About the professor</p>
+              <h1 className="dash-serif mt-2 text-3xl font-semibold leading-tight sm:text-[2.5rem]">Prof. Ajesh Joe</h1>
+              <p className="mt-1 text-sm font-semibold text-white/80">Senior Professor of Chemistry</p>
+              <p className="mt-3 text-sm leading-relaxed text-white/70">
+                Devoted to quantum chemistry, molecular dynamics, and organic synthesis — building
+                structured, non-commercial, open-access learning for university students and
+                competitive-exam aspirants.
+              </p>
+
+              <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
+                {[
+                  { icon: <Building2 size={13} />, text: 'Dept. of Chemistry' },
+                  { icon: <MapPin size={13} />, text: 'Science Block II · Office 402-B' },
+                  { icon: <CalendarClock size={13} />, text: 'Office hours: Sun 6–8 PM' }
+                ].map((chip, i) => (
+                  <span
+                    key={i}
+                    className="inline-flex items-center gap-1.5 rounded-full border border-white/15 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/90"
+                  >
+                    <span className="text-[#D9C2A2]">{chip.icon}</span>
+                    {chip.text}
+                  </span>
+                ))}
+              </div>
             </div>
           </div>
+        </div>
 
-          {/* Academic Profile Basics */}
-          <div className="flex flex-col space-y-4 text-center md:text-left">
+        {/* ================= QUICK FACTS (overlapping hero) ================= */}
+        <div className="relative z-10 -mt-6 grid grid-cols-2 gap-4 sm:-mt-8 lg:grid-cols-4">
+          {FACTS.map((f, i) => (
+            <div key={i} className={`${CARD} p-5`}>
+              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]">
+                {f.icon}
+              </span>
+              <p className="dash-serif mt-3 text-3xl font-semibold leading-none text-[#22201F]">{f.value}</p>
+              <p className={`${MICRO} mt-2`}>{f.label}</p>
+            </div>
+          ))}
+        </div>
+
+        {/* ================= BIOGRAPHY ================= */}
+        <section className="mt-12">
+          <p className={MICRO}>Biography</p>
+          <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F]">A scholar devoted to teaching</h2>
+          <div className={`${CARD} mt-4 p-6 sm:p-8`}>
+            <div className="space-y-4 text-sm leading-relaxed text-[#5A534B]">
+              <p>
+                Professor Ajesh Joe completed his Ph.D. in Chemistry from the Indian Institute of Science
+                (IISc), followed by postdoctoral research at the University of Cambridge, UK. Over the last
+                two decades he has lectured in organic chemistry, physical chemistry, and advanced materials
+                science.
+              </p>
+              <p>
+                Recognising how often students struggle to bridge foundational theory with high-difficulty
+                problem structures, he began writing unified note modules, previous-year guides, and concept
+                booklets — a complete, open-access repository for state and national-level scientific
+                entrance examinations.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= TEACHING PHILOSOPHY ================= */}
+        <section className="mt-10">
+          <p className={MICRO}>Teaching philosophy</p>
+          <div className="relative mt-4 overflow-hidden rounded-2xl border border-[#EAD9C0] bg-gradient-to-br from-[#F6EBE6] to-[#F3EAD8] p-7 sm:p-10">
+            <Quote className="pointer-events-none absolute -right-2 top-3 text-[#4A0E1B]/10" size={110} strokeWidth={1.5} />
+            <p className="dash-serif relative max-w-2xl text-xl leading-relaxed text-[#3A2A22] sm:text-2xl">
+              “Academic excellence does not rely on memorising reactions, but on developing deep physical
+              intuition and chemical logic. A chemistry problem is simply a mechanism waiting to be written in
+              the elegant language of electrons — our role is to teach students its grammar, so they can write
+              their own solutions.”
+            </p>
+            <div className="relative mt-6 flex items-center gap-3">
+              <span className="h-px w-8 bg-[#4A0E1B]/40" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A6A16]">Prof. Ajesh Joe</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ================= INTERESTS + EXPERIENCE ================= */}
+        <section className="mt-10 grid gap-6 md:grid-cols-2">
+          {/* Research interests */}
+          <div className={`${CARD} p-6`}>
+            <p className={MICRO}>Research interests</p>
+            <h3 className="dash-serif mt-1 text-lg font-semibold text-[#22201F]">Fields of focus</h3>
+            <ul className="mt-5 space-y-3.5">
+              {INTERESTS.map((it, i) => (
+                <li key={i} className="flex items-start gap-3">
+                  <span className="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-[#F4E7E5] text-[#4A0E1B]">
+                    {it.icon}
+                  </span>
+                  <span className="pt-1 text-sm font-semibold text-[#3A342E]">{it.label}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Academic experience */}
+          <div className={`${CARD} p-6`}>
+            <p className={MICRO}>Academic experience</p>
+            <h3 className="dash-serif mt-1 text-lg font-semibold text-[#22201F]">Career timeline</h3>
+            <ul className="mt-6 space-y-6 border-l border-[#EAE1D2] pl-5">
+              {EXPERIENCE.map((exp, i) => (
+                <li key={i} className="relative">
+                  <span className="absolute -left-[27px] top-1 h-3.5 w-3.5 rounded-full border-2 border-white bg-[#4A0E1B] ring-1 ring-[#EAE1D2]" />
+                  <span className="dash-mono text-[11px] font-medium tabular-nums text-[#8A6A16]">{exp.year}</span>
+                  <span className="mt-1 block text-sm font-bold text-[#22201F]">{exp.title}</span>
+                  <span className="mt-0.5 block text-xs text-[#8A7E6F]">{exp.place}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* ================= CLOSING CTA ================= */}
+        <section className="mt-10 overflow-hidden rounded-2xl bg-[#22201F] p-7 text-white sm:p-9">
+          <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-3xl font-serif font-bold tracking-tight text-[#22201F]">
-                Prof. Ajesh Joe
-              </h2>
-              <p className="mt-2 font-sans text-[10px] uppercase tracking-[0.2em] font-bold text-[#C9A13B]">
-                Senior Professor of Chemistry
+              <h3 className="dash-serif text-xl font-semibold sm:text-2xl">Everything here is free and open</h3>
+              <p className="mt-1.5 max-w-md text-sm leading-relaxed text-white/70">
+                Browse notes, lectures, previous-year questions and practice sheets — or reach the office with
+                an academic doubt.
               </p>
             </div>
-
-            <div className="flex flex-wrap justify-center gap-y-2 gap-x-4 text-[10px] font-bold uppercase tracking-wider text-[#22201F]/60 md:justify-start">
-              <span className="flex items-center gap-1.5 border border-[#D9C2A2]/30 bg-white px-2 py-1 rounded-lg">
-                <Building size={12} className="text-[#4A0E1B]" />
-                <span>Dept. of Chemistry</span>
-              </span>
-              <span className="flex items-center gap-1.5 border border-[#D9C2A2]/30 bg-white px-2 py-1 rounded-lg">
-                <MapPin size={12} className="text-[#4A0E1B]" />
-                <span>Science Block II, Office 402-B</span>
-              </span>
-            </div>
-
-            <p className="text-sm leading-relaxed text-[#22201F]/70">
-              Devoted to the study of quantum chemistry, molecular dynamics, and organic synthesis, offering structured, non-commercial self-learning systems for university students and aspirants.
-            </p>
-          </div>
-
-        </div>
-
-        {/* Biography Block */}
-        <div className="mt-12 space-y-12">
-          
-          <div className="space-y-4">
-            <h3 className="text-lg font-serif font-bold tracking-tight text-[#22201F]">
-              Biography
-            </h3>
-            <p className="text-sm leading-relaxed text-[#22201F]/70">
-              Professor Ajesh Joe completed his Ph.D. in Chemistry from the Indian Institute of Science (IISc), followed by postdoctoral research at the University of Cambridge, UK. Over the last two decades, he has lectured in organic chemistry, physical chemistry, and advanced materials science. 
-            </p>
-            <p className="text-sm leading-relaxed text-[#22201F]/70">
-              Recognizing the challenges students encounter in bridging foundational theories with high-difficulty problem structures, he started writing these unified note modules, previous year guides, and concept booklets to offer complete, open-access study resources for state and national-level scientific entrances.
-            </p>
-          </div>
-
-          {/* Teaching Philosophy */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-serif font-bold tracking-tight text-[#22201F]">
-              Teaching Philosophy
-            </h3>
-            <div className="border-l-4 border-[#4A0E1B] bg-white p-5 rounded-r-xl border-y border-r border-[#D9C2A2]/30 shadow-soft-sm">
-              <p className="italic text-sm leading-relaxed text-[#22201F]/80">
-                "Academic excellence does not rely on memorizing reactions, but rather on developing deep physical intuition and chemical logic. A chemistry problem is simply a mechanism waiting to be written in the elegant language of electrons. Our role as educators is to teach students the grammar of that language, so they can write their own solutions."
-              </p>
+            <div className="flex shrink-0 flex-wrap gap-2.5">
+              <button
+                onClick={() => onNavigate?.('selection')}
+                className="inline-flex items-center gap-2 rounded-xl bg-[#D9C2A2] px-4 py-2.5 text-xs font-bold tracking-wide text-[#4A0E1B] transition-colors hover:bg-[#E4D2B6]"
+              >
+                Explore resources <ArrowRight size={15} />
+              </button>
+              <button
+                onClick={() => onNavigate?.('contact')}
+                className="inline-flex items-center gap-2 rounded-xl border border-white/20 px-4 py-2.5 text-xs font-bold tracking-wide text-white transition-colors hover:bg-white/10"
+              >
+                Contact office
+              </button>
             </div>
           </div>
-
-          {/* Grid of Interests and Experience */}
-          <div className="grid gap-8 md:grid-cols-2">
-            
-            {/* Research Interests */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-serif font-bold tracking-tight text-[#22201F]">
-                Research Interests
-              </h3>
-              <ul className="space-y-3">
-                {[
-                  'Advanced Organic Synthesis & Reaction Mechanisms',
-                  'Quantum Chemistry and Molecular Dynamics',
-                  'Solid State Chemistry and Material Science',
-                  'Spectroscopic Methods in Chemical Analysis'
-                ].map((interest, i) => (
-                  <li key={i} className="flex items-start gap-2.5">
-                    <div className="mt-1 flex h-4 w-4 flex-shrink-0 items-center justify-center border border-[#D9C2A2]/30 bg-white text-[#4A0E1B] rounded">
-                      <BookOpen size={10} />
-                    </div>
-                    <span className="text-sm font-semibold text-[#22201F]/80">{interest}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Academic Experience */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-serif font-bold tracking-tight text-[#22201F]">
-                Academic Experience
-              </h3>
-              <ul className="space-y-4 border-l border-[#D9C2A2]/30 ml-2 pl-4">
-                {[
-                  {
-                    year: '2015 - Present',
-                    title: 'Senior Professor of Chemistry',
-                    place: 'University Science Department'
-                  },
-                  {
-                    year: '2008 - 2015',
-                    title: 'Associate Researcher',
-                    place: 'National Chemical Laboratory'
-                  },
-                  {
-                    year: '2005 - 2008',
-                    title: 'Postdoctoral Fellow',
-                    place: 'University of Cambridge, UK'
-                  }
-                ].map((exp, i) => (
-                  <li key={i} className="relative">
-                    <div className="absolute -left-[21px] top-1.5 h-2.5 w-2.5 border border-[#D9C2A2]/30 bg-[#4A0E1B] rounded-full" />
-                    <span className="block font-sans text-[9px] uppercase tracking-wider font-bold text-[#C9A13B]">{exp.year}</span>
-                    <span className="mt-1 block font-bold text-[#22201F]">{exp.title}</span>
-                    <span className="mt-0.5 block text-xs text-[#22201F]/60">{exp.place}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-          </div>
-
-        </div>
+        </section>
 
       </div>
-    </section>
+    </div>
   );
 }

@@ -72,18 +72,18 @@ const ROW_BTN_DANGER =
 const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#22201F]/60';
 
 const EXAM_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  'jee-main': { bg: 'bg-[#4A0E1B]/8', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
-  'jee-advanced': { bg: 'bg-[#7C2532]/8', text: 'text-[#7C2532]', dot: 'bg-[#7C2532]' },
-  neet: { bg: 'bg-[#C9A13B]/8', text: 'text-[#C9A13B]', dot: 'bg-[#C9A13B]' },
-  net: { bg: 'bg-[#D9C2A2]/20', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
-  'msc-entrance': { bg: 'bg-[#C9A13B]/15', text: 'text-[#7C2532]', dot: 'bg-[#7C2532]' }
+  'jee-main': { bg: 'bg-[#F4E7E5]', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
+  'jee-advanced': { bg: 'bg-[#F4E2E5]', text: 'text-[#7C2532]', dot: 'bg-[#7C2532]' },
+  neet: { bg: 'bg-[#F7EFD9]', text: 'text-[#8A6A16]', dot: 'bg-[#C9A13B]' },
+  net: { bg: 'bg-[#ECE7E0]', text: 'text-[#22201F]', dot: 'bg-[#22201F]' },
+  'msc-entrance': { bg: 'bg-[#EFE7D8]', text: 'text-[#6E5A2E]', dot: 'bg-[#C4A87F]' }
 };
 
 const ANN_CAT: Record<AnnouncementCategory, { label: string; cls: string }> = {
-  general: { label: 'General', cls: 'bg-[#D9C2A2]/20 text-[#22201F]' },
-  exam: { label: 'Exam', cls: 'bg-[#4A0E1B]/8 text-[#4A0E1B]' },
-  resource: { label: 'Resource', cls: 'bg-[#C9A13B]/10 text-[#4A0E1B]' },
-  schedule: { label: 'Schedule', cls: 'bg-[#7C2532]/8 text-[#7C2532]' }
+  general: { label: 'General', cls: 'bg-[#EFE7D8] text-[#6E645A]' },
+  exam: { label: 'Exam', cls: 'bg-[#F4E4E4] text-[#4A0E1B]' },
+  resource: { label: 'Resource', cls: 'bg-[#F7EFD9] text-[#8A6A16]' },
+  schedule: { label: 'Schedule', cls: 'bg-[#F4E2E5] text-[#7C2532]' }
 };
 
 /* ------------------------------------------------------------------ *
@@ -101,9 +101,9 @@ function ExamChip({ course, label }: { course: string; label: string }) {
 
 function DifficultyChip({ level }: { level: 'Easy' | 'Medium' | 'Hard' }) {
   const map = {
-    Easy: 'bg-[#C9A13B]/10 text-[#C9A13B]',
-    Medium: 'bg-[#D9C2A2]/30 text-[#4A0E1B]',
-    Hard: 'bg-[#4A0E1B]/8 text-[#4A0E1B]'
+    Easy: 'bg-[#F7EFD9] text-[#8A6A16]',
+    Medium: 'bg-[#F4E2E5] text-[#7C2532]',
+    Hard: 'bg-[#F4E4E4] text-[#4A0E1B]'
   } as const;
   return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold ${map[level]}`}>{level}</span>;
 }
@@ -171,12 +171,12 @@ function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <PremiumCard className="flex flex-col items-center justify-center border-dashed border-[#D9C2A2]/50 px-6 py-14 text-center">
-      <PremiumCard.Icon className="h-12 w-12 rounded-xl">{icon}</PremiumCard.Icon>
-      <h4 className="dash-serif mt-4 text-base font-bold text-[#22201F]">{title}</h4>
-      <PremiumCard.Description className="mt-1.5 max-w-sm text-sm">{message}</PremiumCard.Description>
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#E0D5C2] bg-[#FBF7F0] px-6 py-14 text-center">
+      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F7EFD9] text-[#8A6A16]">{icon}</div>
+      <h4 className="dash-serif mt-4 text-base font-semibold text-[#22201F]">{title}</h4>
+      <p className="mt-1 max-w-sm text-sm text-[#8A7E6F]">{message}</p>
       {action && <div className="mt-5">{action}</div>}
-    </PremiumCard>
+    </div>
   );
 }
 
@@ -253,7 +253,7 @@ function YouTubeLinkField({ value, onChange }: { value: string; onChange: (v: st
             showError
               ? 'border-[#B23B2E]/60 focus:border-[#B23B2E]/80 focus:ring-4 focus:ring-[#B23B2E]/10'
               : showOk
-              ? 'border-[#2F6D4E]/60 focus:border-[#2F6D4E]/80 focus:ring-4 focus:ring-[#2F6D4E]/10 bg-white'
+              ? 'border-[#8A6A16]/60 focus:border-[#8A6A16]/80 focus:ring-4 focus:ring-[#8A6A16]/10 bg-white'
               : 'border-[#E3D8C5] focus:border-[#4A0E1B]/50 focus:bg-white focus:ring-4 focus:ring-[#4A0E1B]/10'
           }`}
           required
@@ -266,7 +266,7 @@ function YouTubeLinkField({ value, onChange }: { value: string; onChange: (v: st
           placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…"
         />
         {showOk && (
-          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#2F6D4E]">
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A6A16]">
             <CheckCircle2 size={16} />
           </span>
         )}
@@ -284,7 +284,7 @@ function YouTubeLinkField({ value, onChange }: { value: string; onChange: (v: st
       )}
 
       {showOk && thumbSrc && !thumbError && (
-        <div className="mt-3 flex items-start gap-3 rounded-xl border border-[#E7EFE9] bg-[#F4F8F5] p-3">
+        <div className="mt-3 flex items-start gap-3 rounded-xl border border-[#F7EFD9] bg-[#FBF6EA] p-3">
           <div className="relative h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-[#0f0f0f]">
             <img
               src={thumbSrc}
@@ -299,7 +299,7 @@ function YouTubeLinkField({ value, onChange }: { value: string; onChange: (v: st
             </div>
           </div>
           <div className="min-w-0 flex-1">
-            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#2F6D4E]">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A6A16]">
               ✓ Valid YouTube URL
             </p>
             <p className="mt-0.5 font-mono text-[10px] text-[#8A7E6F] break-all">
@@ -866,7 +866,7 @@ export default function ProfessorDashboard({
                       }}
                       className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#22201F] transition-colors hover:bg-[#F7F3EC]"
                     >
-                      <span className="text-[#C9A13B]">{item.icon}</span>
+                      <span className="text-[#8A6A16]">{item.icon}</span>
                       {item.label}
                     </button>
                   ))}
@@ -917,8 +917,8 @@ export default function ProfessorDashboard({
                 </nav>
               </PremiumCard>
 
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#D9C2A2]/30 bg-white shadow-soft-sm px-3.5 py-3 text-[11px] text-[#22201F]/60">
-                <Check size={14} className="text-[#4A0E1B]" />
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#EAE1D2] bg-[#FBF7F0] px-3.5 py-3 text-[11px] text-[#8A7E6F]">
+                <Check size={14} className="text-[#8A6A16]" />
                 Changes save automatically to this browser.
               </div>
             </div>
@@ -991,7 +991,7 @@ export default function ProfessorDashboard({
                         <h3 className="dash-serif text-lg font-semibold text-[#22201F]">Library by exam</h3>
                         <p className="text-xs text-[#8A7E6F]">How your content is spread</p>
                       </div>
-                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F3EAD8] text-[#A9772E]">
+                      <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F7EFD9] text-[#8A6A16]">
                         <LayoutDashboard size={17} />
                       </span>
                     </div>
@@ -1021,7 +1021,7 @@ export default function ProfessorDashboard({
                     </div>
                     {pendingDoubtsCount === 0 ? (
                       <div className="flex flex-col items-center py-6 text-center">
-                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E7EFE9] text-[#2F6D4E]">
+                        <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#F7EFD9] text-[#8A6A16]">
                           <Check size={20} />
                         </span>
                         <p className="mt-3 text-sm font-semibold text-[#22201F]">You're all caught up</p>
@@ -1115,7 +1115,7 @@ export default function ProfessorDashboard({
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="dash-mono inline-flex items-center gap-1.5 text-sm font-medium tabular-nums text-[#4A443E]">
-                            <Download size={13} className="text-[#A9772E]" />
+                            <Download size={13} className="text-[#8A6A16]" />
                             {n.downloadCount.toLocaleString()}
                           </span>
                         </td>
@@ -1338,14 +1338,14 @@ export default function ProfessorDashboard({
                             {!doubt.isAnswered ? (
                               <span className="rounded-full bg-[#F4E4E4] px-2 py-0.5 text-[10px] font-bold text-[#4A0E1B]">Awaiting reply</span>
                             ) : (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-[#E7EFE9] px-2 py-0.5 text-[10px] font-bold text-[#2F6D4E]">
+                              <span className="inline-flex items-center gap-1 rounded-full bg-[#F7EFD9] px-2 py-0.5 text-[10px] font-bold text-[#8A6A16]">
                                 <Check size={11} /> Answered
                               </span>
                             )}
                           </div>
                         </div>
 
-                        <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#A9772E]">{doubt.subject}</p>
+                        <p className="mt-3 text-[11px] font-bold uppercase tracking-[0.1em] text-[#8A6A16]">{doubt.subject}</p>
                         <p className="mt-1.5 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] p-3.5 text-sm leading-relaxed text-[#3A342E]">{doubt.question}</p>
 
                         {doubt.attachmentName && (
@@ -1369,7 +1369,7 @@ export default function ProfessorDashboard({
                                     <a
                                       href={doubt.attachmentDataUrl}
                                       download={doubt.attachmentName}
-                                      className="text-[10px] font-semibold text-[#A9772E] hover:text-[#4A0E1B] shrink-0 ml-2"
+                                      className="text-[10px] font-semibold text-[#8A6A16] hover:text-[#4A0E1B] shrink-0 ml-2"
                                     >Download</a>
                                   </div>
                                 </div>
@@ -1385,7 +1385,7 @@ export default function ProfessorDashboard({
                                   <a
                                     href={doubt.attachmentDataUrl}
                                     download={doubt.attachmentName}
-                                    className="shrink-0 rounded-lg bg-[#A9772E] px-2.5 py-1 text-[10px] font-bold text-white hover:bg-[#4A0E1B] transition-colors"
+                                    className="shrink-0 rounded-lg bg-[#8A6A16] px-2.5 py-1 text-[10px] font-bold text-white hover:bg-[#4A0E1B] transition-colors"
                                   >Open / Download</a>
                                 </div>
                               )
@@ -1401,11 +1401,11 @@ export default function ProfessorDashboard({
 
                         {/* Answer / reply zone */}
                         {doubt.isAnswered && replyingDoubtId !== doubt.id ? (
-                          <div className="mt-4 rounded-xl border border-[#E7EFE9] bg-[#F4F8F5] p-4">
+                          <div className="mt-4 rounded-xl border border-[#F7EFD9] bg-[#FBF6EA] p-4">
                             <div className="flex items-start gap-2.5">
-                              <CornerDownRight size={15} className="mt-0.5 shrink-0 text-[#2F6D4E]" />
+                              <CornerDownRight size={15} className="mt-0.5 shrink-0 text-[#8A6A16]" />
                               <div className="flex-1">
-                                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#2F6D4E]">Your response</p>
+                                <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A6A16]">Your response</p>
                                 <p className="mt-1 text-sm leading-relaxed text-[#3A342E]">{doubt.answerText}</p>
                               </div>
                             </div>
