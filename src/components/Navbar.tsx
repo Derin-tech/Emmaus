@@ -64,10 +64,10 @@ export default function Navbar({
               />
             </div>
             <div className="flex flex-col whitespace-nowrap">
-              <span className="text-base font-display font-bold tracking-tight text-[#1D1D1F]">
+              <span className="text-lg font-semibold tracking-tight text-[#1D1D1F]">
                 Prof. Ajesh Joe
               </span>
-              <span className={`font-sans text-[9px] uppercase tracking-[0.2em] font-black ${accentText} transition-colors duration-300`}>
+              <span className={`text-[11px] font-medium tracking-wide ${accentText} transition-colors duration-300`}>
                 Academic Library
               </span>
             </div>
@@ -86,7 +86,7 @@ export default function Navbar({
                   <button
                     key={item.label}
                     onClick={() => handleNavClick(item.view)}
-                    className={`relative py-2 text-[10px] uppercase tracking-[0.1em] font-black transition-colors duration-200 hover:text-[#1D1D1F] ${
+                    className={`relative py-2 text-sm font-medium transition-colors duration-200 hover:text-[#1D1D1F] ${
                       isActive 
                         ? 'text-[#1D1D1F]' 
                         : 'text-[#86868B]'
@@ -108,7 +108,7 @@ export default function Navbar({
               {/* Theme Toggle */}
               <button
                 onClick={toggleTheme}
-                className="flex items-center gap-2 rounded-full border border-[#E5E5EA] bg-[#F5F5F7] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#1D1D1F] transition-all hover:bg-gray-200"
+                className="flex items-center gap-2 rounded-full border border-[#E5E5EA] bg-[#F5F5F7] px-3 py-1.5 text-xs font-medium text-[#1D1D1F] transition-all hover:bg-gray-200"
                 id="theme-toggle-btn"
               >
                 {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
@@ -118,8 +118,8 @@ export default function Navbar({
               {/* Portal Access Badge */}
               {userRole ? (
                 <div className="flex items-center space-x-2">
-                  <span className="flex items-center space-x-1 border-2 border-[#E5E5EA] bg-[#F5F5F7] px-2.5 py-1 font-sans text-[9px] uppercase tracking-[0.2em] font-black text-[#86868B]">
-                    <UserCheck size={12} className={`${accentText} transition-colors duration-300`} />
+                  <span className="flex items-center space-x-1 border-2 border-[#E5E5EA] bg-[#F5F5F7] px-2.5 py-1 text-xs font-medium text-[#86868B] rounded-md">
+                    <UserCheck size={14} className={`${accentText} transition-colors duration-300`} />
                     <span className="hidden xl:inline">Role: </span>
                     <span>{userRole === 'professor' ? 'Professor' : 'Student'}</span>
                   </span>
@@ -128,7 +128,7 @@ export default function Navbar({
                       onRoleChange(null);
                       handleNavClick('selection');
                     }}
-                    className="text-[9px] font-black uppercase tracking-wider text-[#86868B] hover:text-red-500 transition-colors"
+                    className="text-xs font-medium text-[#86868B] hover:text-red-500 transition-colors underline decoration-transparent hover:decoration-red-500 underline-offset-4"
                     id="switch-role-btn"
                   >
                     Switch
@@ -137,7 +137,7 @@ export default function Navbar({
               ) : (
                 <button
                   onClick={() => handleNavClick('selection')}
-                  className={`rounded-lg ${accentBg} px-4 py-2 text-[10px] uppercase font-black tracking-wider text-white border-2 ${accentBorder} shadow-[inset_0_-3px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] transition-all ${accentHoverBg}`}
+                  className={`rounded-lg ${accentBg} px-4 py-2 text-sm font-medium text-white border-2 ${accentBorder} shadow-[inset_0_-2px_0_rgba(0,0,0,0.3)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.3)] active:translate-y-[1px] transition-all ${accentHoverBg}`}
                   id="nav-get-started-btn"
                 >
                   Enter Portal
