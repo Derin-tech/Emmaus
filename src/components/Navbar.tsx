@@ -97,6 +97,16 @@ export default function Navbar({
             <div className="h-4 w-px bg-gray-200 " />
 
             <div className="flex items-center space-x-4">
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-2 rounded-full border border-[#E5E5EA] bg-[#F5F5F7] px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-[#1D1D1F] transition-all hover:bg-gray-200"
+                id="theme-toggle-btn"
+              >
+                {theme === 'dark' ? <Sun size={14} /> : <Moon size={14} />}
+                <span className="hidden sm:inline">{theme === 'dark' ? 'Light Theme' : 'Original Dark'}</span>
+              </button>
+
               {/* Portal Access Badge */}
               {userRole ? (
                 <div className="flex items-center space-x-2">
@@ -196,6 +206,16 @@ export default function Navbar({
                 Enter Portal
               </button>
             )}
+          </div>
+          
+          <div className="border-t border-gray-100 pt-4 mt-4">
+            <button
+              onClick={toggleTheme}
+              className="flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50"
+            >
+              <span>{theme === 'dark' ? 'Switch to Current Theme' : 'Switch to Original Dark'}</span>
+              {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
         </div>
       )}
