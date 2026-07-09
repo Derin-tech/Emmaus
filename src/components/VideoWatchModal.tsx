@@ -23,11 +23,11 @@ import {
 import type { Video } from '../types';
 import { VideoPlayer } from './VideoPlayer';
 import { extractYouTubeId, getYoutubeThumbnail } from '../lib/youtube';
+import { PremiumCard } from './PremiumCard';
 
 // ─── Design constants (from design.md) ───────────────────────────────────────
-const CARD =
-  'rounded-2xl border border-[#EAE1D2] bg-white shadow-[0_1px_2px_rgba(34,32,31,0.04),0_18px_36px_-26px_rgba(34,32,31,0.35)]';
-const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]';
+// CARD constant deprecated. We use PremiumCard component for visual consistency.
+const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#22201F]/60';
 
 const EXAM_LABELS: Record<string, string> = {
   'jee-main': 'JEE Main',
@@ -38,11 +38,11 @@ const EXAM_LABELS: Record<string, string> = {
 };
 
 const EXAM_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  'jee-main': { bg: 'bg-[#F4E7E5]', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
-  'jee-advanced': { bg: 'bg-[#F3E6EA]', text: 'text-[#7A1F2B]', dot: 'bg-[#7A1F2B]' },
-  neet: { bg: 'bg-[#E7EFE9]', text: 'text-[#2F6D4E]', dot: 'bg-[#2F6D4E]' },
+  'jee-main': { bg: 'bg-[#4A0E1B]/8', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
+  'jee-advanced': { bg: 'bg-[#7C2532]/8', text: 'text-[#7C2532]', dot: 'bg-[#7C2532]' },
+  neet: { bg: 'bg-[#C9A13B]/10', text: 'text-[#4A0E1B]', dot: 'bg-[#C9A13B]' },
   net: { bg: 'bg-[#E5EDF2]', text: 'text-[#2B5B7A]', dot: 'bg-[#2B5B7A]' },
-  'msc-entrance': { bg: 'bg-[#F5ECD8]', text: 'text-[#8A5E1E]', dot: 'bg-[#A9772E]' },
+  'msc-entrance': { bg: 'bg-[#F5ECD8]', text: 'text-[#8A5E1E]', dot: 'bg-[#C9A13B]' },
 };
 
 // ─── Props ────────────────────────────────────────────────────────────────────
@@ -77,8 +77,8 @@ function VideoThumbnail({
 
   if (!videoId) {
     return (
-      <div className={`flex items-center justify-center bg-[#F0E9DB] ${className}`}>
-        <Play size={20} className="text-[#A79A88]" />
+      <div className={`flex items-center justify-center bg-[#F7F3EC] ${className}`}>
+        <Play size={20} className="text-[#22201F]/40" />
       </div>
     );
   }
@@ -164,28 +164,28 @@ export function VideoWatchModal({
 
       {/* Modal shell */}
       <div
-        className={`relative flex h-full w-full flex-col overflow-hidden bg-[#F6F2EA] transition-all duration-300 sm:rounded-2xl sm:shadow-2xl ${
+        className={`relative flex h-full w-full flex-col overflow-hidden bg-[#F7F3EC] transition-all duration-300 sm:rounded-card sm:shadow-[0_20px_60px_rgba(74,14,27,0.12)] border border-[#D9C2A2]/45 ${
           theater
             ? 'sm:max-w-[98vw] sm:max-h-[96vh]'
             : 'sm:max-w-6xl sm:max-h-[92vh]'
         }`}
       >
         {/* ── Header ─────────────────────────────────────────────────────── */}
-        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-[#EFE7D8] bg-white px-4 py-3 sm:px-5">
+        <div className="flex shrink-0 items-center justify-between gap-4 border-b border-[#D9C2A2]/30 bg-white px-4 py-3 sm:px-5">
           {/* Breadcrumb */}
-          <nav className="flex min-w-0 items-center gap-1.5 text-xs text-[#8A7E6F]">
+          <nav className="flex min-w-0 items-center gap-1.5 text-xs text-[#22201F]/60">
             <button
               onClick={onClose}
-              className="shrink-0 font-semibold text-[#4A443E] hover:text-[#4A0E1B] transition-colors"
+              className="shrink-0 font-semibold text-[#22201F] hover:text-[#4A0E1B] transition-colors"
             >
               Library
             </button>
-            <ChevronRight size={12} className="shrink-0 text-[#C0A98B]" />
-            <span className="shrink-0 font-semibold text-[#4A443E]">{examLabel}</span>
-            <ChevronRight size={12} className="shrink-0 text-[#C0A98B]" />
-            <span className="shrink-0 font-semibold text-[#4A443E]">Video Lectures</span>
-            <ChevronRight size={12} className="shrink-0 text-[#C0A98B]" />
-            <span className="min-w-0 truncate font-semibold text-[#4A0E1B]">{video.title}</span>
+            <ChevronRight size={12} className="shrink-0 text-[#D9C2A2]" />
+            <span className="shrink-0 font-semibold text-[#22201F]">{examLabel}</span>
+            <ChevronRight size={12} className="shrink-0 text-[#D9C2A2]" />
+            <span className="shrink-0 font-semibold text-[#22201F]">Video Lectures</span>
+            <ChevronRight size={12} className="shrink-0 text-[#D9C2A2]" />
+            <span className="min-w-0 truncate font-bold text-[#4A0E1B]">{video.title}</span>
           </nav>
 
           {/* Controls */}
@@ -193,7 +193,7 @@ export function VideoWatchModal({
             {/* Toggle sidebar (mobile) */}
             <button
               onClick={() => setSidebarOpen((o) => !o)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#6E645A] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F] lg:hidden"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#22201F]/80 transition-colors hover:bg-[#F7F3EC] hover:text-[#22201F] lg:hidden"
               aria-label={sidebarOpen ? 'Hide playlist' : 'Show playlist'}
             >
               <List size={16} />
@@ -201,7 +201,7 @@ export function VideoWatchModal({
             {/* Theater mode */}
             <button
               onClick={() => setTheater((t) => !t)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#6E645A] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#22201F]/80 transition-colors hover:bg-[#F7F3EC] hover:text-[#22201F]"
               aria-label={theater ? 'Exit theater mode' : 'Theater mode'}
             >
               {theater ? <Minimize2 size={16} /> : <Maximize2 size={16} />}
@@ -209,7 +209,7 @@ export function VideoWatchModal({
             {/* Close */}
             <button
               onClick={onClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#6E645A] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#22201F]/80 transition-colors hover:bg-[#F7F3EC] hover:text-[#22201F]"
               aria-label="Close"
             >
               <X size={16} />
@@ -243,7 +243,7 @@ export function VideoWatchModal({
               {/* Up Next overlay */}
               {showUpNext && nextVideo && (
                 <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#0f0f0f]/90 text-white p-6">
-                  <p className={MICRO + ' text-[#D9C2A2]'}>Up next</p>
+                  <p className={MICRO + ' text-[#C9A13B]'}>Up next</p>
                   <h3 className="dash-serif mt-2 text-xl font-semibold text-center max-w-sm leading-snug">
                     {nextVideo.title}
                   </h3>
@@ -251,13 +251,13 @@ export function VideoWatchModal({
                   <div className="mt-6 flex gap-3">
                     <button
                       onClick={() => setShowUpNext(false)}
-                      className="inline-flex items-center gap-2 rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-xs font-bold text-white hover:bg-white/20 transition-colors"
+                      className="inline-flex items-center gap-2 rounded-btn border border-[#D9C2A2]/40 bg-[#F7F3EC]/10 px-4 py-2 text-xs font-bold text-white hover:bg-[#F7F3EC]/20 transition-colors"
                     >
                       Stay here
                     </button>
                     <button
                       onClick={goNext}
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#4A0E1B] px-5 py-2 text-xs font-bold text-white hover:bg-[#380A14] transition-colors"
+                      className="inline-flex items-center gap-2 rounded-btn bg-[#4A0E1B] hover:bg-[#7C2532] px-5 py-2 text-xs font-bold text-white transition-all shadow-soft-sm hover:-translate-y-0.5 duration-200 border border-[#4A0E1B]"
                     >
                       <Play size={13} /> Play next
                     </button>
@@ -278,12 +278,12 @@ export function VideoWatchModal({
                     <span className={`h-1.5 w-1.5 rounded-full ${exam.dot}`} />
                     {examLabel}
                   </span>
-                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFE7D8] px-2.5 py-1 text-[10px] font-bold text-[#6E645A]">
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F7F3EC] px-2.5 py-1 text-[10px] font-bold text-[#22201F]/60 border border-[#D9C2A2]/20">
                     <BookOpen size={10} />
                     {video.subject}
                   </span>
                   {video.duration && (
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#EFE7D8] px-2.5 py-1 text-[10px] font-bold text-[#6E645A]">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F7F3EC] px-2.5 py-1 text-[10px] font-bold text-[#22201F]/60 border border-[#D9C2A2]/20">
                       <Clock size={10} />
                       {video.duration}
                     </span>
@@ -298,21 +298,21 @@ export function VideoWatchModal({
 
               {/* Description */}
               {video.description && (
-                <div className={`${CARD} p-4`}>
-                  <p className={`${MICRO} mb-2`}>About this lecture</p>
-                  <p className="text-sm leading-relaxed text-[#5A534B]">{video.description}</p>
-                  <div className="mt-4 flex items-center gap-1.5 text-xs text-[#8A7E6F]">
-                    <span className="dash-mono">Instructor: Prof. Ajesh Joe</span>
-                  </div>
-                </div>
+                <PremiumCard padding="medium" accentLine>
+                  <PremiumCard.Category className="mb-2">About this lecture</PremiumCard.Category>
+                  <p className="text-sm leading-relaxed text-[#22201F]/80">{video.description}</p>
+                  <PremiumCard.Footer noDivider className="mt-4">
+                    <PremiumCard.Metadata className="font-mono">Instructor: Prof. Ajesh Joe</PremiumCard.Metadata>
+                  </PremiumCard.Footer>
+                </PremiumCard>
               )}
 
               {/* Prev / Next navigation */}
-              <div className="flex items-center gap-3 border-t border-[#F2ECDF] pt-4">
+              <div className="flex items-center gap-3 border-t border-[#D9C2A2]/20 pt-4">
                 <button
                   onClick={goPrev}
                   disabled={!prevVideo}
-                  className="flex-1 inline-flex items-center gap-2 rounded-xl border border-[#E3D8C5] bg-white px-4 py-2.5 text-xs font-semibold text-[#4A443E] transition-colors hover:bg-[#F6F2EA] disabled:pointer-events-none disabled:opacity-40"
+                  className="flex-1 inline-flex items-center gap-2 rounded-full border border-[#D9C2A2]/40 bg-white px-5 py-2.5 text-xs font-semibold text-[#22201F] transition-all hover:bg-[#F7F3EC] disabled:pointer-events-none disabled:opacity-40 hover:-translate-y-0.5 shadow-sm"
                 >
                   <ChevronLeft size={15} />
                   <span className="min-w-0 text-left">
@@ -323,7 +323,7 @@ export function VideoWatchModal({
                 <button
                   onClick={goNext}
                   disabled={!nextVideo}
-                  className="flex-1 inline-flex items-center justify-end gap-2 rounded-xl border border-[#E3D8C5] bg-white px-4 py-2.5 text-xs font-semibold text-[#4A443E] transition-colors hover:bg-[#F6F2EA] disabled:pointer-events-none disabled:opacity-40"
+                  className="flex-1 inline-flex items-center justify-end gap-2 rounded-full border border-[#D9C2A2]/40 bg-white px-5 py-2.5 text-xs font-semibold text-[#22201F] transition-all hover:bg-[#F7F3EC] disabled:pointer-events-none disabled:opacity-40 hover:-translate-y-0.5 shadow-sm"
                 >
                   <span className="min-w-0 text-right">
                     <span className={`block ${MICRO} leading-none`}>Next</span>
@@ -337,21 +337,21 @@ export function VideoWatchModal({
 
           {/* ── Sidebar playlist ─────────────────────────────────────────── */}
           <aside
-            className={`shrink-0 overflow-y-auto border-l border-[#EAE1D2] bg-white transition-all duration-300 ${
+            className={`shrink-0 overflow-y-auto border-l border-[#D9C2A2]/30 bg-white transition-all duration-300 ${
               sidebarOpen ? 'w-72 xl:w-80' : 'w-0 overflow-hidden border-0'
             }`}
           >
-            <div className="sticky top-0 z-10 border-b border-[#EFE7D8] bg-white px-4 py-3">
+            <div className="sticky top-0 z-10 border-b border-[#D9C2A2]/30 bg-white px-4 py-3">
               <p className={MICRO}>Playlist</p>
               <p className="mt-0.5 text-sm font-semibold text-[#22201F]">
                 {examLabel} · {video.subject}
               </p>
-              <p className="text-xs text-[#8A7E6F]">
+              <p className="text-xs text-[#22201F]/60">
                 {currentIndex + 1} of {playlist.length}
               </p>
             </div>
 
-            <div className="divide-y divide-[#F2ECDF] p-2">
+            <div className="divide-y divide-[#D9C2A2]/20 p-2">
               {playlist.map((item, idx) => {
                 const itemId = extractYouTubeId(item.youtubeLink);
                 const isActive = item.id === video.id;
@@ -364,17 +364,17 @@ export function VideoWatchModal({
                     }}
                     className={`group flex w-full items-start gap-3 rounded-xl px-2.5 py-3 text-left transition-colors ${
                       isActive
-                        ? 'bg-[#F4E7E5]'
-                        : 'hover:bg-[#FBF7F0]'
+                        ? 'bg-[#4A0E1B]/8'
+                        : 'hover:bg-[#F7F3EC]/50'
                     }`}
                   >
                     {/* Thumbnail / index */}
-                    <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-lg bg-[#F0E9DB]">
+                    <div className="relative h-14 w-24 shrink-0 overflow-hidden rounded-lg bg-[#F7F3EC]">
                       {itemId ? (
                         <PlaylistThumbnail videoId={itemId} alt={item.title} />
                       ) : (
                         <div className="flex h-full items-center justify-center">
-                          <span className="dash-serif text-lg font-semibold text-[#A79A88]">
+                          <span className="dash-serif text-lg font-semibold text-[#22201F]/40">
                             {idx + 1}
                           </span>
                         </div>
@@ -395,9 +395,9 @@ export function VideoWatchModal({
                       >
                         {item.title}
                       </p>
-                      <p className="mt-1 text-[10px] text-[#8A7E6F]">{item.chapter}</p>
+                      <p className="mt-1 text-[10px] text-[#22201F]/60">{item.chapter}</p>
                       {item.duration && (
-                        <p className="dash-mono mt-1 text-[10px] tabular-nums text-[#A79A88]">
+                        <p className="dash-mono mt-1 text-[10px] tabular-nums text-[#22201F]/40">
                           {item.duration}
                         </p>
                       )}
@@ -412,7 +412,7 @@ export function VideoWatchModal({
               })}
 
               {playlist.length === 0 && (
-                <p className="px-4 py-8 text-center text-sm text-[#8A7E6F]">
+                <p className="px-4 py-8 text-center text-sm text-[#22201F]/60">
                   No other lectures in this course.
                 </p>
               )}

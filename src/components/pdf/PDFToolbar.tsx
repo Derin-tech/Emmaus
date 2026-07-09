@@ -129,19 +129,19 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
     return () => window.removeEventListener('keydown', handler);
   }, [zoom, currentPage, numPages, searchOpen, isFullscreen, goToPage, setZoom, setZoomMode, toggleFullscreen]);
 
-  const ICON_BTN = 'flex h-8 w-8 items-center justify-center rounded-lg text-[#6E645A] transition-colors hover:bg-[#F4E7E5] hover:text-[#4A0E1B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A0E1B]/20';
-  const DIVIDER = 'h-5 w-px bg-[#EAE1D2] mx-0.5';
+  const ICON_BTN = 'flex h-8 w-8 items-center justify-center rounded-lg text-[#22201F]/80 transition-colors hover:bg-[#F7F3EC] hover:text-[#4A0E1B] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#4A0E1B]/20';
+  const DIVIDER = 'h-5 w-px bg-[#D9C2A2]/30 mx-0.5';
 
   return (
     <div
-      className="sticky top-0 z-30 flex items-center gap-1 border-b border-[#EAE1D2] bg-white px-2 py-1.5 shadow-[0_1px_2px_rgba(34,32,31,0.06)] print:hidden"
+      className="sticky top-0 z-30 flex items-center gap-1 border-b border-[#D9C2A2]/30 bg-white px-2 py-1.5 shadow-soft-sm print:hidden"
       role="toolbar"
       aria-label="PDF viewer toolbar"
     >
       {/* Back / Close */}
       <button
         onClick={onClose}
-        className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-[#6E645A] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"
+        className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-[#22201F]/80 transition-colors hover:bg-[#F7F3EC] hover:text-[#4A0E1B]"
         aria-label="Close PDF viewer"
       >
         <ArrowLeft size={15} />
@@ -153,7 +153,7 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
       {/* Sidebar toggle */}
       <button
         onClick={() => setSidebarOpen(!sidebarOpen)}
-        className={`${ICON_BTN} ${sidebarOpen ? 'bg-[#F4E7E5] text-[#4A0E1B]' : ''}`}
+        className={`${ICON_BTN} ${sidebarOpen ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : ''}`}
         aria-label="Toggle thumbnail sidebar"
         title="Toggle Sidebar"
       >
@@ -188,11 +188,11 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
             value={pageInput}
             onChange={e => setPageInput(e.target.value)}
             onBlur={handlePageSubmit}
-            className="w-10 rounded-lg border border-[#E3D8C5] bg-[#FBF7F0] px-1.5 py-1 text-center text-xs font-semibold text-[#22201F] outline-none transition focus:border-[#4A0E1B]/50 focus:ring-2 focus:ring-[#4A0E1B]/10"
+            className="w-10 rounded-lg border border-[#D9C2A2]/40 bg-[#F7F3EC]/50 px-1.5 py-1 text-center text-xs font-semibold text-[#22201F] outline-none transition focus:border-[#4A0E1B]/50 focus:ring-2 focus:ring-[#C9A13B]/20"
             aria-label="Current page number"
           />
         </form>
-        <span className="dash-mono text-[10px] text-[#8A7E6F]">/ {numPages || '—'}</span>
+        <span className="dash-mono text-[10px] text-[#22201F]/60">/ {numPages || '—'}</span>
 
         <button
           onClick={() => goToPage(currentPage + 1)}
@@ -221,32 +221,32 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
         <div className="relative" ref={zoomMenuRef}>
           <button
             onClick={() => setZoomMenuOpen(!zoomMenuOpen)}
-            className="flex h-8 items-center gap-1 rounded-lg border border-[#E3D8C5] bg-[#FBF7F0] px-2 text-[10px] font-bold text-[#4A443E] transition-colors hover:bg-[#F4E7E5] hover:border-[#4A0E1B]/20"
+            className="flex h-8 items-center gap-1 rounded-lg border border-[#D9C2A2]/40 bg-[#F7F3EC]/50 px-2 text-[10px] font-bold text-[#22201F] transition-colors hover:bg-[#F7F3EC] hover:border-[#4A0E1B]/30"
             aria-label="Zoom level"
           >
             {displayZoom}
           </button>
           {zoomMenuOpen && (
-            <div className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-2xl border border-[#EAE1D2] bg-white p-1 shadow-xl">
+            <div className="absolute right-0 top-full z-50 mt-1 w-36 overflow-hidden rounded-2xl border border-[#D9C2A2]/30 bg-white p-1 shadow-soft-lg">
               {ZOOM_PRESETS.map(z => (
                 <button
                   key={z}
                   onClick={() => handleZoomChange(z)}
-                  className={`flex w-full items-center rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#F6F2EA] ${Math.abs(zoom - z) < 0.01 && zoomMode === 'custom' ? 'bg-[#F4E7E5] text-[#4A0E1B]' : 'text-[#4A443E]'}`}
+                  className={`flex w-full items-center rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#F7F3EC] ${Math.abs(zoom - z) < 0.01 && zoomMode === 'custom' ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : 'text-[#22201F]/80'}`}
                 >
                   {Math.round(z * 100)}%
                 </button>
               ))}
-              <div className="my-1 border-t border-[#EFE7D8]" />
+              <div className="my-1 border-t border-[#D9C2A2]/20" />
               <button
                 onClick={() => handleZoomChange('fitWidth')}
-                className={`flex w-full items-center rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#F6F2EA] ${zoomMode === 'fitWidth' ? 'bg-[#F4E7E5] text-[#4A0E1B]' : 'text-[#4A443E]'}`}
+                className={`flex w-full items-center rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#F7F3EC] ${zoomMode === 'fitWidth' ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : 'text-[#22201F]/80'}`}
               >
                 Fit Width
               </button>
               <button
                 onClick={() => handleZoomChange('fitPage')}
-                className={`flex w-full items-center rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#F6F2EA] ${zoomMode === 'fitPage' ? 'bg-[#F4E7E5] text-[#4A0E1B]' : 'text-[#4A443E]'}`}
+                className={`flex w-full items-center rounded-xl px-3 py-1.5 text-xs font-semibold transition-colors hover:bg-[#F7F3EC] ${zoomMode === 'fitPage' ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : 'text-[#22201F]/80'}`}
               >
                 Fit Page
               </button>
@@ -289,7 +289,7 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
       {/* Search */}
       <button
         onClick={() => setSearchOpen(s => !s)}
-        className={`${ICON_BTN} ${searchOpen ? 'bg-[#F4E7E5] text-[#4A0E1B]' : ''}`}
+        className={`${ICON_BTN} ${searchOpen ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : ''}`}
         aria-label="Search in document"
         title="Search (Ctrl F)"
       >
@@ -309,7 +309,7 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
       {/* Info panel */}
       <button
         onClick={() => setInfoPanelOpen(!infoPanelOpen)}
-        className={`${ICON_BTN} ${infoPanelOpen ? 'bg-[#F4E7E5] text-[#4A0E1B]' : ''}`}
+        className={`${ICON_BTN} ${infoPanelOpen ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : ''}`}
         aria-label="Document information"
         title="Document Info"
       >
@@ -362,7 +362,7 @@ export function PDFToolbar({ onClose }: PDFToolbarProps) {
       <div className={DIVIDER} />
       <button
         onClick={onClose}
-        className={`${ICON_BTN} hover:bg-[#F6E5E1] hover:text-[#B23B2E]`}
+        className={`${ICON_BTN} hover:bg-[#4A0E1B]/8 hover:text-[#4A0E1B]`}
         aria-label="Close viewer"
         title="Close"
       >
@@ -392,18 +392,18 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
   useEffect(() => { inputRef.current?.focus(); }, []);
 
   return (
-    <div className="flex items-center gap-2 rounded-2xl border border-[#EAE1D2] bg-white p-2 shadow-xl">
-      <Search size={14} className="shrink-0 text-[#B3A996]" />
+    <div className="flex items-center gap-2 rounded-2xl border border-[#D9C2A2]/30 bg-white p-2 shadow-soft-lg">
+      <Search size={14} className="shrink-0 text-[#22201F]/40" />
       <input
         ref={inputRef}
         type="text"
         value={searchQuery}
         onChange={e => setSearchQuery(e.target.value)}
         placeholder="Search in document…"
-        className="w-52 bg-transparent text-sm text-[#22201F] placeholder:text-[#B3A996] outline-none"
+        className="w-52 bg-transparent text-sm text-[#22201F] placeholder:text-[#22201F]/30 outline-none"
         aria-label="Search query"
       />
-      <label className="flex cursor-pointer items-center gap-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#8A7E6F]">
+      <label className="flex cursor-pointer items-center gap-1 text-[10px] font-bold uppercase tracking-[0.1em] text-[#22201F]/60">
         <input
           type="checkbox"
           checked={searchCaseSensitive}
@@ -414,7 +414,7 @@ export function SearchPanel({ onClose }: SearchPanelProps) {
       </label>
       <button
         onClick={onClose}
-        className="flex h-6 w-6 items-center justify-center rounded-lg text-[#8A7E6F] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"
+        className="flex h-6 w-6 items-center justify-center rounded-lg text-[#22201F]/60 transition-colors hover:bg-[#F7F3EC] hover:text-[#4A0E1B]"
         aria-label="Close search"
       >
         <X size={12} />

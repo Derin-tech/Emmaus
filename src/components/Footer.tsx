@@ -4,89 +4,91 @@
  */
 
 import React from 'react';
-import { GraduationCap } from 'lucide-react';
 
 interface FooterProps {
   onNavigate: (view: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact') => void;
   userRole: 'student' | 'professor' | null;
 }
 
-export default function Footer({ onNavigate, userRole }: FooterProps) {
+interface BottomLinkProps {
+  onClick: () => void;
+  children: React.ReactNode;
+}
+
+const BottomLink = ({ onClick, children }: BottomLinkProps) => {
+  return (
+    <button
+      onClick={onClick}
+      className="group relative flex items-center text-[12px] md:text-[13px] font-medium text-[#22201F]/50 dark:text-[#F7F3EC]/50 hover:text-[#4A0E1B] dark:hover:text-[#C9A13B] transition-colors duration-200 ease-out focus:outline-none"
+    >
+      <span className="transform transition-transform duration-200 ease-out group-hover:translate-x-[2px] relative flex flex-col pb-0.5">
+        {children}
+        <span className="absolute bottom-0 left-0 h-[1px] w-full bg-[#4A0E1B] dark:bg-[#C9A13B] origin-left scale-x-0 transition-transform duration-200 ease-out group-hover:scale-x-100" />
+      </span>
+    </button>
+  );
+};
+
+export default function Footer({ onNavigate }: FooterProps) {
   const currentYear = new Date().getFullYear();
 
-  const handleResourceClick = () => {
-    if (userRole === 'student') {
-      onNavigate('student');
-    } else if (userRole === 'professor') {
-      onNavigate('professor');
-    } else {
-      onNavigate('selection');
-    }
-  };
-
   return (
-    <footer className="w-full border-t-2 border-[#E5E5EA] bg-[#FFFFFF] py-12 transition-colors duration-300">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
+    <footer className="w-full bg-[#F7F3EC] dark:bg-[#22201F] pt-8 pb-6 transition-colors duration-300">
+      {/* Floating Lightweight Card Container */}
+      <div className="mx-auto w-[92%] max-w-7xl rounded-[24px] bg-white dark:bg-[#4A0E1B]/12 px-6 py-7 md:px-10 md:py-8 shadow-[0_8px_30px_rgba(74,14,27,0.02)] dark:shadow-[0_8px_30px_rgba(0,0,0,0.15)] border border-[#D9C2A2]/25 dark:border-[#C9A13B]/8 relative transition-all duration-300">
+        
+        {/* Row 1: Asymmetrical Top Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
           
-          {/* Brand */}
-          <div className="flex items-center space-x-3">
-            <div className="flex h-8 w-8 items-center justify-center bg-[#F5F5F7] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] rounded-lg">
-              <img 
-                src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Open%20Book.png" 
-                alt="Footer Logo" 
-                className="h-5 w-5 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]"
-              />
-            </div>
-            <span className="font-display text-sm font-bold tracking-tight text-[#1D1D1F]">
+          {/* Left: Identity */}
+          <div className="flex flex-col space-y-1">
+            <h4 className="text-[18px] font-semibold tracking-tight text-[#22201F] dark:text-[#F7F3EC] font-display">
               Prof. Ajesh Joe
-            </span>
+            </h4>
+            <p className="text-[14px] font-normal text-[#22201F]/80 dark:text-[#F7F3EC]/80">
+              Department of Chemistry
+            </p>
+            <p className="text-[14px] font-normal text-[#22201F]/60 dark:text-[#F7F3EC]/60">
+              Indian Institute of Technology (BHU), Varanasi
+            </p>
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
-            <button
-              onClick={() => onNavigate('home')}
-              className="text-[10px] uppercase tracking-[0.1em] font-black text-[#86868B] hover:text-[#1D1D1F] transition-colors"
-              id="footer-link-home"
+          {/* Right: Contact */}
+          <div className="flex flex-col space-y-1 text-left md:text-right items-start md:items-end text-[14px] font-normal text-[#22201F]/80 dark:text-[#F7F3EC]/80">
+            {/* Email mailto Link */}
+            <a
+              href="mailto:ajesh.joe@university.edu"
+              className="group relative inline-flex items-center text-[14px] font-normal text-[#22201F]/80 dark:text-[#F7F3EC]/80 hover:text-[#4A0E1B] dark:hover:text-[#C9A13B] transition-colors duration-200 ease-out focus:outline-none"
             >
-              Home
-            </button>
-            <button
-              onClick={handleResourceClick}
-              className="text-[10px] uppercase tracking-[0.1em] font-black text-[#86868B] hover:text-[#1D1D1F] transition-colors"
-              id="footer-link-resources"
-            >
-              Library Resources
-            </button>
-            <button
-              onClick={() => onNavigate('about')}
-              className="text-[10px] uppercase tracking-[0.1em] font-black text-[#86868B] hover:text-[#1D1D1F] transition-colors"
-              id="footer-link-about"
-            >
-              About the Professor
-            </button>
-            <button
-              onClick={() => onNavigate('contact')}
-              className="text-[10px] uppercase tracking-[0.1em] font-black text-[#86868B] hover:text-[#1D1D1F] transition-colors"
-              id="footer-link-contact"
-            >
-              Contact Office
-            </button>
+              <span className="transform transition-transform duration-200 ease-out group-hover:translate-x-[2px] relative flex flex-col pb-0.5">
+                ajesh.joe@university.edu
+                <span className="absolute bottom-0 left-0 h-[1px] w-full bg-[#4A0E1B] dark:bg-[#C9A13B] origin-left scale-x-0 transition-transform duration-200 ease-out group-hover:scale-x-100" />
+              </span>
+            </a>
+            <p>Room 402-B, Science Block II</p>
+            <p className="text-[13px] text-[#22201F]/60 dark:text-[#F7F3EC]/60">
+              Office Hours: Mon & Wed: 2:00 PM – 4:00 PM
+            </p>
           </div>
 
         </div>
 
-        <div className="my-8 h-[2px] bg-gray-800" />
+        {/* Thin Fading Gradient Divider */}
+        <div 
+          className="h-[1px] w-full bg-gradient-to-r from-transparent via-[#D9C2A2]/30 dark:via-[#C9A13B]/12 to-transparent my-5" 
+          role="separator" 
+          aria-hidden="true" 
+        />
 
-        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
-          <p className="text-center text-[9px] uppercase tracking-[0.2em] font-black text-[#86868B] md:text-left max-w-xl leading-relaxed">
-            © {currentYear} Prof. Ajesh Joe. All rights reserved. This repository is hosted solely as an open educational resource for university students and aspirants.
-          </p>
-          <div className="flex space-x-4">
-            <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[#0071E3] border-2 border-[#E5E5EA] bg-[#F5F5F7] px-3 py-1.5">
-              Department of Chemistry
-            </span>
+        {/* Row 2: Bottom Bar */}
+        <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0 text-[12px] md:text-[13px] text-[#22201F]/50 dark:text-[#F7F3EC]/50 font-normal">
+          <p>© {currentYear} Prof. Ajesh Joe. All rights reserved.</p>
+          <div className="flex items-center gap-x-3 select-none">
+            <BottomLink onClick={() => onNavigate('home')}>Privacy</BottomLink>
+            <span className="text-[#D9C2A2]/50">•</span>
+            <BottomLink onClick={() => onNavigate('home')}>Terms</BottomLink>
+            <span className="text-[#D9C2A2]/50">•</span>
+            <BottomLink onClick={() => onNavigate('home')}>Accessibility</BottomLink>
           </div>
         </div>
 

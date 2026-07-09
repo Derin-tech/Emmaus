@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import {
   LayoutDashboard,
   FileText,
@@ -34,9 +34,13 @@ import {
   RotateCcw,
   MoreVertical,
   CheckCircle2,
-  AlertCircle
+  AlertCircle,
+  Eye
 } from 'lucide-react';
+import { PDFViewer } from './pdf/PDFViewer';
+import type { PDFDocumentInfo } from './pdf/PDFContext';
 import { FileUpload } from './FileUpload';
+import { PremiumCard } from './PremiumCard';
 import {
   ExamType,
   ExamInfo,
@@ -54,33 +58,32 @@ import { extractYouTubeId, getYoutubeThumbnail, isValidYouTubeUrl } from '../lib
  * Design tokens — a warm, light "professor's study" system built on
  * the chosen palette: Deep Maroon #4A0E1B · Charcoal #22201F · Sand #D9C2A2
  * ------------------------------------------------------------------ */
-const CARD =
-  'rounded-2xl border border-[#EAE1D2] bg-white shadow-[0_1px_2px_rgba(34,32,31,0.04),0_18px_36px_-26px_rgba(34,32,31,0.35)]';
+// CARD constant deprecated. We use PremiumCard component for visual consistency.
 const INPUT =
-  'w-full rounded-xl border border-[#E3D8C5] bg-[#FBF7F0] px-3.5 py-2.5 text-sm text-[#22201F] placeholder:text-[#B3A996] outline-none transition focus:border-[#4A0E1B]/50 focus:bg-white focus:ring-4 focus:ring-[#4A0E1B]/10';
+  'w-full rounded-input border border-[#D9C2A2]/40 bg-white px-3.5 py-2.5 text-sm text-[#22201F] placeholder:text-[#22201F]/30 outline-none transition focus:border-[#4A0E1B]/50 focus:ring-4 focus:ring-[#C9A13B]/10';
 const PRIMARY_BTN =
-  'inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A0E1B] px-4 py-2.5 text-xs font-bold tracking-wide text-white transition-colors hover:bg-[#380A14] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#4A0E1B]/20 disabled:opacity-50';
+  'inline-flex items-center justify-center gap-2 rounded-btn bg-[#4A0E1B] hover:bg-[#7C2532] px-4 py-2.5 text-xs font-bold tracking-wide text-white transition-all shadow-soft-sm hover:-translate-y-0.5 duration-200 disabled:opacity-50';
 const GHOST_BTN =
-  'inline-flex items-center justify-center gap-2 rounded-xl border border-[#E3D8C5] bg-white px-4 py-2.5 text-xs font-semibold text-[#4A443E] transition-colors hover:bg-[#F6F2EA]';
+  'inline-flex items-center justify-center gap-2 rounded-btn border border-[#D9C2A2]/40 bg-white px-4 py-2.5 text-xs font-semibold text-[#22201F] transition-all hover:bg-[#F7F3EC] hover:-translate-y-0.5 duration-200';
 const ROW_BTN =
-  'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#6E645A] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]';
+  'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#22201F]/80 transition-colors hover:bg-[#F7F3EC] hover:text-[#4A0E1B]';
 const ROW_BTN_DANGER =
-  'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#8A7E6F] transition-colors hover:bg-[#F6E5E1] hover:text-[#B23B2E]';
-const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]';
+  'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-[#4A0E1B]/80 transition-colors hover:bg-[#4A0E1B]/8 hover:text-[#4A0E1B]';
+const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#22201F]/60';
 
 const EXAM_STYLES: Record<string, { bg: string; text: string; dot: string }> = {
-  'jee-main': { bg: 'bg-[#F4E7E5]', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
-  'jee-advanced': { bg: 'bg-[#F3E6EA]', text: 'text-[#7A1F2B]', dot: 'bg-[#7A1F2B]' },
-  neet: { bg: 'bg-[#E7EFE9]', text: 'text-[#2F6D4E]', dot: 'bg-[#2F6D4E]' },
-  net: { bg: 'bg-[#E5EDF2]', text: 'text-[#2B5B7A]', dot: 'bg-[#2B5B7A]' },
-  'msc-entrance': { bg: 'bg-[#F5ECD8]', text: 'text-[#8A5E1E]', dot: 'bg-[#A9772E]' }
+  'jee-main': { bg: 'bg-[#4A0E1B]/8', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
+  'jee-advanced': { bg: 'bg-[#7C2532]/8', text: 'text-[#7C2532]', dot: 'bg-[#7C2532]' },
+  neet: { bg: 'bg-[#C9A13B]/8', text: 'text-[#C9A13B]', dot: 'bg-[#C9A13B]' },
+  net: { bg: 'bg-[#D9C2A2]/20', text: 'text-[#4A0E1B]', dot: 'bg-[#4A0E1B]' },
+  'msc-entrance': { bg: 'bg-[#C9A13B]/15', text: 'text-[#7C2532]', dot: 'bg-[#7C2532]' }
 };
 
 const ANN_CAT: Record<AnnouncementCategory, { label: string; cls: string }> = {
-  general: { label: 'General', cls: 'bg-[#EFE7D8] text-[#6E645A]' },
-  exam: { label: 'Exam', cls: 'bg-[#F4E4E4] text-[#4A0E1B]' },
-  resource: { label: 'Resource', cls: 'bg-[#E7EFE9] text-[#2F6D4E]' },
-  schedule: { label: 'Schedule', cls: 'bg-[#E5EDF2] text-[#2B5B7A]' }
+  general: { label: 'General', cls: 'bg-[#D9C2A2]/20 text-[#22201F]' },
+  exam: { label: 'Exam', cls: 'bg-[#4A0E1B]/8 text-[#4A0E1B]' },
+  resource: { label: 'Resource', cls: 'bg-[#C9A13B]/10 text-[#4A0E1B]' },
+  schedule: { label: 'Schedule', cls: 'bg-[#7C2532]/8 text-[#7C2532]' }
 };
 
 /* ------------------------------------------------------------------ *
@@ -98,9 +101,9 @@ function ExamChip({ course, label }: { course: string; label: string }) {
 
 function DifficultyChip({ level }: { level: 'Easy' | 'Medium' | 'Hard' }) {
   const map = {
-    Easy: 'bg-[#E7EFE9] text-[#2F6D4E]',
-    Medium: 'bg-[#F5ECD8] text-[#8A5E1E]',
-    Hard: 'bg-[#F4E4E4] text-[#4A0E1B]'
+    Easy: 'bg-[#C9A13B]/10 text-[#C9A13B]',
+    Medium: 'bg-[#D9C2A2]/30 text-[#4A0E1B]',
+    Hard: 'bg-[#4A0E1B]/8 text-[#4A0E1B]'
   } as const;
   return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold ${map[level]}`}>{level}</span>;
 }
@@ -117,14 +120,14 @@ function StatCard({
   sub?: string;
 }) {
   return (
-    <div className={`${CARD} p-5`}>
-      <div className="flex items-start justify-between">
-        <span className={MICRO}>{label}</span>
-        <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]">{icon}</span>
+    <PremiumCard padding="medium">
+      <div className="flex items-center justify-between">
+        <PremiumCard.Category>{label}</PremiumCard.Category>
+        <PremiumCard.Icon className="h-10 w-10 rounded-full">{icon}</PremiumCard.Icon>
       </div>
-      <p className="dash-serif mt-3 text-4xl font-semibold leading-none tabular-nums text-[#22201F]">{value}</p>
-      {sub && <p className="mt-2 text-xs text-[#8A7E6F]">{sub}</p>}
-    </div>
+      <p className="mt-4 text-3xl font-bold leading-none tabular-nums text-[#22201F]">{value}</p>
+      {sub && <PremiumCard.Metadata className="mt-2 block">{sub}</PremiumCard.Metadata>}
+    </PremiumCard>
   );
 }
 
@@ -168,12 +171,12 @@ function EmptyState({
   action?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#E0D5C2] bg-[#FBF7F0] px-6 py-14 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F1E3D0] text-[#A9772E]">{icon}</div>
-      <h4 className="dash-serif mt-4 text-base font-semibold text-[#22201F]">{title}</h4>
-      <p className="mt-1 max-w-sm text-sm text-[#8A7E6F]">{message}</p>
+    <PremiumCard className="flex flex-col items-center justify-center border-dashed border-[#D9C2A2]/50 px-6 py-14 text-center">
+      <PremiumCard.Icon className="h-12 w-12 rounded-xl">{icon}</PremiumCard.Icon>
+      <h4 className="dash-serif mt-4 text-base font-bold text-[#22201F]">{title}</h4>
+      <PremiumCard.Description className="mt-1.5 max-w-sm text-sm">{message}</PremiumCard.Description>
       {action && <div className="mt-5">{action}</div>}
-    </div>
+    </PremiumCard>
   );
 }
 
@@ -199,13 +202,13 @@ function Modal({
   return (
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <button aria-label="Close" onClick={onClose} className="absolute inset-0 cursor-default bg-[#22201F]/40 backdrop-blur-[2px]" />
-      <div className={`relative w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} overflow-hidden rounded-2xl border border-[#EAE1D2] bg-white shadow-2xl`}>
-        <div className="flex items-start justify-between gap-4 border-b border-[#EFE7D8] px-6 py-5">
+      <div className={`relative w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} overflow-hidden rounded-modal border border-[#D9C2A2]/30 bg-white shadow-soft-xl`}>
+        <div className="flex items-start justify-between gap-4 border-b border-[#D9C2A2]/20 px-6 py-5">
           <div>
             <h3 className="dash-serif text-lg font-semibold text-[#22201F]">{title}</h3>
-            {subtitle && <p className="mt-0.5 text-xs text-[#8A7E6F]">{subtitle}</p>}
+            {subtitle && <p className="mt-0.5 text-xs text-[#22201F]/60">{subtitle}</p>}
           </div>
-          <button onClick={onClose} className="rounded-lg p-1.5 text-[#8A7E6F] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]">
+          <button onClick={onClose} className="rounded-lg p-1.5 text-[#22201F]/60 transition-colors hover:bg-[#F7F3EC] hover:text-[#22201F]">
             <X size={18} />
           </button>
         </div>
@@ -406,6 +409,10 @@ export default function ProfessorDashboard({
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
+
+  // ─── PDF Viewer ─────────────────────────────────────────────────────────────
+  const [pdfDoc, setPdfDoc] = useState<PDFDocumentInfo | null>(null);
+  const openPDF = useCallback((info: PDFDocumentInfo) => setPdfDoc(info), []);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [noteFile, setNoteFile] = useState<File | null>(null);
@@ -827,14 +834,16 @@ export default function ProfessorDashboard({
   );
 
   return (
-    <div className="dash-root min-h-[85vh] bg-[#F6F2EA] text-[#22201F]">
+    <div className="dash-root min-h-[85vh] bg-[#F7F3EC] text-[#22201F]">
+      {/* ─── In-app PDF Viewer overlay ─── */}
+      {pdfDoc && <PDFViewer docInfo={pdfDoc} onClose={() => setPdfDoc(null)} />}
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         {/* ============ TOP HEADER ============ */}
         <header className="mb-7 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className={MICRO}>Professor workspace</p>
             <h1 className="dash-serif mt-1 text-3xl font-semibold text-[#22201F] sm:text-[2rem]">{pageTitle[activeTab]}</h1>
-            <p className="mt-1 flex items-center gap-1.5 text-sm text-[#8A7E6F]">
+            <p className="mt-1 flex items-center gap-1.5 text-sm text-[#22201F]/60">
               {activeTab === 'overview' && <Calendar size={14} />}
               {pageSub[activeTab]}
             </p>
@@ -847,7 +856,7 @@ export default function ProfessorDashboard({
             {quickAddOpen && (
               <>
                 <button className="fixed inset-0 z-40 cursor-default" aria-hidden onClick={() => setQuickAddOpen(false)} />
-                <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-[#EAE1D2] bg-white p-1.5 shadow-xl">
+                <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-2xl border border-[#D9C2A2]/30 bg-white p-1.5 shadow-soft-lg">
                   {quickAdd.map((item) => (
                     <button
                       key={item.label}
@@ -855,9 +864,9 @@ export default function ProfessorDashboard({
                         item.fn();
                         setQuickAddOpen(false);
                       }}
-                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#4A443E] transition-colors hover:bg-[#F6F2EA]"
+                      className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold text-[#22201F] transition-colors hover:bg-[#F7F3EC]"
                     >
-                      <span className="text-[#A9772E]">{item.icon}</span>
+                      <span className="text-[#C9A13B]">{item.icon}</span>
                       {item.label}
                     </button>
                   ))}
@@ -871,15 +880,15 @@ export default function ProfessorDashboard({
           {/* ============ SIDEBAR ============ */}
           <aside className="lg:col-span-3">
             <div className="lg:sticky lg:top-24">
-              <div className={`${CARD} p-3`}>
+              <PremiumCard padding="small">
                 {/* Profile */}
-                <div className="mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#F4E7E5] to-[#F3EAD8] p-3">
-                  <div className="dash-serif flex h-11 w-11 items-center justify-center rounded-xl bg-[#4A0E1B] text-base font-semibold text-[#F3E3C6]">
+                <div className="mb-3 flex items-center gap-3 rounded-xl bg-gradient-to-br from-[#4A0E1B]/8 to-[#C9A13B]/8 border border-[#D9C2A2]/20 p-3">
+                  <div className="dash-serif flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[#4A0E1B] text-base font-semibold text-[#D9C2A2]">
                     {initials(profile.name)}
                   </div>
                   <div className="min-w-0">
                     <h3 className="truncate text-sm font-bold text-[#22201F]">{profile.name}</h3>
-                    <span className="text-[11px] font-medium text-[#8A7E6F]">{profile.role}</span>
+                    <span className="text-[11px] font-medium text-[#22201F]/60">{profile.role}</span>
                   </div>
                 </div>
 
@@ -892,12 +901,12 @@ export default function ProfessorDashboard({
                         key={item.id}
                         onClick={() => setActiveTab(item.id)}
                         id={`sidebar-tab-${item.id}`}
-                        className={`group relative flex w-full items-center gap-3 rounded-xl px-3.5 py-2.5 text-sm font-semibold transition-colors ${
-                          active ? 'bg-[#F4E7E5] text-[#4A0E1B]' : 'text-[#6E645A] hover:bg-[#F6F2EA] hover:text-[#22201F]'
+                        className={`group relative flex w-full items-center gap-3 rounded-[12px] px-3.5 py-2.5 text-sm font-semibold transition-all duration-200 ${
+                          active ? 'bg-[#4A0E1B]/8 text-[#4A0E1B]' : 'text-[#22201F]/80 hover:bg-[#F7F3EC] hover:text-[#22201F]'
                         }`}
                       >
                         {active && <span className="absolute left-0 top-1/2 h-5 w-1 -translate-y-1/2 rounded-r-full bg-[#4A0E1B]" />}
-                        <span className={active ? 'text-[#4A0E1B]' : 'text-[#AC9F8C] group-hover:text-[#6E645A]'}>{item.icon}</span>
+                        <span className={active ? 'text-[#4A0E1B]' : 'text-[#4A0E1B]/60 group-hover:text-[#4A0E1B]'}>{item.icon}</span>
                         <span className="flex-1 text-left">{item.label}</span>
                         {!!item.badge && item.badge > 0 && (
                           <span className="rounded-full bg-[#4A0E1B] px-1.5 py-0.5 text-[10px] font-bold tabular-nums text-white">{item.badge}</span>
@@ -906,10 +915,10 @@ export default function ProfessorDashboard({
                     );
                   })}
                 </nav>
-              </div>
+              </PremiumCard>
 
-              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#EAE1D2] bg-[#FBF7F0] px-3.5 py-3 text-[11px] text-[#8A7E6F]">
-                <Check size={14} className="text-[#2F6D4E]" />
+              <div className="mt-3 flex items-center gap-2 rounded-xl border border-[#D9C2A2]/30 bg-white shadow-soft-sm px-3.5 py-3 text-[11px] text-[#22201F]/60">
+                <Check size={14} className="text-[#4A0E1B]" />
                 Changes save automatically to this browser.
               </div>
             </div>
@@ -921,9 +930,9 @@ export default function ProfessorDashboard({
             {activeTab === 'overview' && (
               <div className="space-y-6">
                 {/* Hero band */}
-                <div className="relative overflow-hidden rounded-2xl bg-[#4A0E1B] p-6 text-white shadow-[0_22px_44px_-24px_rgba(74,14,27,0.75)] sm:p-7">
-                  <div className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-[#D9C2A2]/20 blur-2xl" />
-                  <div className="pointer-events-none absolute -bottom-14 right-24 h-36 w-36 rounded-full bg-[#D9C2A2]/10 blur-2xl" />
+                <div className="relative overflow-hidden rounded-hero bg-gradient-to-r from-[#4A0E1B] to-[#7C2532] p-6 text-white shadow-soft-xl border border-[#D9C2A2]/20 sm:p-7">
+                  <div className="pointer-events-none absolute -right-10 -top-12 h-44 w-44 rounded-full bg-[#C9A13B]/20 blur-3xl" />
+                  <div className="pointer-events-none absolute -bottom-14 right-24 h-36 w-36 rounded-full bg-white/10 blur-2xl" />
                   <div className="relative flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
                     <div className="max-w-md">
                       <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#D9C2A2]">Repository health</p>
@@ -955,7 +964,7 @@ export default function ProfessorDashboard({
 
                 {/* Analytics */}
                 <div className="grid gap-6 lg:grid-cols-2">
-                  <div className={`${CARD} p-6`}>
+                  <PremiumCard padding="large" accentLine>
                     <div className="mb-5 flex items-center justify-between">
                       <div>
                         <h3 className="dash-serif text-lg font-semibold text-[#22201F]">Most downloaded notes</h3>
@@ -974,9 +983,9 @@ export default function ProfessorDashboard({
                         ))}
                       </div>
                     )}
-                  </div>
+                  </PremiumCard>
 
-                  <div className={`${CARD} p-6`}>
+                  <PremiumCard padding="large" accentLine>
                     <div className="mb-5 flex items-center justify-between">
                       <div>
                         <h3 className="dash-serif text-lg font-semibold text-[#22201F]">Library by exam</h3>
@@ -998,12 +1007,12 @@ export default function ProfessorDashboard({
                         />
                       ))}
                     </div>
-                  </div>
+                  </PremiumCard>
                 </div>
 
                 {/* Attention + recent */}
                 <div className="grid gap-6 lg:grid-cols-2">
-                  <div className={`${CARD} p-6`}>
+                  <PremiumCard padding="large" accentLine>
                     <div className="mb-4 flex items-center justify-between">
                       <h3 className="dash-serif text-lg font-semibold text-[#22201F]">Needs your attention</h3>
                       {pendingDoubtsCount > 0 && (
@@ -1021,32 +1030,32 @@ export default function ProfessorDashboard({
                     ) : (
                       <div className="space-y-2.5">
                         {doubts
-                          .filter((d) => !d.isAnswered)
-                          .slice(0, 4)
-                          .map((d) => (
-                            <button
-                              key={d.id}
-                              onClick={() => goAnswer(d.id)}
-                              className="flex w-full items-start gap-3 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] p-3 text-left transition-colors hover:border-[#E3D1CD] hover:bg-[#F8EEEC]"
-                            >
-                              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-[#8A7E6F] ring-1 ring-[#EAE1D2]">
-                                <User size={14} />
-                              </span>
-                              <span className="min-w-0 flex-1">
-                                <span className="flex items-center justify-between gap-2">
-                                  <span className="truncate text-sm font-bold text-[#22201F]">{d.name}</span>
-                                  <span className="dash-mono shrink-0 text-[10px] text-[#A79A88]">{fmtDate(d.createdAt)}</span>
-                                </span>
-                                <span className="line-clamp-1 text-xs text-[#8A7E6F]">{d.question}</span>
-                              </span>
-                              <ArrowRight size={15} className="mt-1 shrink-0 text-[#C0A98B]" />
-                            </button>
-                          ))}
+                           .filter((d) => !d.isAnswered)
+                           .slice(0, 4)
+                           .map((d) => (
+                             <button
+                               key={d.id}
+                               onClick={() => goAnswer(d.id)}
+                               className="flex w-full items-start gap-3 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] p-3 text-left transition-colors hover:border-[#E3D1CD] hover:bg-[#F8EEEC]"
+                             >
+                               <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white text-[#8A7E6F] ring-1 ring-[#EAE1D2]">
+                                 <User size={14} />
+                               </span>
+                               <span className="min-w-0 flex-1">
+                                 <span className="flex items-center justify-between gap-2">
+                                   <span className="truncate text-sm font-bold text-[#22201F]">{d.name}</span>
+                                   <span className="dash-mono shrink-0 text-[10px] text-[#A79A88]">{fmtDate(d.createdAt)}</span>
+                                 </span>
+                                 <span className="line-clamp-1 text-xs text-[#8A7E6F]">{d.question}</span>
+                               </span>
+                               <ArrowRight size={15} className="mt-1 shrink-0 text-[#C0A98B]" />
+                             </button>
+                           ))}
                       </div>
                     )}
-                  </div>
+                  </PremiumCard>
 
-                  <div className={`${CARD} p-6`}>
+                  <PremiumCard padding="large" accentLine>
                     <h3 className="dash-serif mb-4 text-lg font-semibold text-[#22201F]">Recent uploads</h3>
                     {recentUploads.length === 0 ? (
                       <p className="py-8 text-center text-sm text-[#8A7E6F]">Nothing uploaded yet.</p>
@@ -1064,7 +1073,7 @@ export default function ProfessorDashboard({
                         ))}
                       </div>
                     )}
-                  </div>
+                  </PremiumCard>
                 </div>
               </div>
             )}
@@ -1111,7 +1120,11 @@ export default function ProfessorDashboard({
                           </span>
                         </td>
                         <td className="px-5 py-3.5">
-                          <RowActions onEdit={() => openEditNote(n)} onDelete={() => askDelete('this note', () => onDeleteNote(n.id))} />
+                          <RowActions
+                            onView={n.fileUrl ? () => openPDF({ title: n.title, fileUrl: n.fileUrl, fileSize: n.fileSize, entityType: 'note', entityId: n.id, isProfessor: true, downloadCount: n.downloadCount, onDelete: () => { askDelete('this note', () => onDeleteNote(n.id)); setPdfDoc(null); } }) : undefined}
+                            onEdit={() => openEditNote(n)}
+                            onDelete={() => askDelete('this note', () => onDeleteNote(n.id))}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -1215,7 +1228,11 @@ export default function ProfessorDashboard({
                           <DifficultyChip level={p.difficulty} />
                         </td>
                         <td className="px-5 py-3.5">
-                          <RowActions onEdit={() => openEditPyq(p)} onDelete={() => askDelete('this PYQ', () => onDeletePyq(p.id))} />
+                          <RowActions
+                            onView={p.questionUrl ? () => openPDF({ title: `${p.chapter} · ${p.year} (Question)`, fileUrl: p.questionUrl, fileSize: p.questionSize, entityType: 'pyq', entityId: p.id, isProfessor: true, onDelete: () => { askDelete('this PYQ', () => onDeletePyq(p.id)); setPdfDoc(null); } }) : undefined}
+                            onEdit={() => openEditPyq(p)}
+                            onDelete={() => askDelete('this PYQ', () => onDeletePyq(p.id))}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -1258,7 +1275,11 @@ export default function ProfessorDashboard({
                         <td className="px-5 py-3.5 font-semibold text-[#22201F]">{s.title}</td>
                         <td className="px-5 py-3.5 text-sm text-[#8A7E6F]">{s.chapter}</td>
                         <td className="px-5 py-3.5">
-                          <RowActions onEdit={() => openEditSheet(s)} onDelete={() => askDelete('this sheet', () => onDeletePracticeSheet(s.id))} />
+                          <RowActions
+                            onView={s.fileUrl ? () => openPDF({ title: s.title, fileUrl: s.fileUrl, fileSize: s.fileSize, entityType: 'sheet', entityId: s.id, isProfessor: true, onDelete: () => { askDelete('this sheet', () => onDeletePracticeSheet(s.id)); setPdfDoc(null); } }) : undefined}
+                            onEdit={() => openEditSheet(s)}
+                            onDelete={() => askDelete('this sheet', () => onDeletePracticeSheet(s.id))}
+                          />
                         </td>
                       </tr>
                     ))}
@@ -1301,7 +1322,7 @@ export default function ProfessorDashboard({
                 ) : (
                   <div className="space-y-4">
                     {doubtsFiltered.map((doubt) => (
-                      <div key={doubt.id} className={`${CARD} p-5 ${!doubt.isAnswered ? 'ring-1 ring-[#4A0E1B]/12' : ''}`}>
+                      <PremiumCard key={doubt.id} padding="medium" className={!doubt.isAnswered ? 'ring-1 ring-[#4A0E1B]/12' : ''}>
                         <div className="flex items-start justify-between gap-3">
                           <div className="flex items-start gap-3">
                             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]">
@@ -1426,7 +1447,7 @@ export default function ProfessorDashboard({
                             </button>
                           </div>
                         )}
-                      </div>
+                      </PremiumCard>
                     ))}
                   </div>
                 )}
@@ -1450,7 +1471,7 @@ export default function ProfessorDashboard({
                 ) : (
                   <div className="space-y-4">
                     {annSorted.map((a) => (
-                      <div key={a.id} className={`${CARD} p-5 ${a.pinned ? 'ring-1 ring-[#4A0E1B]/15' : ''}`}>
+                      <PremiumCard key={a.id} padding="medium" className={a.pinned ? 'ring-1 ring-[#4A0E1B]/15' : ''}>
                         <div className="flex items-start justify-between gap-4">
                           <div className="flex flex-wrap items-center gap-2">
                             <span className={`rounded-full px-2.5 py-1 text-[10px] font-bold ${ANN_CAT[a.category].cls}`}>{ANN_CAT[a.category].label}</span>
@@ -1475,7 +1496,7 @@ export default function ProfessorDashboard({
                             <Trash2 size={13} /> Delete
                           </button>
                         </div>
-                      </div>
+                      </PremiumCard>
                     ))}
                   </div>
                 )}
@@ -1485,7 +1506,7 @@ export default function ProfessorDashboard({
             {/* ---------- SETTINGS ---------- */}
             {activeTab === 'settings' && (
               <div className="space-y-6">
-                <div className={`${CARD} p-6`}>
+                <PremiumCard padding="large" accentLine>
                   <h3 className="dash-serif text-lg font-semibold text-[#22201F]">Profile</h3>
                   <p className="text-xs text-[#8A7E6F]">Shown across the professor workspace.</p>
                   <div className="mt-5 grid max-w-xl gap-4 sm:grid-cols-2">
@@ -1502,15 +1523,15 @@ export default function ProfessorDashboard({
                       <input className={INPUT} value={profile.office} onChange={(e) => setProfile({ ...profile, office: e.target.value })} />
                     </Field>
                   </div>
-                </div>
+                </PremiumCard>
 
-                <div className={`${CARD} p-6`}>
+                <PremiumCard padding="large" accentLine>
                   <h3 className="dash-serif text-lg font-semibold text-[#22201F]">Data</h3>
                   <p className="mt-1 max-w-xl text-sm leading-relaxed text-[#5A534B]">
                     Notes, videos, PYQs, sheets, doubts and announcements are stored in this browser only. Resetting restores the original sample library.
                   </p>
                   <button
-                    className="mt-4 inline-flex items-center gap-2 rounded-xl border border-[#E6C9C4] bg-[#FBF0EE] px-4 py-2.5 text-xs font-bold text-[#B23B2E] transition-colors hover:bg-[#F6E5E1]"
+                    className="mt-4 inline-flex items-center gap-2 rounded-full border border-[#E6C9C4] bg-[#FBF0EE] px-4 py-2.5 text-xs font-bold text-[#B23B2E] transition-colors hover:bg-[#F6E5E1]"
                     onClick={() =>
                       setConfirm({
                         title: 'Reset all content?',
@@ -1522,7 +1543,7 @@ export default function ProfessorDashboard({
                   >
                     <RotateCcw size={14} /> Reset to sample data
                   </button>
-                </div>
+                </PremiumCard>
               </div>
             )}
           </main>
@@ -1823,9 +1844,9 @@ function Toolbar({
 
 function Table({ head, children }: { head: string[]; children: React.ReactNode }) {
   return (
-    <div className={`${CARD} overflow-hidden`}>
+    <PremiumCard padding="none" className="overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full min-w-[640px] text-left text-sm">
+        <table className="w-full min-w-[640px] text-left text-sm border-collapse">
           <thead>
             <tr className="border-b border-[#EAE1D2] bg-[#FBF7F0]">
               {head.map((h, i) => (
@@ -1838,13 +1859,18 @@ function Table({ head, children }: { head: string[]; children: React.ReactNode }
           <tbody className="divide-y divide-[#F2ECDF]">{children}</tbody>
         </table>
       </div>
-    </div>
+    </PremiumCard>
   );
 }
 
-function RowActions({ onEdit, onDelete }: { onEdit: () => void; onDelete: () => void }) {
+function RowActions({ onView, onEdit, onDelete }: { onView?: () => void; onEdit: () => void; onDelete: () => void }) {
   return (
     <div className="flex justify-end gap-1">
+      {onView && (
+        <button onClick={onView} className="rounded-lg p-2 text-[#8A7E6F] transition-colors hover:bg-[#F4E7E5] hover:text-[#4A0E1B]" aria-label="View PDF">
+          <Eye size={15} />
+        </button>
+      )}
       <button onClick={onEdit} className="rounded-lg p-2 text-[#8A7E6F] transition-colors hover:bg-[#F4E7E5] hover:text-[#4A0E1B]" aria-label="Edit">
         <Pencil size={15} />
       </button>

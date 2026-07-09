@@ -226,10 +226,10 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
   // ─── Loading / Error UI ───────────────────────────────────────────────────
   if (state.loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F7]">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F3EC]">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-[#5B0E14] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#5B0E14]">
+          <div className="w-12 h-12 border-4 border-[#4A0E1B] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#4A0E1B]">
             Loading Portal…
           </p>
         </div>
@@ -239,16 +239,16 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
 
   if (state.error) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F7] p-6">
+      <div className="min-h-screen flex items-center justify-center bg-[#F7F3EC] p-6">
         <div className="max-w-md text-center space-y-4">
           <p className="text-3xl">⚠️</p>
-          <h2 className="text-lg font-black uppercase tracking-[0.2em] text-[#5B0E14]">
+          <h2 className="text-lg font-black uppercase tracking-[0.2em] text-[#4A0E1B]">
             Failed to connect
           </h2>
-          <p className="text-sm text-gray-600">{state.error}</p>
+          <p className="text-sm text-[#22201F]/80">{state.error}</p>
           <button
             onClick={loadAllData}
-            className="px-6 py-3 bg-[#5B0E14] text-white text-xs font-black uppercase tracking-[0.2em] rounded-lg hover:bg-[#7a1219] transition-colors"
+            className="px-6 py-3 bg-[#4A0E1B] text-white text-xs font-black uppercase tracking-[0.2em] rounded-lg hover:bg-[#7C2532] transition-colors"
           >
             Retry
           </button>
@@ -259,7 +259,7 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
 
   // ─── Main Render ──────────────────────────────────────────────────────────
   return (
-    <div className={`min-h-screen flex flex-col ${currentView === 'professor' ? 'bg-[#F6F2EA]' : 'bg-[#F5F5F7]'} text-[#1D1D1F] transition-colors duration-300`}>
+    <div className={`min-h-screen flex flex-col bg-[#F7F3EC] text-[#22201F] transition-colors duration-300`}>
       {/* Sticky Top Navbar */}
       <Navbar
         theme={theme}

@@ -3,7 +3,7 @@
  * Clicking a thumbnail jumps the main view to that page.
  */
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { Document, Page, pdfjs } from 'react-pdf';
+import { Document, Page } from 'react-pdf';
 import { Bookmark, BookmarkCheck } from 'lucide-react';
 import { usePDF } from './PDFContext';
 
@@ -60,11 +60,11 @@ export function ThumbnailSidebar({ pdfUrl }: ThumbnailSidebarProps) {
 
   return (
     <aside
-      className="relative flex h-full w-[168px] shrink-0 flex-col border-r border-[#EAE1D2] bg-[#FBF7F0]"
+      className="relative flex h-full w-[168px] shrink-0 flex-col border-r border-[#D9C2A2]/30 bg-[#F7F3EC]"
       aria-label="Page thumbnails"
     >
-      <div className="border-b border-[#EAE1D2] px-3 py-2">
-        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]">
+      <div className="border-b border-[#D9C2A2]/30 px-3 py-2">
+        <p className="text-[10px] font-bold uppercase tracking-[0.14em] text-[#22201F]/60">
           Pages · {numPages}
         </p>
       </div>
@@ -95,10 +95,10 @@ export function ThumbnailSidebar({ pdfUrl }: ThumbnailSidebarProps) {
               data-page={pageNum}
               role="listitem"
               style={{ height: THUMB_HEIGHT - 8 }}
-              className={`group relative mx-2 mb-2 cursor-pointer overflow-hidden rounded-xl border-2 transition-all duration-150 ${
+              className={`group relative mx-2 mb-2 cursor-pointer overflow-hidden rounded-xl border transition-all duration-150 ${
                 isActive
-                  ? 'border-[#4A0E1B] shadow-[0_0_0_2px_rgba(74,14,27,0.15)]'
-                  : 'border-[#EAE1D2] hover:border-[#4A0E1B]/40 hover:shadow-md'
+                  ? 'border-[#4A0E1B] ring-2 ring-[#4A0E1B]/15 shadow-soft-md'
+                  : 'border-[#D9C2A2]/40 hover:border-[#4A0E1B]/40 hover:shadow-soft-md'
               }`}
               onClick={() => goToPage(pageNum)}
               aria-label={`Go to page ${pageNum}`}
@@ -112,14 +112,14 @@ export function ThumbnailSidebar({ pdfUrl }: ThumbnailSidebarProps) {
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
                     loading={
-                      <div className="h-full w-full animate-pulse bg-[#F0E9DB]" />
+                      <div className="h-full w-full animate-pulse bg-[#F7F3EC]" />
                     }
                     className="pointer-events-none"
                   />
                 </Document>
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-[#F0E9DB]">
-                  <span className="dash-mono text-xs text-[#A79A88]">{pageNum}</span>
+                <div className="flex h-full w-full items-center justify-center bg-[#F7F3EC]">
+                  <span className="dash-mono text-xs text-[#22201F]/40">{pageNum}</span>
                 </div>
               )}
 
@@ -129,7 +129,7 @@ export function ThumbnailSidebar({ pdfUrl }: ThumbnailSidebarProps) {
                 className={`absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-md transition-all ${
                   bookmarked
                     ? 'bg-[#4A0E1B] text-white opacity-100'
-                    : 'bg-white/80 text-[#8A7E6F] opacity-0 group-hover:opacity-100'
+                    : 'bg-white/80 text-[#22201F]/60 opacity-0 group-hover:opacity-100'
                 }`}
                 aria-label={bookmarked ? `Remove bookmark from page ${pageNum}` : `Bookmark page ${pageNum}`}
               >
@@ -137,7 +137,7 @@ export function ThumbnailSidebar({ pdfUrl }: ThumbnailSidebarProps) {
               </button>
 
               {/* Page number label */}
-              <div className={`absolute inset-x-0 bottom-0 py-0.5 text-center ${isActive ? 'bg-[#4A0E1B]' : 'bg-[#22201F]/60'}`}>
+              <div className={`absolute inset-x-0 bottom-0 py-0.5 text-center ${isActive ? 'bg-[#4A0E1B]' : 'bg-[#22201F]/50'}`}>
                 <span className="dash-mono text-[9px] font-bold text-white tabular-nums">{pageNum}</span>
               </div>
             </div>
@@ -146,8 +146,8 @@ export function ThumbnailSidebar({ pdfUrl }: ThumbnailSidebarProps) {
 
         {numPages === 0 && (
           <div className="flex flex-col items-center justify-center gap-2 py-8 text-center">
-            <div className="h-8 w-8 animate-pulse rounded-lg bg-[#F0E9DB]" />
-            <p className="text-[10px] text-[#A79A88]">Loading…</p>
+            <div className="h-8 w-8 animate-pulse rounded-lg bg-[#D9C2A2]/20" />
+            <p className="text-[10px] text-[#22201F]/40">Loading…</p>
           </div>
         )}
       </div>

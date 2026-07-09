@@ -6,12 +6,10 @@
 import React, { useEffect, useRef, useCallback, useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { usePDF } from './PDFContext';
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString();
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+// Use the worker matching react-pdf's exact pdfjs-dist version
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 interface PDFViewerCoreProps {
   pdfUrl: string;
@@ -74,7 +72,7 @@ export function PDFViewerCore({ pdfUrl, containerWidth }: PDFViewerCoreProps) {
             visiblePagesRef.current.delete(page);
           }
         }
-        const visible = Array.from(visiblePagesRef.current).sort((a, b) => a - b);
+        const visible = Array.from(visiblePagesRef.current).sort((a: number, b: number) => a - b);
         if (visible.length > 0) setCurrentPage(visible[0]);
       },
       { root, threshold: 0.3 }
@@ -109,10 +107,10 @@ export function PDFViewerCore({ pdfUrl, containerWidth }: PDFViewerCoreProps) {
   }, []);
 
   // Theme backgrounds
-  const viewerBg = theme === 'dark' ? 'bg-[#1a1a1a]' : theme === 'sepia' ? 'bg-[#f4ecd8]' : 'bg-[#E8E0D5]';
+  const viewerBg = theme === 'dark' ? 'bg-[#1a1a1a]' : theme === 'sepia' ? 'bg-[#f4ecd8]' : 'bg-[#F7F3EC]';
   const pageShadow = theme === 'dark'
     ? 'shadow-[0_4px_24px_rgba(0,0,0,0.6)]'
-    : 'shadow-[0_2px_8px_rgba(34,32,31,0.15),0_12px_32px_rgba(34,32,31,0.08)]';
+    : 'shadow-soft-md border border-[#D9C2A2]/30';
 
   const pageWidth = effectiveWidth();
 
@@ -123,7 +121,7 @@ export function PDFViewerCore({ pdfUrl, containerWidth }: PDFViewerCoreProps) {
     const escaped = searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     try {
       const regex = new RegExp(escaped, flags);
-      return textItem.str.replace(regex, (match) => `<mark style="background:#FDE68A;color:inherit">${match}</mark>`);
+      return textItem.str.replace(regex, (match) => `<mark style="background:rgba(201,161,59,.25);color:inherit">${match}</mark>`);
     } catch {
       return textItem.str;
     }
@@ -171,7 +169,7 @@ export function PDFViewerCore({ pdfUrl, containerWidth }: PDFViewerCoreProps) {
                     />
                   }
                   error={
-                    <div className="flex items-center justify-center rounded-sm bg-white p-8 text-sm text-[#8A7E6F]">
+                    <div className="flex items-center justify-center rounded-sm bg-white p-8 text-sm text-[#22201F]/60">
                       Page {pageNum} failed to render
                     </div>
                   }
@@ -195,10 +193,10 @@ function LoadingSkeleton() {
           className="w-full max-w-[600px] animate-pulse rounded-sm bg-white"
           style={{ height: Math.round(600 * ratio) }}
         >
-          <div className="h-full w-full rounded-sm bg-gradient-to-b from-[#F0E9DB]/60 to-[#FBF7F0]/40" />
+          <div className="h-full w-full rounded-sm bg-gradient-to-b from-[#D9C2A2]/20 to-[#F7F3EC]/10" />
         </div>
       ))}
-      <p className="dash-root text-xs text-[#8A7E6F] animate-pulse">Loading document…</p>
+      <p className="dash-root text-xs text-[#22201F]/60 animate-pulse">Loading document…</p>
     </div>
   );
 }
@@ -207,16 +205,16 @@ function LoadingSkeleton() {
 function ErrorState({ error, onRetry }: { error: string; onRetry: () => void }) {
   return (
     <div className="flex flex-col items-center justify-center gap-4 py-20 text-center">
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#F1E3D0] text-[#A9772E]">
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#C9A13B]/10 text-[#4A0E1B] border border-[#D9C2A2]/30">
         <svg width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 3h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
         </svg>
       </div>
-      <h4 className="dash-serif text-base font-semibold text-[#22201F]">Could not load document</h4>
-      <p className="max-w-xs text-sm text-[#8A7E6F]">{error}</p>
+      <h4 className="dash-serif text-base font-bold text-[#22201F]">Could not load document</h4>
+      <p className="max-w-xs text-sm text-[#22201F]/60">{error}</p>
       <button
         onClick={onRetry}
-        className="inline-flex items-center gap-2 rounded-xl bg-[#4A0E1B] px-4 py-2.5 text-xs font-bold tracking-wide text-white transition-colors hover:bg-[#380A14]"
+        className="inline-flex items-center gap-2 rounded-btn bg-[#4A0E1B] px-4 py-2.5 text-xs font-bold tracking-wide text-white transition-all hover:bg-[#7C2532] shadow-soft-sm hover:-translate-y-0.5 duration-200 transition-all border border-[#4A0E1B]"
       >
         Try Again
       </button>

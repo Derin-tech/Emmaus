@@ -1,10 +1,6 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React from 'react';
-import { BookOpen, ShieldCheck, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { PremiumCard } from './PremiumCard';
 
 interface SelectionPageProps {
   onSelectRole: (role: 'student' | 'professor') => void;
@@ -12,18 +8,18 @@ interface SelectionPageProps {
 
 export default function SelectionPage({ onSelectRole }: SelectionPageProps) {
   return (
-    <section className="flex min-h-[70vh] items-center justify-center bg-[#F5F5F7] py-16">
+    <section className="flex min-h-[70vh] items-center justify-center bg-[#F7F3EC] py-16">
       <div className="mx-auto w-full max-w-4xl px-4 sm:px-6 lg:px-8">
         
         {/* Header Block */}
         <div className="text-center">
-          <p className="font-sans text-[9px] font-black tracking-[0.2em] text-[#0071E3] uppercase">
+          <p className="font-sans text-[9px] font-bold tracking-[0.2em] text-[#C9A13B] uppercase">
             Secure Portal Selection
           </p>
-          <h2 className="mt-2 text-3xl font-display font-extrabold tracking-tight text-[#1D1D1F] sm:text-4xl">
+          <h2 className="mt-2 text-3xl font-serif font-extrabold tracking-tight text-[#22201F] sm:text-4xl">
             Who are you?
           </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-[#86868B]">
+          <p className="mx-auto mt-3 max-w-md text-sm text-[#22201F]/60">
             Please choose your role to proceed to the designated section of the digital library portal.
           </p>
         </div>
@@ -32,62 +28,64 @@ export default function SelectionPage({ onSelectRole }: SelectionPageProps) {
         <div className="mt-12 grid gap-6 sm:grid-cols-2">
           
           {/* Student Card */}
-          <div
+          <PremiumCard
             onClick={() => onSelectRole('student')}
-            className="group relative cursor-pointer rounded-[12px] bg-[#FFFFFF] p-8 transition-all duration-300 hover:bg-[#F5F5F7] hover:-translate-y-1 hover:rotate-1 shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-0"
+            interactive
+            accentLine
             id="role-card-student"
           >
             {/* Top Icon Area */}
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F5F5F7] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] transition-colors">
-              <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Graduation%20Cap.png" alt="Student" className="h-8 w-8 drop-shadow-sm" />
-            </div>
+            <PremiumCard.Icon>
+              <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Graduation%20Cap.png" alt="Student" className="h-8 w-8 object-contain drop-shadow-sm" />
+            </PremiumCard.Icon>
 
             {/* Typography */}
-            <h3 className="mt-6 text-xl font-display font-bold text-[#1D1D1F]">
+            <PremiumCard.Title className="mt-6">
               Student
-            </h3>
-            <p className="mt-2.5 text-sm text-[#86868B] leading-relaxed">
+            </PremiumCard.Title>
+            <PremiumCard.Description className="mt-2.5">
               Access learning resources. Browse comprehensive chemistry concepts, notes, video lectures, and previous year papers.
-            </p>
+            </PremiumCard.Description>
 
             {/* Bottom Action Hint */}
-            <div className="mt-8 flex items-center space-x-2 text-[9px] uppercase tracking-[0.2em] font-black text-[#0071E3] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1">
+            <div className="mt-8 flex items-center space-x-2 text-[9px] uppercase tracking-[0.2em] font-bold text-[#4A0E1B] opacity-0 transition-all duration-250 group-hover:opacity-100 group-hover:translate-x-1">
               <span>Enter Repository</span>
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </div>
-          </div>
+          </PremiumCard>
 
           {/* Professor Card */}
-          <div
+          <PremiumCard
             onClick={() => onSelectRole('professor')}
-            className="group relative cursor-pointer rounded-[12px] bg-[#FFFFFF] p-8 transition-all duration-300 hover:bg-[#F5F5F7] hover:-translate-y-1 hover:-rotate-1 shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-0"
+            interactive
+            accentLine
             id="role-card-professor"
           >
             {/* Top Icon Area */}
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-[#F5F5F7] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] transition-colors">
-              <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Briefcase.png" alt="Professor" className="h-8 w-8 drop-shadow-sm" />
-            </div>
+            <PremiumCard.Icon>
+              <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Briefcase.png" alt="Professor" className="h-8 w-8 object-contain drop-shadow-sm" />
+            </PremiumCard.Icon>
 
             {/* Typography */}
-            <h3 className="mt-6 text-xl font-display font-bold text-[#1D1D1F]">
+            <PremiumCard.Title className="mt-6">
               Professor
-            </h3>
-            <p className="mt-2.5 text-sm text-[#86868B] leading-relaxed">
+            </PremiumCard.Title>
+            <PremiumCard.Description className="mt-2.5">
               Manage educational resources. Add, update, or remove notes, lectures, previous year solutions, practice worksheets, and answer student queries.
-            </p>
+            </PremiumCard.Description>
 
             {/* Bottom Action Hint */}
-            <div className="mt-8 flex items-center space-x-2 text-[9px] uppercase tracking-[0.2em] font-black text-red-500 opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1">
+            <div className="mt-8 flex items-center space-x-2 text-[9px] uppercase tracking-[0.2em] font-bold text-[#4A0E1B] opacity-0 transition-all duration-250 group-hover:opacity-100 group-hover:translate-x-1">
               <span>Access Dashboard</span>
               <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
             </div>
-          </div>
+          </PremiumCard>
 
         </div>
 
         {/* Minimal academic note */}
         <div className="mt-10 text-center">
-          <p className="font-sans text-[9px] uppercase tracking-wider text-[#86868B] font-black">
+          <p className="font-sans text-[9px] uppercase tracking-wider text-[#22201F]/60 font-bold">
             Open-access educational model • No authentication or credit cards required
           </p>
         </div>

@@ -9,11 +9,11 @@ import {
 } from 'lucide-react';
 import { usePDF } from './PDFContext';
 import { downloadPDF } from '../../lib/pdfUrl';
+import { PremiumCard } from '../PremiumCard';
 
-const CARD = 'rounded-2xl border border-[#EAE1D2] bg-white shadow-[0_1px_2px_rgba(34,32,31,0.04),0_18px_36px_-26px_rgba(34,32,31,0.35)]';
-const GHOST_BTN = 'inline-flex items-center justify-center gap-2 rounded-xl border border-[#E3D8C5] bg-white px-3 py-2 text-xs font-semibold text-[#4A443E] transition-colors hover:bg-[#F6F2EA]';
-const PRIMARY_BTN = 'inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A0E1B] px-3 py-2 text-xs font-bold tracking-wide text-white transition-colors hover:bg-[#380A14]';
-const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]';
+const GHOST_BTN = 'inline-flex items-center justify-center gap-2 rounded-full border border-[#D9C2A2]/40 bg-white px-3 py-2 text-xs font-semibold text-[#22201F] transition-all hover:bg-[#F7F3EC] duration-200 hover:-translate-y-0.5 shadow-sm';
+const PRIMARY_BTN = 'inline-flex items-center justify-center gap-2 rounded-full bg-[#4A0E1B] px-3 py-2 text-xs font-bold tracking-wide text-white transition-all hover:bg-[#7C2532] shadow-sm hover:-translate-y-0.5 duration-200';
+const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#22201F]/60';
 
 export function DocumentInfoPanel() {
   const {
@@ -36,7 +36,7 @@ export function DocumentInfoPanel() {
 
   return (
     <aside
-      className="hidden w-[240px] shrink-0 flex-col gap-4 overflow-y-auto border-l border-[#EAE1D2] bg-[#FBF7F0] p-4 lg:flex"
+      className="hidden w-[240px] shrink-0 flex-col gap-4 overflow-y-auto border-l border-[#D9C2A2]/30 bg-[#F7F3EC] p-4 lg:flex"
       aria-label="Document information"
     >
       {/* Header */}
@@ -44,7 +44,7 @@ export function DocumentInfoPanel() {
         <p className={MICRO}>Document Info</p>
         <button
           onClick={() => setInfoPanelOpen(false)}
-          className="flex h-6 w-6 items-center justify-center rounded-lg text-[#8A7E6F] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"
+          className="flex h-6 w-6 items-center justify-center rounded-lg text-[#22201F]/60 transition-colors hover:bg-[#D9C2A2]/20 hover:text-[#22201F]"
           aria-label="Close info panel"
         >
           <X size={13} />
@@ -52,17 +52,17 @@ export function DocumentInfoPanel() {
       </div>
 
       {/* File info card */}
-      <div className={`${CARD} p-4`}>
+      <PremiumCard padding="medium" accentLine>
         <div className="flex items-start gap-3">
-          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]">
+          <PremiumCard.Icon className="h-9 w-9 bg-[#4A0E1B]/8 text-[#4A0E1B] border-0">
             <FileText size={17} />
-          </span>
+          </PremiumCard.Icon>
           <div className="min-w-0">
-            <h4 className="dash-serif text-sm font-semibold text-[#22201F] leading-snug">
+            <PremiumCard.Title as="h4" className="text-sm">
               {docInfo.title}
-            </h4>
+            </PremiumCard.Title>
             {docInfo.entityType && (
-              <span className="mt-1 inline-flex items-center rounded-full bg-[#F4E7E5] px-2 py-0.5 text-[10px] font-bold text-[#4A0E1B]">
+              <span className="mt-1 inline-flex items-center rounded-full bg-[#C9A13B]/10 px-2 py-0.5 text-[10px] font-bold text-[#4A0E1B]">
                 {docInfo.entityType === 'note' ? 'Study Note' : docInfo.entityType === 'pyq' ? 'PYQ' : 'Practice Sheet'}
               </span>
             )}
@@ -72,59 +72,59 @@ export function DocumentInfoPanel() {
         <div className="mt-4 space-y-2.5">
           {docInfo.fileSize && (
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs text-[#8A7E6F]">
-                <HardDrive size={12} className="text-[#AC9F8C]" /> Size
+              <span className="flex items-center gap-1.5 text-xs text-[#22201F]/60">
+                <HardDrive size={12} className="text-[#4A0E1B]" /> Size
               </span>
-              <span className="dash-mono text-[11px] text-[#6E645A]">{docInfo.fileSize}</span>
+              <span className="dash-mono text-[11px] text-[#22201F]">{docInfo.fileSize}</span>
             </div>
           )}
           {docInfo.uploadDate && (
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs text-[#8A7E6F]">
-                <Calendar size={12} className="text-[#AC9F8C]" /> Uploaded
+              <span className="flex items-center gap-1.5 text-xs text-[#22201F]/60">
+                <Calendar size={12} className="text-[#4A0E1B]" /> Uploaded
               </span>
-              <span className="dash-mono text-[11px] text-[#6E645A]">
+              <span className="dash-mono text-[11px] text-[#22201F]">
                 {new Date(docInfo.uploadDate).toLocaleDateString()}
               </span>
             </div>
           )}
           {docInfo.downloadCount !== undefined && (
             <div className="flex items-center justify-between">
-              <span className="flex items-center gap-1.5 text-xs text-[#8A7E6F]">
-                <Eye size={12} className="text-[#AC9F8C]" /> Downloads
+              <span className="flex items-center gap-1.5 text-xs text-[#22201F]/60">
+                <Eye size={12} className="text-[#4A0E1B]" /> Downloads
               </span>
-              <span className="dash-mono text-[11px] tabular-nums text-[#6E645A]">{docInfo.downloadCount}</span>
+              <span className="dash-mono text-[11px] tabular-nums text-[#22201F]">{docInfo.downloadCount}</span>
             </div>
           )}
         </div>
-      </div>
+      </PremiumCard>
 
       {/* Reading progress */}
-      <div className={`${CARD} p-4`}>
-        <p className={`${MICRO} mb-3`}>Reading Progress</p>
+      <PremiumCard padding="medium" accentLine>
+        <PremiumCard.Category className="mb-3">Reading Progress</PremiumCard.Category>
         <div className="mb-1.5 flex items-baseline justify-between">
-          <span className="text-xs text-[#5A534B]">Page {currentPage} of {numPages || '…'}</span>
-          <span className="dash-mono text-[10px] tabular-nums text-[#8A7E6F]">
+          <span className="text-xs text-[#22201F]">Page {currentPage} of {numPages || '…'}</span>
+          <span className="dash-mono text-[10px] tabular-nums text-[#22201F]/60">
             {numPages ? Math.round((currentPage / numPages) * 100) : 0}%
           </span>
         </div>
-        <div className="h-2 overflow-hidden rounded-full bg-[#F0E9DB]">
+        <div className="h-2 overflow-hidden rounded-full bg-[#D9C2A2]/20">
           <div
             className="h-full rounded-full bg-[#4A0E1B] transition-all duration-300"
             style={{ width: numPages ? `${(currentPage / numPages) * 100}%` : '0%' }}
           />
         </div>
-      </div>
+      </PremiumCard>
 
       {/* Bookmarks */}
       {bookmarks.length > 0 && (
-        <div className={`${CARD} p-4`}>
-          <p className={`${MICRO} mb-3`}>Bookmarks</p>
+        <PremiumCard padding="medium" accentLine>
+          <PremiumCard.Category className="mb-3">Bookmarks</PremiumCard.Category>
           <div className="space-y-1">
             {bookmarks.sort((a, b) => a.page - b.page).map(bm => (
               <div
                 key={bm.id}
-                className="group flex cursor-pointer items-center justify-between rounded-xl px-2 py-1.5 transition-colors hover:bg-[#F6F2EA]"
+                className="group flex cursor-pointer items-center justify-between rounded-xl px-2 py-1.5 transition-colors hover:bg-[#F7F3EC]"
               >
                 <button
                   onClick={() => goToPage(bm.page)}
@@ -132,11 +132,11 @@ export function DocumentInfoPanel() {
                   aria-label={`Go to ${bm.label}`}
                 >
                   <Bookmark size={12} className="shrink-0 text-[#4A0E1B]" />
-                  <span className="text-xs font-semibold text-[#3A342E] truncate">{bm.label}</span>
+                  <span className="text-xs font-semibold text-[#22201F] truncate">{bm.label}</span>
                 </button>
                 <button
                   onClick={() => removeBookmark(bm.id)}
-                  className="ml-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg text-[#A79A88] opacity-0 transition-all hover:bg-[#F6E5E1] hover:text-[#B23B2E] group-hover:opacity-100"
+                  className="ml-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-lg text-[#22201F]/60 opacity-0 transition-all hover:bg-[#4A0E1B]/8 hover:text-[#4A0E1B] group-hover:opacity-100"
                   aria-label={`Remove bookmark: ${bm.label}`}
                 >
                   <X size={10} />
@@ -144,7 +144,7 @@ export function DocumentInfoPanel() {
               </div>
             ))}
           </div>
-        </div>
+        </PremiumCard>
       )}
 
       {/* Actions */}
@@ -165,19 +165,19 @@ export function DocumentInfoPanel() {
             {docInfo.onDelete && !confirmDelete && (
               <button
                 onClick={() => setConfirmDelete(true)}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-[#E6C9C4] bg-[#FBF0EE] px-3 py-2 text-xs font-semibold text-[#B23B2E] transition-colors hover:bg-[#F6E5E1]"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-btn border border-[#4A0E1B]/20 bg-[#4A0E1B]/5 px-3 py-2 text-xs font-semibold text-[#4A0E1B] transition-colors hover:bg-[#4A0E1B]/10"
               >
                 <Trash2 size={14} /> Delete PDF
               </button>
             )}
 
             {confirmDelete && (
-              <div className="rounded-2xl border border-[#EAE1D2] bg-white p-4">
+              <PremiumCard padding="medium">
                 <div className="flex items-start gap-2">
-                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#FBF0EE] text-[#B23B2E]">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#4A0E1B]/8 text-[#4A0E1B]">
                     <AlertTriangle size={15} />
                   </span>
-                  <p className="text-xs leading-relaxed text-[#5A534B]">
+                  <p className="text-xs leading-relaxed text-[#22201F]">
                     Delete this PDF? This cannot be undone.
                   </p>
                 </div>
@@ -187,12 +187,12 @@ export function DocumentInfoPanel() {
                   </button>
                   <button
                     onClick={handleDelete}
-                    className="flex-1 inline-flex items-center justify-center gap-1 rounded-xl bg-[#B23B2E] px-3 py-2 text-xs font-bold text-white transition-colors hover:bg-[#98311F]"
+                    className="flex-1 inline-flex items-center justify-center gap-1 rounded-full bg-[#4A0E1B] hover:bg-[#7C2532] px-3 py-2 text-xs font-bold text-white transition-all shadow-sm hover:-translate-y-0.5 duration-200 border border-[#4A0E1B]"
                   >
                     Delete
                   </button>
                 </div>
-              </div>
+              </PremiumCard>
             )}
           </>
         )}
