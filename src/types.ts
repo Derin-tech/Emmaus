@@ -67,6 +67,8 @@ export interface Doubt {
   subject: string;
   question: string;
   attachmentName?: string;
+  attachmentUrl?: string;
+  attachmentDataUrl?: string;   // base64 data URL of the uploaded file
   answerText?: string;
   isAnswered: boolean;
   createdAt: string;

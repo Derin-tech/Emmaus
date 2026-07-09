@@ -31,8 +31,12 @@ import {
   AlertTriangle,
   Check,
   CornerDownRight,
-  RotateCcw
+  RotateCcw,
+  MoreVertical,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
+import { FileUpload } from './FileUpload';
 import {
   ExamType,
   ExamInfo,
@@ -44,6 +48,7 @@ import {
   Announcement,
   AnnouncementCategory
 } from '../types';
+import { extractYouTubeId, getYoutubeThumbnail, isValidYouTubeUrl } from '../lib/youtube';
 
 /* ------------------------------------------------------------------ *
  * Design tokens — a warm, light "professor's study" system built on
@@ -135,6 +140,7 @@ function Bar({
   value: number;
   max: number;
   barClass?: string;
+  key?: React.Key;
 }) {
   const pct = max > 0 && value > 0 ? Math.max(5, Math.round((value / max) * 100)) : 0;
   return (
@@ -211,10 +217,98 @@ function Modal({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
+    <div className="block">
       <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-[#8A7E6F]">{label}</span>
       {children}
-    </label>
+    </div>
+  );
+}
+
+/* ─── YouTubeLinkField — smart URL input with live validation preview ───────── */
+function YouTubeLinkField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [touched, setTouched] = React.useState(false);
+  const [thumbError, setThumbError] = React.useState(false);
+
+  const videoId = extractYouTubeId(value);
+  const isValid = !!videoId;
+  const showError = touched && value.length > 0 && !isValid;
+  const showOk = touched && isValid;
+  const thumbSrc = videoId ? getYoutubeThumbnail(videoId, 'maxresdefault') : null;
+
+  return (
+    <div className="block">
+      <span className="mb-1.5 flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.1em] text-[#8A7E6F]">
+        YouTube URL
+        <span className="normal-case font-normal text-[#A79A88] tracking-normal">
+          — supports all formats (watch, youtu.be, embed, shorts)
+        </span>
+      </span>
+      <div className="relative">
+        <input
+          type="url"
+          className={`w-full rounded-xl border bg-[#FBF7F0] px-3.5 py-2.5 pr-10 text-sm text-[#22201F] placeholder:text-[#B3A996] outline-none transition ${
+            showError
+              ? 'border-[#B23B2E]/60 focus:border-[#B23B2E]/80 focus:ring-4 focus:ring-[#B23B2E]/10'
+              : showOk
+              ? 'border-[#8A6A16]/60 focus:border-[#8A6A16]/80 focus:ring-4 focus:ring-[#8A6A16]/10 bg-white'
+              : 'border-[#E3D8C5] focus:border-[#4A0E1B]/50 focus:bg-white focus:ring-4 focus:ring-[#4A0E1B]/10'
+          }`}
+          required
+          value={value}
+          onChange={(e) => {
+            onChange(e.target.value);
+            setThumbError(false);
+          }}
+          onBlur={() => setTouched(true)}
+          placeholder="https://www.youtube.com/watch?v=… or https://youtu.be/…"
+        />
+        {showOk && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#8A6A16]">
+            <CheckCircle2 size={16} />
+          </span>
+        )}
+        {showError && (
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[#B23B2E]">
+            <AlertCircle size={16} />
+          </span>
+        )}
+      </div>
+
+      {showError && (
+        <p className="mt-1.5 text-[11px] text-[#B23B2E]">
+          Couldn't extract a video ID from this URL. Please paste a valid YouTube link.
+        </p>
+      )}
+
+      {showOk && thumbSrc && !thumbError && (
+        <div className="mt-3 flex items-start gap-3 rounded-xl border border-[#F7EFD9] bg-[#FBF6EA] p-3">
+          <div className="relative h-16 w-28 shrink-0 overflow-hidden rounded-lg bg-[#0f0f0f]">
+            <img
+              src={thumbSrc}
+              alt="Preview"
+              className="h-full w-full object-cover"
+              onError={() => setThumbError(true)}
+            />
+            <div className="absolute inset-0 flex items-center justify-center bg-black/30">
+              <svg viewBox="0 0 24 24" fill="white" className="h-5 w-5 drop-shadow ml-0.5 opacity-90">
+                <path d="M8 5v14l11-7z" />
+              </svg>
+            </div>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A6A16]">
+              ✓ Valid YouTube URL
+            </p>
+            <p className="mt-0.5 font-mono text-[10px] text-[#8A7E6F] break-all">
+              Video ID: <span className="text-[#22201F] font-semibold">{videoId}</span>
+            </p>
+            <p className="mt-1 text-[10px] text-[#8A7E6F]">
+              Thumbnail auto-generated · No manual upload needed
+            </p>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -222,6 +316,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
  * Props
  * ------------------------------------------------------------------ */
 interface ProfessorDashboardProps {
+
   exams: ExamInfo[];
   notes: Note[];
   videos: Video[];
@@ -248,6 +343,8 @@ interface ProfessorDashboardProps {
   onDeleteAnnouncement: (id: string) => void;
   onTogglePinAnnouncement: (id: string) => void;
 }
+
+import { uploadFile } from '../services/storageService';
 
 type Tab = 'overview' | 'notes' | 'videos' | 'pyqs' | 'sheets' | 'doubts' | 'announcements' | 'settings';
 type ModalKind =
@@ -310,6 +407,12 @@ export default function ProfessorDashboard({
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [noteFile, setNoteFile] = useState<File | null>(null);
+  const [pyqQuestionFile, setPyqQuestionFile] = useState<File | null>(null);
+  const [pyqSolutionFile, setPyqSolutionFile] = useState<File | null>(null);
+  const [sheetFile, setSheetFile] = useState<File | null>(null);
+
   // Doubts inbox
   const [doubtsTab, setDoubtsTab] = useState<'unanswered' | 'answered' | 'all'>('unanswered');
   const [replyingDoubtId, setReplyingDoubtId] = useState<string | null>(null);
@@ -337,10 +440,10 @@ export default function ProfessorDashboard({
   }, [profile]);
 
   // Forms
-  const [noteForm, setNoteForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '' });
-  const [videoForm, setVideoForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', youtubeLink: '', thumbnail: '', description: '', duration: '' });
-  const [pyqForm, setPyqForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard', questionUrl: '', solutionUrl: '' });
-  const [sheetForm, setSheetForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+  const [noteForm, setNoteForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+  const [videoForm, setVideoForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', youtubeLink: '', description: '', duration: '' });
+  const [pyqForm, setPyqForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
+  const [sheetForm, setSheetForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
   const [annForm, setAnnForm] = useState({ title: '', body: '', category: 'general' as AnnouncementCategory, pinned: false });
 
   /* ---------------- Derived data ---------------- */
@@ -461,42 +564,50 @@ export default function ProfessorDashboard({
 
   /* ---------------- Open helpers ---------------- */
   const openAddNote = () => {
-    setNoteForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+    setNoteForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+    setNoteFile(null);
     setActiveTab('notes');
     setActiveModal('add-note');
   };
   const openEditNote = (n: Note) => {
-    setNoteForm({ course: n.course, subject: n.subject, chapter: n.chapter, title: n.title, description: n.description, fileUrl: n.fileUrl });
+    setNoteForm({ course: n.course, subject: n.subject, chapter: n.chapter, title: n.title, description: n.description, fileUrl: n.fileUrl, fileSize: n.fileSize || '' });
+    setNoteFile(null);
     setSelectedItemId(n.id);
     setActiveModal('edit-note');
   };
   const openAddVideo = () => {
-    setVideoForm({ course: 'jee-main', subject: '', chapter: '', title: '', youtubeLink: '', thumbnail: '', description: '', duration: '' });
+    setVideoForm({ course: 'jee-main', subject: '', chapter: '', title: '', youtubeLink: '', description: '', duration: '' });
     setActiveTab('videos');
     setActiveModal('add-video');
   };
   const openEditVideo = (v: Video) => {
-    setVideoForm({ course: v.course, subject: v.subject, chapter: v.chapter, title: v.title, youtubeLink: v.youtubeLink, thumbnail: v.thumbnail, description: v.description, duration: v.duration });
+    setVideoForm({ course: v.course, subject: v.subject, chapter: v.chapter, title: v.title, youtubeLink: v.youtubeLink, description: v.description, duration: v.duration });
     setSelectedItemId(v.id);
     setActiveModal('edit-video');
   };
   const openAddPyq = () => {
-    setPyqForm({ course: 'jee-main', subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium', questionUrl: '', solutionUrl: '' });
+    setPyqForm({ course: 'jee-main', subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
+    setPyqQuestionFile(null);
+    setPyqSolutionFile(null);
     setActiveTab('pyqs');
     setActiveModal('add-pyq');
   };
   const openEditPyq = (p: PYQ) => {
-    setPyqForm({ course: p.course, subject: p.subject, chapter: p.chapter, year: p.year, difficulty: p.difficulty, questionUrl: p.questionUrl, solutionUrl: p.solutionUrl });
+    setPyqForm({ course: p.course, subject: p.subject, chapter: p.chapter, year: p.year, difficulty: p.difficulty, questionUrl: p.questionUrl, solutionUrl: p.solutionUrl, questionSize: p.questionSize || '', solutionSize: p.solutionSize || '' });
+    setPyqQuestionFile(null);
+    setPyqSolutionFile(null);
     setSelectedItemId(p.id);
     setActiveModal('edit-pyq');
   };
   const openAddSheet = () => {
-    setSheetForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+    setSheetForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+    setSheetFile(null);
     setActiveTab('sheets');
     setActiveModal('add-sheet');
   };
   const openEditSheet = (s: PracticeSheet) => {
-    setSheetForm({ course: s.course, subject: s.subject, chapter: s.chapter, title: s.title, description: s.description, fileUrl: s.fileUrl });
+    setSheetForm({ course: s.course, subject: s.subject, chapter: s.chapter, title: s.title, description: s.description, fileUrl: s.fileUrl, fileSize: s.fileSize || '' });
+    setSheetFile(null);
     setSelectedItemId(s.id);
     setActiveModal('edit-sheet');
   };
@@ -519,46 +630,124 @@ export default function ProfessorDashboard({
   };
 
   /* ---------------- Submit handlers ---------------- */
-  const handleNoteSubmit = (e: React.FormEvent) => {
+  const handleNoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeModal === 'add-note') {
-      onAddNote({ ...noteForm, fileUrl: noteForm.fileUrl || 'uploaded_document.pdf', fileSize: '2.5 MB' });
-    } else if (selectedItemId) {
-      onEditNote(selectedItemId, noteForm);
+    setIsSubmitting(true);
+    try {
+      let finalUrl = noteForm.fileUrl || 'uploaded_document.pdf';
+      let finalSize = noteForm.fileSize || '2.5 MB';
+      if (noteFile) {
+        const res = await uploadFile(noteFile, 'notes-pdfs');
+        finalUrl = res.url;
+        finalSize = res.size;
+      }
+      if (activeModal === 'add-note') {
+        onAddNote({ ...noteForm, fileUrl: finalUrl, fileSize: finalSize });
+      } else if (selectedItemId) {
+        onEditNote(selectedItemId, { ...noteForm, fileUrl: finalUrl, fileSize: finalSize });
+      }
+      closeModal();
+    } catch (err: any) {
+      console.error('Supabase Upload Error:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload (Permission Denied).';
+      else if (errMsg.includes('bucket not found') || errMsg.includes('Bucket not found')) errMsg = 'Bucket not found.';
+      else if (errMsg.includes('already exists')) errMsg = 'File already exists.';
+      else if (errMsg.includes('mime type') || errMsg.includes('content type')) errMsg = 'Invalid file type.';
+      else if (errMsg.includes('size limit') || errMsg.includes('too large')) errMsg = 'File too large.';
+      else if (errMsg.includes('JWT') || errMsg.includes('Auth')) errMsg = 'Authentication required.';
+      alert(`Upload failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
   const handleVideoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    // Auto-generate thumbnail from the YouTube URL
+    const videoId = extractYouTubeId(videoForm.youtubeLink);
+    const autoThumbnail = videoId
+      ? getYoutubeThumbnail(videoId, 'maxresdefault')
+      : 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=600&q=80';
     if (activeModal === 'add-video') {
       onAddVideo({
         ...videoForm,
         youtubeLink: videoForm.youtubeLink || 'https://youtube.com',
-        thumbnail: videoForm.thumbnail || 'https://images.unsplash.com/photo-1509228468518-180dd4864904?auto=format&fit=crop&w=600&q=80',
+        thumbnail: autoThumbnail,
         duration: videoForm.duration || '45:00'
       });
     } else if (selectedItemId) {
-      onEditVideo(selectedItemId, videoForm);
+      onEditVideo(selectedItemId, { ...videoForm, thumbnail: autoThumbnail });
     }
     closeModal();
   };
-  const handlePyqSubmit = (e: React.FormEvent) => {
+  const handlePyqSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeModal === 'add-pyq') {
-      onAddPyq({ ...pyqForm, year: Number(pyqForm.year), questionUrl: pyqForm.questionUrl || 'uploaded_pyq_question.pdf', solutionUrl: pyqForm.solutionUrl || 'uploaded_pyq_solution.pdf' });
-    } else if (selectedItemId) {
-      onEditPyq(selectedItemId, { ...pyqForm, year: Number(pyqForm.year) });
+    setIsSubmitting(true);
+    try {
+      let finalQUrl = pyqForm.questionUrl || 'uploaded_pyq_question.pdf';
+      let finalQSize = pyqForm.questionSize || '1.2 MB';
+      if (pyqQuestionFile) {
+        const res = await uploadFile(pyqQuestionFile, 'pyqs');
+        finalQUrl = res.url;
+        finalQSize = res.size;
+      }
+      let finalSUrl = pyqForm.solutionUrl || 'uploaded_pyq_solution.pdf';
+      let finalSSize = pyqForm.solutionSize || '2.0 MB';
+      if (pyqSolutionFile) {
+        const res = await uploadFile(pyqSolutionFile, 'pyqs');
+        finalSUrl = res.url;
+        finalSSize = res.size;
+      }
+      if (activeModal === 'add-pyq') {
+        onAddPyq({ ...pyqForm, year: Number(pyqForm.year), questionUrl: finalQUrl, solutionUrl: finalSUrl, questionSize: finalQSize, solutionSize: finalSSize });
+      } else if (selectedItemId) {
+        onEditPyq(selectedItemId, { ...pyqForm, year: Number(pyqForm.year), questionUrl: finalQUrl, solutionUrl: finalSUrl, questionSize: finalQSize, solutionSize: finalSSize });
+      }
+      closeModal();
+    } catch (err: any) {
+      console.error('Supabase Upload Error:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload (Permission Denied).';
+      else if (errMsg.includes('bucket not found') || errMsg.includes('Bucket not found')) errMsg = 'Bucket not found.';
+      else if (errMsg.includes('already exists')) errMsg = 'File already exists.';
+      else if (errMsg.includes('mime type') || errMsg.includes('content type')) errMsg = 'Invalid file type.';
+      else if (errMsg.includes('size limit') || errMsg.includes('too large')) errMsg = 'File too large.';
+      else if (errMsg.includes('JWT') || errMsg.includes('Auth')) errMsg = 'Authentication required.';
+      alert(`Upload failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
-  const handleSheetSubmit = (e: React.FormEvent) => {
+  const handleSheetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeModal === 'add-sheet') {
-      onAddPracticeSheet({ ...sheetForm, fileUrl: sheetForm.fileUrl || 'uploaded_practice_sheet.pdf' });
-    } else if (selectedItemId) {
-      onEditPracticeSheet(selectedItemId, sheetForm);
+    setIsSubmitting(true);
+    try {
+      let finalUrl = sheetForm.fileUrl || 'uploaded_practice_sheet.pdf';
+      let finalSize = sheetForm.fileSize || '1.5 MB';
+      if (sheetFile) {
+        const res = await uploadFile(sheetFile, 'practice-sheets');
+        finalUrl = res.url;
+        finalSize = res.size;
+      }
+      if (activeModal === 'add-sheet') {
+        onAddPracticeSheet({ ...sheetForm, fileUrl: finalUrl, fileSize: finalSize });
+      } else if (selectedItemId) {
+        onEditPracticeSheet(selectedItemId, { ...sheetForm, fileUrl: finalUrl, fileSize: finalSize });
+      }
+      closeModal();
+    } catch (err: any) {
+      console.error('Supabase Upload Error:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload (Permission Denied).';
+      else if (errMsg.includes('bucket not found') || errMsg.includes('Bucket not found')) errMsg = 'Bucket not found.';
+      else if (errMsg.includes('already exists')) errMsg = 'File already exists.';
+      else if (errMsg.includes('mime type') || errMsg.includes('content type')) errMsg = 'Invalid file type.';
+      else if (errMsg.includes('size limit') || errMsg.includes('too large')) errMsg = 'File too large.';
+      else if (errMsg.includes('JWT') || errMsg.includes('Auth')) errMsg = 'Authentication required.';
+      alert(`Upload failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
   const handleAnnouncementSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1139,14 +1328,59 @@ export default function ProfessorDashboard({
                         <p className="mt-1.5 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] p-3.5 text-sm leading-relaxed text-[#3A342E]">{doubt.question}</p>
 
                         {doubt.attachmentName && (
-                          <span className="mt-2 inline-flex items-center gap-1.5 text-xs text-[#8A7E6F]">
-                            📎 <span className="cursor-pointer underline decoration-[#D9C2A2] underline-offset-2 hover:text-[#4A0E1B]">{doubt.attachmentName}</span>
-                          </span>
+                          <div className="mt-2">
+                            {doubt.attachmentDataUrl ? (
+                              doubt.attachmentDataUrl.startsWith('data:image/') ? (
+                                /* Image: show thumbnail + open in new tab */
+                                <div className="rounded-xl border border-[#EFE7D8] overflow-hidden">
+                                  <img
+                                    src={doubt.attachmentDataUrl}
+                                    alt={doubt.attachmentName}
+                                    className="w-full max-h-48 object-contain bg-[#FBF7F0] cursor-pointer"
+                                    onClick={() => {
+                                      const win = window.open();
+                                      if (win) { win.document.write(`<img src="${doubt.attachmentDataUrl}" style="max-width:100%">`); }
+                                    }}
+                                    title="Click to open full size"
+                                  />
+                                  <div className="flex items-center justify-between px-3 py-1.5 bg-[#FBF7F0] border-t border-[#EFE7D8]">
+                                    <span className="text-[10px] text-[#8A7E6F] truncate">📎 {doubt.attachmentName}</span>
+                                    <a
+                                      href={doubt.attachmentDataUrl}
+                                      download={doubt.attachmentName}
+                                      className="text-[10px] font-semibold text-[#8A6A16] hover:text-[#4A0E1B] shrink-0 ml-2"
+                                    >Download</a>
+                                  </div>
+                                </div>
+                              ) : (
+                                /* Other file type: download button */
+                                <div className="flex items-center gap-2.5 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] px-3.5 py-2.5">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-semibold text-[#3A342E] truncate">📎 {doubt.attachmentName}</p>
+                                  </div>
+                                  <a
+                                    href={doubt.attachmentDataUrl}
+                                    download={doubt.attachmentName}
+                                    className="shrink-0 rounded-lg bg-[#8A6A16] px-2.5 py-1 text-[10px] font-bold text-white hover:bg-[#4A0E1B] transition-colors"
+                                  >Open / Download</a>
+                                </div>
+                              )
+                            ) : (
+                              /* Legacy: no data URL stored */
+                              <span className="inline-flex items-center gap-1.5 text-xs text-[#8A7E6F]">
+                                📎 <span className="italic">{doubt.attachmentName}</span>
+                                <span className="text-[10px] text-[#C7C7CC]">(file not available)</span>
+                              </span>
+                            )}
+                          </div>
                         )}
 
                         {/* Answer / reply zone */}
                         {doubt.isAnswered && replyingDoubtId !== doubt.id ? (
-                          <div className="mt-4 rounded-xl border border-[#EFE1C2] bg-[#FBF6EA] p-4">
+                          <div className="mt-4 rounded-xl border border-[#F7EFD9] bg-[#FBF6EA] p-4">
                             <div className="flex items-start gap-2.5">
                               <CornerDownRight size={15} className="mt-0.5 shrink-0 text-[#8A6A16]" />
                               <div className="flex-1">
@@ -1320,19 +1554,23 @@ export default function ProfessorDashboard({
             <Field label="Short description">
               <textarea className={INPUT} required rows={3} value={noteForm.description} onChange={(e) => setNoteForm({ ...noteForm, description: e.target.value })} placeholder="A breakdown of electric fluxes and Gaussian integrations…" />
             </Field>
-            <Field label="PDF file name">
-              <input className={INPUT} value={noteForm.fileUrl} onChange={(e) => setNoteForm({ ...noteForm, fileUrl: e.target.value })} placeholder="gauss_notes_final.pdf" />
+            <Field label="PDF Document">
+              <FileUpload 
+                value={noteFile || noteForm.fileUrl} 
+                onFileSelect={(f) => setNoteFile(f)} 
+                placeholder="Upload note PDF" 
+              />
             </Field>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" className={GHOST_BTN} onClick={closeModal}>Cancel</button>
-              <button type="submit" className={PRIMARY_BTN}>{activeModal === 'add-note' ? 'Add note' : 'Save changes'}</button>
+              <button type="button" className={GHOST_BTN} onClick={closeModal} disabled={isSubmitting}>Cancel</button>
+              <button type="submit" className={PRIMARY_BTN} disabled={isSubmitting}>{isSubmitting ? 'Uploading...' : (activeModal === 'add-note' ? 'Add note' : 'Save changes')}</button>
             </div>
           </form>
         </Modal>
       )}
 
       {(activeModal === 'add-video' || activeModal === 'edit-video') && (
-        <Modal title={activeModal === 'add-video' ? 'Add video lecture' : 'Edit video lecture'} subtitle="Linked lecture shown in the student library" onClose={closeModal}>
+        <Modal title={activeModal === 'add-video' ? 'Add video lecture' : 'Edit video lecture'} subtitle="Paste a YouTube URL — the player will embed directly in the student portal" onClose={closeModal}>
           <form onSubmit={handleVideoSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <Field label="Exam / course">
@@ -1357,12 +1595,13 @@ export default function ProfessorDashboard({
             <Field label="Lecture title">
               <input className={INPUT} required value={videoForm.title} onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })} placeholder="Visualizing Gauss's Law" />
             </Field>
-            <Field label="YouTube / stream link">
-              <input className={INPUT} type="url" value={videoForm.youtubeLink} onChange={(e) => setVideoForm({ ...videoForm, youtubeLink: e.target.value })} placeholder="https://youtube.com/…" />
-            </Field>
-            <Field label="Thumbnail image URL">
-              <input className={INPUT} value={videoForm.thumbnail} onChange={(e) => setVideoForm({ ...videoForm, thumbnail: e.target.value })} placeholder="Image URL…" />
-            </Field>
+
+            {/* YouTube URL field with live validation and thumbnail preview */}
+            <YouTubeLinkField
+              value={videoForm.youtubeLink}
+              onChange={(v) => setVideoForm({ ...videoForm, youtubeLink: v })}
+            />
+
             <Field label="Description">
               <textarea className={INPUT} required rows={2} value={videoForm.description} onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })} placeholder="An intuitive, geometric lecture on…" />
             </Field>
@@ -1406,15 +1645,23 @@ export default function ProfessorDashboard({
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Question PDF">
-                <input className={INPUT} value={pyqForm.questionUrl} onChange={(e) => setPyqForm({ ...pyqForm, questionUrl: e.target.value })} placeholder="pyq_questions_2024.pdf" />
+                <FileUpload 
+                  value={pyqQuestionFile || pyqForm.questionUrl} 
+                  onFileSelect={(f) => setPyqQuestionFile(f)} 
+                  placeholder="Upload question PDF" 
+                />
               </Field>
               <Field label="Solution PDF">
-                <input className={INPUT} value={pyqForm.solutionUrl} onChange={(e) => setPyqForm({ ...pyqForm, solutionUrl: e.target.value })} placeholder="pyq_solutions_2024.pdf" />
+                <FileUpload 
+                  value={pyqSolutionFile || pyqForm.solutionUrl} 
+                  onFileSelect={(f) => setPyqSolutionFile(f)} 
+                  placeholder="Upload solution PDF" 
+                />
               </Field>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" className={GHOST_BTN} onClick={closeModal}>Cancel</button>
-              <button type="submit" className={PRIMARY_BTN}>{activeModal === 'add-pyq' ? 'Publish PYQ' : 'Save changes'}</button>
+              <button type="button" className={GHOST_BTN} onClick={closeModal} disabled={isSubmitting}>Cancel</button>
+              <button type="submit" className={PRIMARY_BTN} disabled={isSubmitting}>{isSubmitting ? 'Uploading...' : (activeModal === 'add-pyq' ? 'Publish PYQ' : 'Save changes')}</button>
             </div>
           </form>
         </Modal>
@@ -1444,12 +1691,16 @@ export default function ProfessorDashboard({
             <Field label="Description">
               <textarea className={INPUT} required rows={3} value={sheetForm.description} onChange={(e) => setSheetForm({ ...sheetForm, description: e.target.value })} placeholder="45 targeted MCQs with dielectric-insertion questions…" />
             </Field>
-            <Field label="PDF file name">
-              <input className={INPUT} value={sheetForm.fileUrl} onChange={(e) => setSheetForm({ ...sheetForm, fileUrl: e.target.value })} placeholder="practice_sheet_dynamics.pdf" />
+            <Field label="Practice Sheet PDF">
+              <FileUpload 
+                value={sheetFile || sheetForm.fileUrl} 
+                onFileSelect={(f) => setSheetFile(f)} 
+                placeholder="Upload practice sheet PDF" 
+              />
             </Field>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" className={GHOST_BTN} onClick={closeModal}>Cancel</button>
-              <button type="submit" className={PRIMARY_BTN}>{activeModal === 'add-sheet' ? 'Upload sheet' : 'Save changes'}</button>
+              <button type="button" className={GHOST_BTN} onClick={closeModal} disabled={isSubmitting}>Cancel</button>
+              <button type="submit" className={PRIMARY_BTN} disabled={isSubmitting}>{isSubmitting ? 'Uploading...' : (activeModal === 'add-sheet' ? 'Upload sheet' : 'Save changes')}</button>
             </div>
           </form>
         </Modal>
