@@ -1,9 +1,13 @@
 /**
  * @license
  * SPDX-License-Identifier: Apache-2.0
+ *
+ * AppNew.tsx — Primary application shell.
+ * Data persistence migrated from LocalStorage → Supabase.
+ * All state is now server-authoritative; LocalStorage removed.
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
@@ -13,276 +17,254 @@ import ContactPage from './components/ContactPage';
 import StudentDashboard from './components/StudentDashboard';
 import ProfessorDashboard from './components/ProfessorDashboard';
 
-import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ, Announcement } from './types';
-import { EXAMS, INITIAL_NOTES, INITIAL_VIDEOS, INITIAL_PYQS, INITIAL_PRACTICE_SHEETS, INITIAL_DOUBTS, INITIAL_FAQS, INITIAL_ANNOUNCEMENTS } from './data';
+import type { Note, Video, PYQ, PracticeSheet, Doubt, Announcement } from './types';
+import { EXAMS, INITIAL_FAQS } from './data';
 
-const LOCAL_STORAGE_KEYS = {
-  NOTES: 'prof_portal_notes_v1',
-  VIDEOS: 'prof_portal_videos_v1',
-  PYQS: 'prof_portal_pyqs_v1',
-  SHEETS: 'prof_portal_sheets_v1',
-  DOUBTS: 'prof_portal_doubts_v1',
-  ANNOUNCEMENTS: 'prof_portal_announcements_v1',
-  USER_ROLE: 'prof_portal_user_role_v1',
-  VIEW: 'prof_portal_view_v1'
-};
+import {
+  fetchNotes, createNote, updateNote, deleteNote, incrementNoteDownload,
+  fetchVideos, createVideo, updateVideo, deleteVideo,
+  fetchPyqs, createPyq, updatePyq, deletePyq,
+  fetchPracticeSheets, createPracticeSheet, updatePracticeSheet, deletePracticeSheet,
+  fetchDoubts, submitDoubt, replyToDoubt, deleteDoubt,
+  fetchAnnouncements, createAnnouncement, updateAnnouncement, deleteAnnouncement, togglePinAnnouncement,
+} from './services';
 
-export function AppNew({ theme, toggleTheme }: { theme: string, toggleTheme: () => void }) {
-  // View States
-  const [currentView, setCurrentView] = useState<'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact'>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.VIEW);
-      return saved ? (JSON.parse(saved) as any) : 'home';
-    } catch {
-      return 'home';
-    }
+// ─── Loading / Error States ──────────────────────────────────────────────────
+interface AppState {
+  notes: Note[];
+  videos: Video[];
+  pyqs: PYQ[];
+  practiceSheets: PracticeSheet[];
+  doubts: Doubt[];
+  announcements: Announcement[];
+  loading: boolean;
+  error: string | null;
+}
+
+export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
+  // ─── Navigation & Role ────────────────────────────────────────────────────
+  const [currentView, setCurrentView] = useState<
+    'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact'
+  >('home');
+
+  const [userRole, setUserRole] = useState<'student' | 'professor' | null>(null);
+
+  // ─── Data State ───────────────────────────────────────────────────────────
+  const [state, setState] = useState<AppState>({
+    notes: [],
+    videos: [],
+    pyqs: [],
+    practiceSheets: [],
+    doubts: [],
+    announcements: [],
+    loading: true,
+    error: null,
   });
 
-  const [userRole, setUserRole] = useState<'student' | 'professor' | null>(() => {
+  // ─── Initial Data Load from Supabase ─────────────────────────────────────
+  const loadAllData = useCallback(async () => {
+    setState(prev => ({ ...prev, loading: true, error: null }));
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.USER_ROLE);
-      return saved ? (JSON.parse(saved) as any) : null;
-    } catch {
-      return null;
+      const [notes, videos, pyqs, practiceSheets, doubts, announcements] = await Promise.all([
+        fetchNotes(),
+        fetchVideos(),
+        fetchPyqs(),
+        fetchPracticeSheets(),
+        fetchDoubts(),
+        fetchAnnouncements(),
+      ]);
+      setState({ notes, videos, pyqs, practiceSheets, doubts, announcements, loading: false, error: null });
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Unknown error loading data.';
+      console.error('[AppNew] loadAllData error:', message);
+      setState(prev => ({ ...prev, loading: false, error: message }));
     }
-  });
-
-  // Data Repositories States
-  const [notes, setNotes] = useState<Note[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.NOTES);
-      return saved ? JSON.parse(saved) : INITIAL_NOTES;
-    } catch {
-      return INITIAL_NOTES;
-    }
-  });
-
-  const [videos, setVideos] = useState<Video[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.VIDEOS);
-      return saved ? JSON.parse(saved) : INITIAL_VIDEOS;
-    } catch {
-      return INITIAL_VIDEOS;
-    }
-  });
-
-  const [pyqs, setPyqs] = useState<PYQ[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.PYQS);
-      return saved ? JSON.parse(saved) : INITIAL_PYQS;
-    } catch {
-      return INITIAL_PYQS;
-    }
-  });
-
-  const [practiceSheets, setPracticeSheets] = useState<PracticeSheet[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.SHEETS);
-      return saved ? JSON.parse(saved) : INITIAL_PRACTICE_SHEETS;
-    } catch {
-      return INITIAL_PRACTICE_SHEETS;
-    }
-  });
-
-  const [doubts, setDoubts] = useState<Doubt[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.DOUBTS);
-      return saved ? JSON.parse(saved) : INITIAL_DOUBTS;
-    } catch {
-      return INITIAL_DOUBTS;
-    }
-  });
-
-  const [announcements, setAnnouncements] = useState<Announcement[]>(() => {
-    try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.ANNOUNCEMENTS);
-      return saved ? JSON.parse(saved) : INITIAL_ANNOUNCEMENTS;
-    } catch {
-      return INITIAL_ANNOUNCEMENTS;
-    }
-  });
-
-  // Synchronize navigation and roles back to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.VIEW, JSON.stringify(currentView));
-      localStorage.setItem(LOCAL_STORAGE_KEYS.USER_ROLE, JSON.stringify(userRole));
-    } catch (e) {
-      console.warn(e);
-    }
-  }, [currentView, userRole]);
-
-  // Sync core data sets back to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.NOTES, JSON.stringify(notes));
-    } catch {}
-  }, [notes]);
+  }, []);
 
   useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.VIDEOS, JSON.stringify(videos));
-    } catch {}
-  }, [videos]);
+    loadAllData();
+  }, [loadAllData]);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.PYQS, JSON.stringify(pyqs));
-    } catch {}
-  }, [pyqs]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.SHEETS, JSON.stringify(practiceSheets));
-    } catch {}
-  }, [practiceSheets]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.DOUBTS, JSON.stringify(doubts));
-    } catch {}
-  }, [doubts]);
-
-  useEffect(() => {
-    try {
-      localStorage.setItem(LOCAL_STORAGE_KEYS.ANNOUNCEMENTS, JSON.stringify(announcements));
-    } catch {}
-  }, [announcements]);
-
-
-  // ================= STATE HANDLERS (CRUD) =================
-
-  // Role selections
+  // ─── Role Selection ───────────────────────────────────────────────────────
   const handleSelectRole = (selected: 'student' | 'professor') => {
     setUserRole(selected);
     setCurrentView(selected === 'student' ? 'student' : 'professor');
   };
 
-  // NOTES CRUD
-  const handleAddNote = (newNote: Omit<Note, 'id' | 'downloadCount'>) => {
-    const note: Note = {
-      ...newNote,
-      id: `note-custom-${Date.now()}`,
-      downloadCount: 0
-    };
-    setNotes(prev => [...prev, note]);
-  };
+  // ─── NOTES CRUD ───────────────────────────────────────────────────────────
+  const handleAddNote = useCallback(async (newNote: Omit<Note, 'id' | 'downloadCount'>) => {
+    const created = await createNote(newNote);
+    setState(prev => ({ ...prev, notes: [...prev.notes, created] }));
+  }, []);
 
-  const handleEditNote = (id: string, updatedFields: Partial<Note>) => {
-    setNotes(prev => prev.map(n => n.id === id ? { ...n, ...updatedFields } : n));
-  };
+  const handleEditNote = useCallback(async (id: string, updatedFields: Partial<Note>) => {
+    const updated = await updateNote(id, updatedFields);
+    setState(prev => ({
+      ...prev,
+      notes: prev.notes.map(n => n.id === id ? updated : n),
+    }));
+  }, []);
 
-  const handleDeleteNote = (id: string) => {
-    setNotes(prev => prev.filter(n => n.id !== id));
-  };
+  const handleDeleteNote = useCallback(async (id: string) => {
+    await deleteNote(id);
+    setState(prev => ({ ...prev, notes: prev.notes.filter(n => n.id !== id) }));
+  }, []);
 
-  const handleIncrementNoteDownload = (id: string) => {
-    setNotes(prev => prev.map(n => n.id === id ? { ...n, downloadCount: n.downloadCount + 1 } : n));
-  };
+  const handleIncrementNoteDownload = useCallback(async (id: string) => {
+    await incrementNoteDownload(id);
+    setState(prev => ({
+      ...prev,
+      notes: prev.notes.map(n => n.id === id ? { ...n, downloadCount: n.downloadCount + 1 } : n),
+    }));
+  }, []);
 
-  // VIDEOS CRUD
-  const handleAddVideo = (newVideo: Omit<Video, 'id'>) => {
-    const vid: Video = {
-      ...newVideo,
-      id: `vid-custom-${Date.now()}`
-    };
-    setVideos(prev => [...prev, vid]);
-  };
+  // ─── VIDEOS CRUD ──────────────────────────────────────────────────────────
+  const handleAddVideo = useCallback(async (newVideo: Omit<Video, 'id'>) => {
+    const created = await createVideo(newVideo);
+    setState(prev => ({ ...prev, videos: [...prev.videos, created] }));
+  }, []);
 
-  const handleEditVideo = (id: string, updatedFields: Partial<Video>) => {
-    setVideos(prev => prev.map(v => v.id === id ? { ...v, ...updatedFields } : v));
-  };
+  const handleEditVideo = useCallback(async (id: string, updatedFields: Partial<Video>) => {
+    const updated = await updateVideo(id, updatedFields);
+    setState(prev => ({
+      ...prev,
+      videos: prev.videos.map(v => v.id === id ? updated : v),
+    }));
+  }, []);
 
-  const handleDeleteVideo = (id: string) => {
-    setVideos(prev => prev.filter(v => v.id !== id));
-  };
+  const handleDeleteVideo = useCallback(async (id: string) => {
+    await deleteVideo(id);
+    setState(prev => ({ ...prev, videos: prev.videos.filter(v => v.id !== id) }));
+  }, []);
 
-  // PYQS CRUD
-  const handleAddPyq = (newPyq: Omit<PYQ, 'id' | 'questionSize' | 'solutionSize'>) => {
-    const pyq: PYQ = {
-      ...newPyq,
-      id: `pyq-custom-${Date.now()}`,
-      questionSize: '510 KB',
-      solutionSize: '1.2 MB'
-    };
-    setPyqs(prev => [...prev, pyq]);
-  };
+  // ─── PYQS CRUD ────────────────────────────────────────────────────────────
+  const handleAddPyq = useCallback(async (newPyq: Omit<PYQ, 'id' | 'questionSize' | 'solutionSize'>) => {
+    const created = await createPyq(newPyq);
+    setState(prev => ({ ...prev, pyqs: [...prev.pyqs, created] }));
+  }, []);
 
-  const handleEditPyq = (id: string, updatedFields: Partial<PYQ>) => {
-    setPyqs(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p));
-  };
+  const handleEditPyq = useCallback(async (id: string, updatedFields: Partial<PYQ>) => {
+    const updated = await updatePyq(id, updatedFields);
+    setState(prev => ({
+      ...prev,
+      pyqs: prev.pyqs.map(p => p.id === id ? updated : p),
+    }));
+  }, []);
 
-  const handleDeletePyq = (id: string) => {
-    setPyqs(prev => prev.filter(p => p.id !== id));
-  };
+  const handleDeletePyq = useCallback(async (id: string) => {
+    await deletePyq(id);
+    setState(prev => ({ ...prev, pyqs: prev.pyqs.filter(p => p.id !== id) }));
+  }, []);
 
-  // PRACTICE SHEETS CRUD
-  const handleAddPracticeSheet = (newSheet: Omit<PracticeSheet, 'id' | 'fileSize'>) => {
-    const sheet: PracticeSheet = {
-      ...newSheet,
-      id: `ps-custom-${Date.now()}`,
-      fileSize: '1.1 MB'
-    };
-    setPracticeSheets(prev => [...prev, sheet]);
-  };
+  // ─── PRACTICE SHEETS CRUD ─────────────────────────────────────────────────
+  const handleAddPracticeSheet = useCallback(async (newSheet: Omit<PracticeSheet, 'id' | 'fileSize'>) => {
+    const created = await createPracticeSheet(newSheet);
+    setState(prev => ({ ...prev, practiceSheets: [...prev.practiceSheets, created] }));
+  }, []);
 
-  const handleEditPracticeSheet = (id: string, updatedFields: Partial<PracticeSheet>) => {
-    setPracticeSheets(prev => prev.map(s => s.id === id ? { ...s, ...updatedFields } : s));
-  };
+  const handleEditPracticeSheet = useCallback(async (id: string, updatedFields: Partial<PracticeSheet>) => {
+    const updated = await updatePracticeSheet(id, updatedFields);
+    setState(prev => ({
+      ...prev,
+      practiceSheets: prev.practiceSheets.map(s => s.id === id ? updated : s),
+    }));
+  }, []);
 
-  const handleDeletePracticeSheet = (id: string) => {
-    setPracticeSheets(prev => prev.filter(s => s.id !== id));
-  };
+  const handleDeletePracticeSheet = useCallback(async (id: string) => {
+    await deletePracticeSheet(id);
+    setState(prev => ({ ...prev, practiceSheets: prev.practiceSheets.filter(s => s.id !== id) }));
+  }, []);
 
-  // DOUBTS RESPONSES
-  const handleAddDoubt = (newDoubt: Omit<Doubt, 'id' | 'isAnswered' | 'createdAt'>) => {
-    const ticket: Doubt = {
-      ...newDoubt,
-      id: `doubt-custom-${Date.now()}`,
-      isAnswered: false,
-      createdAt: new Date().toISOString()
-    };
-    setDoubts(prev => [ticket, ...prev]);
-  };
+  // ─── DOUBTS ───────────────────────────────────────────────────────────────
+  const handleAddDoubt = useCallback(async (newDoubt: Omit<Doubt, 'id' | 'isAnswered' | 'createdAt'>) => {
+    const created = await submitDoubt(newDoubt);
+    setState(prev => ({ ...prev, doubts: [created, ...prev.doubts] }));
+  }, []);
 
-  const handleReplyDoubt = (id: string, answerText: string) => {
-    setDoubts(prev => prev.map(d => d.id === id ? { ...d, answerText, isAnswered: true } : d));
-  };
+  const handleReplyDoubt = useCallback(async (id: string, answerText: string) => {
+    const updated = await replyToDoubt(id, answerText);
+    setState(prev => ({
+      ...prev,
+      doubts: prev.doubts.map(d => d.id === id ? updated : d),
+    }));
+  }, []);
 
-  const handleDeleteDoubt = (id: string) => {
-    setDoubts(prev => prev.filter(d => d.id !== id));
-  };
+  const handleDeleteDoubt = useCallback(async (id: string) => {
+    await deleteDoubt(id);
+    setState(prev => ({ ...prev, doubts: prev.doubts.filter(d => d.id !== id) }));
+  }, []);
 
-  // ANNOUNCEMENTS CRUD
-  const handleAddAnnouncement = (newAnnouncement: Omit<Announcement, 'id' | 'createdAt'>) => {
-    const announcement: Announcement = {
-      ...newAnnouncement,
-      id: `ann-custom-${Date.now()}`,
-      createdAt: new Date().toISOString()
-    };
-    setAnnouncements(prev => [announcement, ...prev]);
-  };
+  // ─── ANNOUNCEMENTS CRUD ───────────────────────────────────────────────────
+  const handleAddAnnouncement = useCallback(async (newAnn: Omit<Announcement, 'id' | 'createdAt'>) => {
+    const created = await createAnnouncement(newAnn);
+    setState(prev => ({ ...prev, announcements: [created, ...prev.announcements] }));
+  }, []);
 
-  const handleEditAnnouncement = (id: string, updatedFields: Partial<Announcement>) => {
-    setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, ...updatedFields } : a));
-  };
+  const handleEditAnnouncement = useCallback(async (id: string, updatedFields: Partial<Announcement>) => {
+    const updated = await updateAnnouncement(id, updatedFields);
+    setState(prev => ({
+      ...prev,
+      announcements: prev.announcements.map(a => a.id === id ? updated : a),
+    }));
+  }, []);
 
-  const handleDeleteAnnouncement = (id: string) => {
-    setAnnouncements(prev => prev.filter(a => a.id !== id));
-  };
+  const handleDeleteAnnouncement = useCallback(async (id: string) => {
+    await deleteAnnouncement(id);
+    setState(prev => ({ ...prev, announcements: prev.announcements.filter(a => a.id !== id) }));
+  }, []);
 
-  const handleTogglePinAnnouncement = (id: string) => {
-    setAnnouncements(prev => prev.map(a => a.id === id ? { ...a, pinned: !a.pinned } : a));
-  };
+  const handleTogglePinAnnouncement = useCallback(async (id: string) => {
+    const current = state.announcements.find(a => a.id === id);
+    if (!current) return;
+    const updated = await togglePinAnnouncement(id, current.pinned);
+    setState(prev => ({
+      ...prev,
+      announcements: prev.announcements.map(a => a.id === id ? updated : a),
+    }));
+  }, [state.announcements]);
 
+  // ─── Loading / Error UI ───────────────────────────────────────────────────
+  if (state.loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F7]">
+        <div className="text-center space-y-4">
+          <div className="w-12 h-12 border-4 border-[#5B0E14] border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#5B0E14]">
+            Loading Portal…
+          </p>
+        </div>
+      </div>
+    );
+  }
 
-  // ================= MAIN RENDER ROUTER =================
+  if (state.error) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#F5F5F7] p-6">
+        <div className="max-w-md text-center space-y-4">
+          <p className="text-3xl">⚠️</p>
+          <h2 className="text-lg font-black uppercase tracking-[0.2em] text-[#5B0E14]">
+            Failed to connect
+          </h2>
+          <p className="text-sm text-gray-600">{state.error}</p>
+          <button
+            onClick={loadAllData}
+            className="px-6 py-3 bg-[#5B0E14] text-white text-xs font-black uppercase tracking-[0.2em] rounded-lg hover:bg-[#7a1219] transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
 
+  // ─── Main Render ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col bg-[#F5F5F7] text-[#1D1D1F] transition-colors duration-300">
-      
+
       {/* Sticky Top Navbar */}
-      <Navbar theme={theme} toggleTheme={toggleTheme}
+      <Navbar
+        theme={theme}
+        toggleTheme={toggleTheme}
         currentView={currentView}
         onNavigate={setCurrentView}
         userRole={userRole}
@@ -299,19 +281,17 @@ export function AppNew({ theme, toggleTheme }: { theme: string, toggleTheme: () 
         )}
 
         {currentView === 'selection' && (
-          <SelectionPage
-            onSelectRole={handleSelectRole}
-          />
+          <SelectionPage onSelectRole={handleSelectRole} />
         )}
 
         {currentView === 'student' && (
           <StudentDashboard
             exams={EXAMS}
-            notes={notes}
-            videos={videos}
-            pyqs={pyqs}
-            practiceSheets={practiceSheets}
-            doubts={doubts}
+            notes={state.notes}
+            videos={state.videos}
+            pyqs={state.pyqs}
+            practiceSheets={state.practiceSheets}
+            doubts={state.doubts}
             faqs={INITIAL_FAQS}
             onAddDoubt={handleAddDoubt}
             onIncrementNoteDownload={handleIncrementNoteDownload}
@@ -321,12 +301,12 @@ export function AppNew({ theme, toggleTheme }: { theme: string, toggleTheme: () 
         {currentView === 'professor' && (
           <ProfessorDashboard
             exams={EXAMS}
-            notes={notes}
-            videos={videos}
-            pyqs={pyqs}
-            practiceSheets={practiceSheets}
-            doubts={doubts}
-            announcements={announcements}
+            notes={state.notes}
+            videos={state.videos}
+            pyqs={state.pyqs}
+            practiceSheets={state.practiceSheets}
+            doubts={state.doubts}
+            announcements={state.announcements}
             onAddNote={handleAddNote}
             onEditNote={handleEditNote}
             onDeleteNote={handleDeleteNote}
@@ -348,21 +328,12 @@ export function AppNew({ theme, toggleTheme }: { theme: string, toggleTheme: () 
           />
         )}
 
-        {currentView === 'about' && (
-          <AboutPage />
-        )}
-
-        {currentView === 'contact' && (
-          <ContactPage />
-        )}
+        {currentView === 'about' && <AboutPage />}
+        {currentView === 'contact' && <ContactPage />}
       </main>
 
       {/* Minimal Academic Footer */}
-      <Footer
-        onNavigate={setCurrentView}
-        userRole={userRole}
-      />
-
+      <Footer onNavigate={setCurrentView} userRole={userRole} />
     </div>
   );
 }

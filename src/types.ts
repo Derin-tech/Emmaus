@@ -67,6 +67,7 @@ export interface Doubt {
   subject: string;
   question: string;
   attachmentName?: string;
+  attachmentUrl?: string;
   answerText?: string;
   isAnswered: boolean;
   createdAt: string;

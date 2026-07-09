@@ -31,8 +31,10 @@ import {
   AlertTriangle,
   Check,
   CornerDownRight,
-  RotateCcw
+  RotateCcw,
+  MoreVertical
 } from 'lucide-react';
+import { FileUpload } from './FileUpload';
 import {
   ExamType,
   ExamInfo,
@@ -135,6 +137,7 @@ function Bar({
   value: number;
   max: number;
   barClass?: string;
+  key?: React.Key;
 }) {
   const pct = max > 0 && value > 0 ? Math.max(5, Math.round((value / max) * 100)) : 0;
   return (
@@ -211,10 +214,10 @@ function Modal({
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <label className="block">
+    <div className="block">
       <span className="mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-[#8A7E6F]">{label}</span>
       {children}
-    </label>
+    </div>
   );
 }
 
@@ -248,6 +251,8 @@ interface ProfessorDashboardProps {
   onDeleteAnnouncement: (id: string) => void;
   onTogglePinAnnouncement: (id: string) => void;
 }
+
+import { uploadFile } from '../services/storageService';
 
 type Tab = 'overview' | 'notes' | 'videos' | 'pyqs' | 'sheets' | 'doubts' | 'announcements' | 'settings';
 type ModalKind =
@@ -310,6 +315,12 @@ export default function ProfessorDashboard({
   const [quickAddOpen, setQuickAddOpen] = useState(false);
   const [confirm, setConfirm] = useState<ConfirmState | null>(null);
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [noteFile, setNoteFile] = useState<File | null>(null);
+  const [pyqQuestionFile, setPyqQuestionFile] = useState<File | null>(null);
+  const [pyqSolutionFile, setPyqSolutionFile] = useState<File | null>(null);
+  const [sheetFile, setSheetFile] = useState<File | null>(null);
+
   // Doubts inbox
   const [doubtsTab, setDoubtsTab] = useState<'unanswered' | 'answered' | 'all'>('unanswered');
   const [replyingDoubtId, setReplyingDoubtId] = useState<string | null>(null);
@@ -337,10 +348,10 @@ export default function ProfessorDashboard({
   }, [profile]);
 
   // Forms
-  const [noteForm, setNoteForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+  const [noteForm, setNoteForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
   const [videoForm, setVideoForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', youtubeLink: '', thumbnail: '', description: '', duration: '' });
-  const [pyqForm, setPyqForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard', questionUrl: '', solutionUrl: '' });
-  const [sheetForm, setSheetForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+  const [pyqForm, setPyqForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
+  const [sheetForm, setSheetForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
   const [annForm, setAnnForm] = useState({ title: '', body: '', category: 'general' as AnnouncementCategory, pinned: false });
 
   /* ---------------- Derived data ---------------- */
@@ -461,12 +472,14 @@ export default function ProfessorDashboard({
 
   /* ---------------- Open helpers ---------------- */
   const openAddNote = () => {
-    setNoteForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+    setNoteForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+    setNoteFile(null);
     setActiveTab('notes');
     setActiveModal('add-note');
   };
   const openEditNote = (n: Note) => {
-    setNoteForm({ course: n.course, subject: n.subject, chapter: n.chapter, title: n.title, description: n.description, fileUrl: n.fileUrl });
+    setNoteForm({ course: n.course, subject: n.subject, chapter: n.chapter, title: n.title, description: n.description, fileUrl: n.fileUrl, fileSize: n.fileSize || '' });
+    setNoteFile(null);
     setSelectedItemId(n.id);
     setActiveModal('edit-note');
   };
@@ -481,22 +494,28 @@ export default function ProfessorDashboard({
     setActiveModal('edit-video');
   };
   const openAddPyq = () => {
-    setPyqForm({ course: 'jee-main', subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium', questionUrl: '', solutionUrl: '' });
+    setPyqForm({ course: 'jee-main', subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
+    setPyqQuestionFile(null);
+    setPyqSolutionFile(null);
     setActiveTab('pyqs');
     setActiveModal('add-pyq');
   };
   const openEditPyq = (p: PYQ) => {
-    setPyqForm({ course: p.course, subject: p.subject, chapter: p.chapter, year: p.year, difficulty: p.difficulty, questionUrl: p.questionUrl, solutionUrl: p.solutionUrl });
+    setPyqForm({ course: p.course, subject: p.subject, chapter: p.chapter, year: p.year, difficulty: p.difficulty, questionUrl: p.questionUrl, solutionUrl: p.solutionUrl, questionSize: p.questionSize || '', solutionSize: p.solutionSize || '' });
+    setPyqQuestionFile(null);
+    setPyqSolutionFile(null);
     setSelectedItemId(p.id);
     setActiveModal('edit-pyq');
   };
   const openAddSheet = () => {
-    setSheetForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '' });
+    setSheetForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+    setSheetFile(null);
     setActiveTab('sheets');
     setActiveModal('add-sheet');
   };
   const openEditSheet = (s: PracticeSheet) => {
-    setSheetForm({ course: s.course, subject: s.subject, chapter: s.chapter, title: s.title, description: s.description, fileUrl: s.fileUrl });
+    setSheetForm({ course: s.course, subject: s.subject, chapter: s.chapter, title: s.title, description: s.description, fileUrl: s.fileUrl, fileSize: s.fileSize || '' });
+    setSheetFile(null);
     setSelectedItemId(s.id);
     setActiveModal('edit-sheet');
   };
@@ -519,14 +538,36 @@ export default function ProfessorDashboard({
   };
 
   /* ---------------- Submit handlers ---------------- */
-  const handleNoteSubmit = (e: React.FormEvent) => {
+  const handleNoteSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeModal === 'add-note') {
-      onAddNote({ ...noteForm, fileUrl: noteForm.fileUrl || 'uploaded_document.pdf', fileSize: '2.5 MB' });
-    } else if (selectedItemId) {
-      onEditNote(selectedItemId, noteForm);
+    setIsSubmitting(true);
+    try {
+      let finalUrl = noteForm.fileUrl || 'uploaded_document.pdf';
+      let finalSize = noteForm.fileSize || '2.5 MB';
+      if (noteFile) {
+        const res = await uploadFile(noteFile, 'notes-pdfs');
+        finalUrl = res.url;
+        finalSize = res.size;
+      }
+      if (activeModal === 'add-note') {
+        onAddNote({ ...noteForm, fileUrl: finalUrl, fileSize: finalSize });
+      } else if (selectedItemId) {
+        onEditNote(selectedItemId, { ...noteForm, fileUrl: finalUrl, fileSize: finalSize });
+      }
+      closeModal();
+    } catch (err: any) {
+      console.error('Supabase Upload Error:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload (Permission Denied).';
+      else if (errMsg.includes('bucket not found') || errMsg.includes('Bucket not found')) errMsg = 'Bucket not found.';
+      else if (errMsg.includes('already exists')) errMsg = 'File already exists.';
+      else if (errMsg.includes('mime type') || errMsg.includes('content type')) errMsg = 'Invalid file type.';
+      else if (errMsg.includes('size limit') || errMsg.includes('too large')) errMsg = 'File too large.';
+      else if (errMsg.includes('JWT') || errMsg.includes('Auth')) errMsg = 'Authentication required.';
+      alert(`Upload failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
   const handleVideoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -542,23 +583,74 @@ export default function ProfessorDashboard({
     }
     closeModal();
   };
-  const handlePyqSubmit = (e: React.FormEvent) => {
+  const handlePyqSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeModal === 'add-pyq') {
-      onAddPyq({ ...pyqForm, year: Number(pyqForm.year), questionUrl: pyqForm.questionUrl || 'uploaded_pyq_question.pdf', solutionUrl: pyqForm.solutionUrl || 'uploaded_pyq_solution.pdf' });
-    } else if (selectedItemId) {
-      onEditPyq(selectedItemId, { ...pyqForm, year: Number(pyqForm.year) });
+    setIsSubmitting(true);
+    try {
+      let finalQUrl = pyqForm.questionUrl || 'uploaded_pyq_question.pdf';
+      let finalQSize = pyqForm.questionSize || '1.2 MB';
+      if (pyqQuestionFile) {
+        const res = await uploadFile(pyqQuestionFile, 'pyqs');
+        finalQUrl = res.url;
+        finalQSize = res.size;
+      }
+      let finalSUrl = pyqForm.solutionUrl || 'uploaded_pyq_solution.pdf';
+      let finalSSize = pyqForm.solutionSize || '2.0 MB';
+      if (pyqSolutionFile) {
+        const res = await uploadFile(pyqSolutionFile, 'pyqs');
+        finalSUrl = res.url;
+        finalSSize = res.size;
+      }
+      if (activeModal === 'add-pyq') {
+        onAddPyq({ ...pyqForm, year: Number(pyqForm.year), questionUrl: finalQUrl, solutionUrl: finalSUrl, questionSize: finalQSize, solutionSize: finalSSize });
+      } else if (selectedItemId) {
+        onEditPyq(selectedItemId, { ...pyqForm, year: Number(pyqForm.year), questionUrl: finalQUrl, solutionUrl: finalSUrl, questionSize: finalQSize, solutionSize: finalSSize });
+      }
+      closeModal();
+    } catch (err: any) {
+      console.error('Supabase Upload Error:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload (Permission Denied).';
+      else if (errMsg.includes('bucket not found') || errMsg.includes('Bucket not found')) errMsg = 'Bucket not found.';
+      else if (errMsg.includes('already exists')) errMsg = 'File already exists.';
+      else if (errMsg.includes('mime type') || errMsg.includes('content type')) errMsg = 'Invalid file type.';
+      else if (errMsg.includes('size limit') || errMsg.includes('too large')) errMsg = 'File too large.';
+      else if (errMsg.includes('JWT') || errMsg.includes('Auth')) errMsg = 'Authentication required.';
+      alert(`Upload failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
-  const handleSheetSubmit = (e: React.FormEvent) => {
+  const handleSheetSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (activeModal === 'add-sheet') {
-      onAddPracticeSheet({ ...sheetForm, fileUrl: sheetForm.fileUrl || 'uploaded_practice_sheet.pdf' });
-    } else if (selectedItemId) {
-      onEditPracticeSheet(selectedItemId, sheetForm);
+    setIsSubmitting(true);
+    try {
+      let finalUrl = sheetForm.fileUrl || 'uploaded_practice_sheet.pdf';
+      let finalSize = sheetForm.fileSize || '1.5 MB';
+      if (sheetFile) {
+        const res = await uploadFile(sheetFile, 'practice-sheets');
+        finalUrl = res.url;
+        finalSize = res.size;
+      }
+      if (activeModal === 'add-sheet') {
+        onAddPracticeSheet({ ...sheetForm, fileUrl: finalUrl, fileSize: finalSize });
+      } else if (selectedItemId) {
+        onEditPracticeSheet(selectedItemId, { ...sheetForm, fileUrl: finalUrl, fileSize: finalSize });
+      }
+      closeModal();
+    } catch (err: any) {
+      console.error('Supabase Upload Error:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload (Permission Denied).';
+      else if (errMsg.includes('bucket not found') || errMsg.includes('Bucket not found')) errMsg = 'Bucket not found.';
+      else if (errMsg.includes('already exists')) errMsg = 'File already exists.';
+      else if (errMsg.includes('mime type') || errMsg.includes('content type')) errMsg = 'Invalid file type.';
+      else if (errMsg.includes('size limit') || errMsg.includes('too large')) errMsg = 'File too large.';
+      else if (errMsg.includes('JWT') || errMsg.includes('Auth')) errMsg = 'Authentication required.';
+      alert(`Upload failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
     }
-    closeModal();
   };
   const handleAnnouncementSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -1320,12 +1412,16 @@ export default function ProfessorDashboard({
             <Field label="Short description">
               <textarea className={INPUT} required rows={3} value={noteForm.description} onChange={(e) => setNoteForm({ ...noteForm, description: e.target.value })} placeholder="A breakdown of electric fluxes and Gaussian integrations…" />
             </Field>
-            <Field label="PDF file name">
-              <input className={INPUT} value={noteForm.fileUrl} onChange={(e) => setNoteForm({ ...noteForm, fileUrl: e.target.value })} placeholder="gauss_notes_final.pdf" />
+            <Field label="PDF Document">
+              <FileUpload 
+                value={noteFile || noteForm.fileUrl} 
+                onFileSelect={(f) => setNoteFile(f)} 
+                placeholder="Upload note PDF" 
+              />
             </Field>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" className={GHOST_BTN} onClick={closeModal}>Cancel</button>
-              <button type="submit" className={PRIMARY_BTN}>{activeModal === 'add-note' ? 'Add note' : 'Save changes'}</button>
+              <button type="button" className={GHOST_BTN} onClick={closeModal} disabled={isSubmitting}>Cancel</button>
+              <button type="submit" className={PRIMARY_BTN} disabled={isSubmitting}>{isSubmitting ? 'Uploading...' : (activeModal === 'add-note' ? 'Add note' : 'Save changes')}</button>
             </div>
           </form>
         </Modal>
@@ -1406,15 +1502,23 @@ export default function ProfessorDashboard({
             </Field>
             <div className="grid grid-cols-2 gap-3">
               <Field label="Question PDF">
-                <input className={INPUT} value={pyqForm.questionUrl} onChange={(e) => setPyqForm({ ...pyqForm, questionUrl: e.target.value })} placeholder="pyq_questions_2024.pdf" />
+                <FileUpload 
+                  value={pyqQuestionFile || pyqForm.questionUrl} 
+                  onFileSelect={(f) => setPyqQuestionFile(f)} 
+                  placeholder="Upload question PDF" 
+                />
               </Field>
               <Field label="Solution PDF">
-                <input className={INPUT} value={pyqForm.solutionUrl} onChange={(e) => setPyqForm({ ...pyqForm, solutionUrl: e.target.value })} placeholder="pyq_solutions_2024.pdf" />
+                <FileUpload 
+                  value={pyqSolutionFile || pyqForm.solutionUrl} 
+                  onFileSelect={(f) => setPyqSolutionFile(f)} 
+                  placeholder="Upload solution PDF" 
+                />
               </Field>
             </div>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" className={GHOST_BTN} onClick={closeModal}>Cancel</button>
-              <button type="submit" className={PRIMARY_BTN}>{activeModal === 'add-pyq' ? 'Publish PYQ' : 'Save changes'}</button>
+              <button type="button" className={GHOST_BTN} onClick={closeModal} disabled={isSubmitting}>Cancel</button>
+              <button type="submit" className={PRIMARY_BTN} disabled={isSubmitting}>{isSubmitting ? 'Uploading...' : (activeModal === 'add-pyq' ? 'Publish PYQ' : 'Save changes')}</button>
             </div>
           </form>
         </Modal>
@@ -1444,12 +1548,16 @@ export default function ProfessorDashboard({
             <Field label="Description">
               <textarea className={INPUT} required rows={3} value={sheetForm.description} onChange={(e) => setSheetForm({ ...sheetForm, description: e.target.value })} placeholder="45 targeted MCQs with dielectric-insertion questions…" />
             </Field>
-            <Field label="PDF file name">
-              <input className={INPUT} value={sheetForm.fileUrl} onChange={(e) => setSheetForm({ ...sheetForm, fileUrl: e.target.value })} placeholder="practice_sheet_dynamics.pdf" />
+            <Field label="Practice Sheet PDF">
+              <FileUpload 
+                value={sheetFile || sheetForm.fileUrl} 
+                onFileSelect={(f) => setSheetFile(f)} 
+                placeholder="Upload practice sheet PDF" 
+              />
             </Field>
             <div className="flex justify-end gap-2 pt-2">
-              <button type="button" className={GHOST_BTN} onClick={closeModal}>Cancel</button>
-              <button type="submit" className={PRIMARY_BTN}>{activeModal === 'add-sheet' ? 'Upload sheet' : 'Save changes'}</button>
+              <button type="button" className={GHOST_BTN} onClick={closeModal} disabled={isSubmitting}>Cancel</button>
+              <button type="submit" className={PRIMARY_BTN} disabled={isSubmitting}>{isSubmitting ? 'Uploading...' : (activeModal === 'add-sheet' ? 'Upload sheet' : 'Save changes')}</button>
             </div>
           </form>
         </Modal>

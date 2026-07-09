@@ -23,7 +23,7 @@ import {
   User,
   Filter
 } from 'lucide-react';
-import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ } from '../types';
+import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ, Announcement } from '../../types';
 
 interface ProfessorDashboardProps {
   exams: ExamInfo[];

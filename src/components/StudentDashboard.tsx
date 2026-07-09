@@ -28,6 +28,8 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ } from '../types';
+import { FileUpload } from './FileUpload';
+import { uploadDoubtAttachment } from '../services/doubtsService';
 
 interface StudentDashboardProps {
   exams: ExamInfo[];
@@ -64,8 +66,7 @@ export default function StudentDashboard({
 
   // Interactive Overlays
   const [activeVideoModal, setActiveVideoModal] = useState<Video | null>(null);
-  const [activePdfViewer, setActivePdfViewer] = useState<{ title: string; fileUrl: string } | null>(null);
-  const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
+    const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
 
   // Doubt Form State
   const [doubtForm, setDoubtForm] = useState({
@@ -73,9 +74,10 @@ export default function StudentDashboard({
     email: '',
     subject: '',
     question: '',
-    attachmentName: ''
   });
+  const [doubtFile, setDoubtFile] = useState<File | null>(null);
   const [doubtSubmitted, setDoubtSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Dynamic Lucide helper mapping for Exam Icons
   const renderExamIcon = (iconName: string) => {
@@ -168,46 +170,63 @@ export default function StudentDashboard({
   }, [practiceSheets, selectedExam, searchQuery, selectedSubject]);
 
   // Handle Doubt Submission
-  const handleDoubtSubmit = (e: React.FormEvent) => {
+  const handleDoubtSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!doubtForm.name || !doubtForm.email || !doubtForm.question) return;
 
-    onAddDoubt({
-      name: doubtForm.name,
-      email: doubtForm.email,
-      subject: doubtForm.subject || `${currentExamInfo?.title || ''} - General Query`,
-      question: doubtForm.question,
-      attachmentName: doubtForm.attachmentName || undefined
-    });
+    setIsSubmitting(true);
+    try {
+      let finalAttachmentName = undefined;
+      let finalAttachmentUrl = undefined;
+      
+      if (doubtFile) {
+        const res = await uploadDoubtAttachment(doubtFile);
+        finalAttachmentName = res.name;
+        finalAttachmentUrl = res.url;
+      }
 
-    setDoubtSubmitted(true);
-    setDoubtForm({
-      name: '',
-      email: '',
-      subject: '',
-      question: '',
-      attachmentName: ''
-    });
+      onAddDoubt({
+        name: doubtForm.name,
+        email: doubtForm.email,
+        subject: doubtForm.subject || `${currentExamInfo?.title || ''} - General Query`,
+        question: doubtForm.question,
+        attachmentName: finalAttachmentName,
+        attachmentUrl: finalAttachmentUrl,
+      });
 
-    setTimeout(() => {
-      setDoubtSubmitted(false);
-    }, 6000);
+      setDoubtSubmitted(true);
+      setDoubtForm({
+        name: '',
+        email: '',
+        subject: '',
+        question: '',
+      });
+      setDoubtFile(null);
+
+      setTimeout(() => {
+        setDoubtSubmitted(false);
+      }, 6000);
+    } catch (err: any) {
+      console.error('Error uploading doubt attachment:', err);
+      let errMsg = err.message || 'Unknown error occurred.';
+      if (errMsg.includes('row-level security policy') || errMsg.includes('RLS')) errMsg = 'Storage policy rejected upload.';
+      alert(`Doubt submission failed: ${errMsg}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const openFile = (fileUrl: string) => {
+    if (fileUrl && fileUrl.startsWith('http')) {
+      window.open(fileUrl, '_blank', 'noopener,noreferrer');
+    } else {
+      alert("File not found or invalid URL.");
+    }
   };
 
   const handleDownloadFile = (noteId: string, fileName: string) => {
     onIncrementNoteDownload(noteId);
-    triggerDownload(fileName);
-  };
-
-  const triggerDownload = (fileName: string) => {
-    // Elegant simulation of a local PDF download
-    const element = document.createElement("a");
-    const file = new Blob([`Simulated academic repository download for: ${fileName}.`], {type: 'text/plain'});
-    element.href = URL.createObjectURL(file);
-    element.download = fileName;
-    document.body.appendChild(element);
-    element.click();
-    document.body.removeChild(element);
+    openFile(fileName);
   };
 
   return (
@@ -386,18 +405,7 @@ export default function StudentDashboard({
                 </p>
               </div>
 
-              {/* Category 6: Additional Resources */}
-              <div
-                onClick={() => setActiveCategory('resources')}
-                className="group cursor-pointer rounded-[12px] border-2 border-[#E5E5EA] bg-[#FFFFFF] p-6 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] transition-all hover:border-blue-200 hover:-translate-y-0.5"
-                id="cat-card-resources"
-              >
-                <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/File%20Folder.png" alt="Resources" className="h-10 w-10 drop-shadow-md" />
-                <h3 className="mt-4 text-[1rem] font-semibold text-[#1D1D1F]">Additional Resources</h3>
-                <p className="mt-1.5 text-[0.9rem] font-light text-[#6E6E73] leading-relaxed">
-                  Comprehensive syllabus blueprints, mathematical reference constants, and formulas.
-                </p>
-              </div>
+              
 
             </div>
           </div>
@@ -477,7 +485,7 @@ export default function StudentDashboard({
                             <span className="font-mono text-[10px] text-[#86868B]">{note.fileSize} • {note.downloadCount || 0} views</span>
                             <div className="flex space-x-2">
                               <button
-                                onClick={() => setActivePdfViewer({ title: note.title, fileUrl: note.fileUrl })}
+                                onClick={() => openFile(note.fileUrl )}
                                 className="inline-flex items-center space-x-1 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-[#86868B] hover:bg-[#F5F5F7]:bg-slate-800"
                               >
                                 <Eye size={12} />
@@ -679,13 +687,13 @@ export default function StudentDashboard({
                           <td className="px-6 py-4 text-right">
                             <div className="inline-flex space-x-1.5 justify-end">
                               <button
-                                onClick={() => setActivePdfViewer({ title: `PYQ Question - ${pyq.chapter} (${pyq.year})`, fileUrl: pyq.questionUrl })}
+                                onClick={() => openFile(pyq.questionUrl )}
                                 className="p-1.5 text-[#86868B] hover:text-blue-500"
                               >
                                 <Eye size={14} />
                               </button>
                               <button
-                                onClick={() => triggerDownload(pyq.questionUrl)}
+                                onClick={() => openFile(pyq.questionUrl)}
                                 className="inline-flex items-center space-x-1 rounded bg-blue-50 text-blue-600 px-2 py-1 font-semibold text-[10px] hover:bg-blue-100"
                               >
                                 <Download size={10} />
@@ -696,13 +704,13 @@ export default function StudentDashboard({
                           <td className="px-6 py-4 text-right">
                             <div className="inline-flex space-x-1.5 justify-end">
                               <button
-                                onClick={() => setActivePdfViewer({ title: `PYQ Solution - ${pyq.chapter} (${pyq.year})`, fileUrl: pyq.solutionUrl })}
+                                onClick={() => openFile(pyq.solutionUrl )}
                                 className="p-1.5 text-[#86868B] hover:text-emerald-500"
                               >
                                 <Eye size={14} />
                               </button>
                               <button
-                                onClick={() => triggerDownload(pyq.solutionUrl)}
+                                onClick={() => openFile(pyq.solutionUrl)}
                                 className="inline-flex items-center space-x-1 rounded bg-emerald-50 text-emerald-600 px-2 py-1 font-semibold text-[10px] hover:bg-emerald-100"
                               >
                                 <Download size={10} />
@@ -782,14 +790,14 @@ export default function StudentDashboard({
                       <span className="font-mono text-[10px] text-[#86868B]">File size: {sheet.fileSize}</span>
                       <div className="flex space-x-2">
                         <button
-                          onClick={() => setActivePdfViewer({ title: sheet.title, fileUrl: sheet.fileUrl })}
+                          onClick={() => openFile(sheet.fileUrl )}
                           className="inline-flex items-center space-x-1 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-[#86868B] hover:bg-[#F5F5F7]:bg-slate-800"
                         >
                           <Eye size={12} />
                           <span>View</span>
                         </button>
                         <button
-                          onClick={() => triggerDownload(sheet.fileUrl)}
+                          onClick={() => openFile(sheet.fileUrl)}
                           className="inline-flex items-center space-x-1 rounded-lg bg-blue-500 text-white px-2.5 py-1.5 text-[11px] font-semibold hover:bg-blue-600"
                         >
                           <Download size={12} />
@@ -897,35 +905,26 @@ export default function StudentDashboard({
                     </div>
 
                     <div>
-                      <label className="block text-[10px] font-bold text-[#86868B] uppercase tracking-wider">
+                      <label className="block text-[10px] font-bold text-[#86868B] uppercase tracking-wider mb-2">
                         Attachment (Optional)
                       </label>
-                      <div className="mt-1.5 flex items-center space-x-3">
-                        <input
-                          type="text"
-                          readOnly
-                          value={doubtForm.attachmentName}
-                          placeholder="No file selected (Optional)"
-                          className="block w-full rounded-[12px] border-2 border-[#E5E5EA] bg-[#F5F5F7]/20 px-3 py-2 text-xs text-[#86868B]"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setDoubtForm({ ...doubtForm, attachmentName: 'doubt-concept-diagram.png' })}
-                          className="flex-shrink-0 rounded-[12px] bg-[#F5F5F7] border-2 border-[#E5E5EA] px-3 py-2 text-[11px] font-semibold text-[#86868B] hover:bg-gray-100"
-                        >
-                          Select File
-                        </button>
-                      </div>
+                      <FileUpload
+                        value={doubtFile}
+                        onFileSelect={(f) => setDoubtFile(f)}
+                        placeholder="Upload screenshot or PDF"
+                        accept="image/*,.pdf"
+                      />
                     </div>
 
                     <div className="pt-2">
                       <button
                         type="submit"
-                        className="w-full inline-flex items-center justify-center space-x-1.5 rounded-[12px] bg-blue-600 py-2.5 text-xs font-semibold text-white hover:bg-blue-700"
+                        disabled={isSubmitting}
+                        className="w-full inline-flex items-center justify-center space-x-1.5 rounded-[12px] bg-blue-600 py-2.5 text-xs font-semibold text-white hover:bg-blue-700 disabled:opacity-70"
                         id="student-doubt-submit-btn"
                       >
                         <Send size={12} />
-                        <span>Submit Academic Doubt</span>
+                        <span>{isSubmitting ? 'Submitting...' : 'Submit Academic Doubt'}</span>
                       </button>
                     </div>
 
@@ -997,7 +996,7 @@ export default function StudentDashboard({
                 </p>
                 <div className="mt-5 flex justify-end">
                   <button
-                    onClick={() => triggerDownload('syllabus-blueprints.pdf')}
+                    onClick={() => openFile('syllabus-blueprints.pdf')}
                     className="inline-flex items-center space-x-1 rounded-lg bg-blue-50 px-2.5 py-1.5 font-semibold text-[11px] text-blue-600 hover:bg-blue-100"
                   >
                     <Download size={11} />
@@ -1016,7 +1015,7 @@ export default function StudentDashboard({
                 </p>
                 <div className="mt-5 flex justify-end">
                   <button
-                    onClick={() => triggerDownload('formula-pocket-sheets.pdf')}
+                    onClick={() => openFile('formula-pocket-sheets.pdf')}
                     className="inline-flex items-center space-x-1 rounded-lg bg-indigo-50 px-2.5 py-1.5 font-semibold text-[11px] text-indigo-600 hover:bg-indigo-100"
                   >
                     <Download size={11} />
@@ -1081,74 +1080,7 @@ export default function StudentDashboard({
         </div>
       )}
 
-      {/* ================= PDF Simulation Reader Overlay ================= */}
-      {activePdfViewer && (
-        <div className="fixed inset-0 z-55 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="relative w-full max-w-3xl overflow-hidden rounded-[12px] bg-[#FFFFFF] shadow-2xl border-2 border-[#E5E5EA]">
-            <div className="flex items-center justify-between border-b-2 border-[#E5E5EA] px-5 py-4">
-              <div>
-                <span className="font-mono text-[9px] uppercase font-bold text-blue-600">Interactive Document Viewer</span>
-                <h3 className="text-sm font-bold text-[#1D1D1F]">{activePdfViewer.title}</h3>
-              </div>
-              <button
-                onClick={() => setActivePdfViewer(null)}
-                className="rounded-lg p-1.5 text-[#86868B] hover:bg-gray-100:bg-slate-800"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            
-            {/* PDF simulation sheet */}
-            <div className="max-h-[60vh] overflow-y-auto p-8 bg-[#F5F5F7] font-sans text-[#1D1D1F]">
-              <div className="mx-auto max-w-2xl bg-[#FFFFFF] p-10 shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)] border-2 border-[#E5E5EA] rounded">
-                {/* Simulated Header */}
-                <div className="border-b-2 border-[#E5E5EA] pb-4 mb-6 text-center">
-                  <h4 className="font-bold text-base text-[#1D1D1F] uppercase tracking-wider">Prof. Ajesh Joe Academic Repository</h4>
-                  <p className="font-mono text-[9px] text-[#86868B] mt-1">MODULE: {activePdfViewer.fileUrl}</p>
-                </div>
 
-                {/* Simulated Content */}
-                <div className="space-y-4 text-xs leading-relaxed">
-                  <p className="font-semibold text-sm text-[#1D1D1F]">I. FOUNDATIONAL THEOREMS & BOUNDARIES</p>
-                  <p>
-                    Let S be a piecewise smooth, closed Gaussian surface enclosing a total algebraic charge Q_encl. By establishing the divergence properties of the electrostatic displacement vector D or field vector E, we state the global integral theorem:
-                  </p>
-                  <div className="my-4 bg-[#F5F5F7] p-3 text-center font-mono text-[11px] rounded border-2 border-[#E5E5EA]">
-                    ∮_S E • dA = Q_encl / ε_0
-                  </div>
-                  <p className="font-semibold text-sm text-[#1D1D1F]">II. COMPREHENSIVE PROOFS & INTEGRATIONS</p>
-                  <p>
-                    For a spherically symmetric charge distribution of radial density ρ(r), we construct a concentric Gaussian sphere of radius r. Integrating the isotropic flux yields:
-                  </p>
-                  <ul className="list-disc list-inside space-y-1.5 text-[#86868B]">
-                    <li>For r &lt; R: E(r) = Q(r) / (4πε_0 r²) where Q(r) is the integral of 4π(r')² ρ(r') dr'</li>
-                    <li>For r ≥ R: The distribution behaves strictly as a point charge concentrated at the geographic center.</li>
-                  </ul>
-                  <p className="font-semibold text-sm text-[#1D1D1F]">III. KEY COMPETITIVE BLOCKERS & DERIVATIONS</p>
-                  <p>
-                    Under examinations, problems often couple these radial integrations with dielectric boundary transitions. Recall that the tangential component of the electric field vector is always continuous across interfaces, whereas the normal component undergoes a discontinuity corresponding to the free surface charge density.
-                  </p>
-                </div>
-
-                <div className="mt-8 border-t-2 border-[#E5E5EA] pt-6 text-center text-[10px] font-mono text-[#86868B]">
-                  --- End of Document Preview ---
-                </div>
-              </div>
-            </div>
-
-            <div className="p-4 border-t-2 border-[#E5E5EA] bg-[#F5F5F7] flex justify-between items-center">
-              <span className="text-[10px] text-[#86868B]">Secure Client-Side Sandbox Preview</span>
-              <button
-                onClick={() => triggerDownload(activePdfViewer.fileUrl)}
-                className="inline-flex items-center space-x-1.5 rounded-lg bg-blue-500 text-white px-3.5 py-1.5 text-xs font-semibold hover:bg-blue-600"
-              >
-                <Download size={12} />
-                <span>Download Full PDF</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
     </div>
   );
