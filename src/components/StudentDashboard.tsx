@@ -32,6 +32,11 @@ import {
   CheckCircle2
 } from 'lucide-react';
 import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ, Announcement, AnnouncementCategory } from '../types';
+import { VideoWatchModal } from './VideoWatchModal';
+import { PDFViewer } from './pdf/PDFViewer';
+import { FileUpload } from './FileUpload';
+import { uploadDoubtAttachment } from '../services/doubtsService';
+import { extractYouTubeId, getYoutubeThumbnail } from '../lib/youtube';
 
 /* ------------------------------------------------------------------ *
  * Design tokens — shared "Professor's Study" system (see DESIGN_SYSTEM.md)
@@ -128,10 +133,11 @@ export default function StudentDashboard({
     name: '',
     email: '',
     subject: '',
-    question: '',
-    attachmentName: ''
+    question: ''
   });
+  const [doubtFile, setDoubtFile] = useState<File | null>(null);
   const [doubtSubmitted, setDoubtSubmitted] = useState(false);
+  const [doubtSubmitting, setDoubtSubmitting] = useState(false);
 
   // Dynamic Lucide helper mapping for Exam Icons (all rendered in maroon on a tinted tile)
   const renderExamIcon = (iconName?: string) => {
@@ -223,22 +229,40 @@ export default function StudentDashboard({
     });
   }, [practiceSheets, selectedExam, searchQuery, selectedSubject]);
 
-  // Handle Doubt Submission
-  const handleDoubtSubmit = (e: React.FormEvent) => {
+  // Handle Doubt Submission — uploads attachment to Supabase (main's flow), then submits
+  const handleDoubtSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!doubtForm.name || !doubtForm.email || !doubtForm.question) return;
+    if (!doubtForm.name || !doubtForm.email || !doubtForm.question || doubtSubmitting) return;
 
-    onAddDoubt({
-      name: doubtForm.name,
-      email: doubtForm.email,
-      subject: doubtForm.subject || `${currentExamInfo?.title || ''} - General Query`,
-      question: doubtForm.question,
-      attachmentName: doubtForm.attachmentName || undefined
-    });
+    setDoubtSubmitting(true);
+    try {
+      let attachmentUrl: string | undefined;
+      let attachmentName: string | undefined;
+      if (doubtFile) {
+        const uploaded = await uploadDoubtAttachment(doubtFile);
+        attachmentUrl = uploaded.url;
+        attachmentName = uploaded.name;
+      }
 
-    setDoubtSubmitted(true);
-    setDoubtForm({ name: '', email: '', subject: '', question: '', attachmentName: '' });
-    setTimeout(() => setDoubtSubmitted(false), 6000);
+      onAddDoubt({
+        name: doubtForm.name,
+        email: doubtForm.email,
+        subject: doubtForm.subject || `${currentExamInfo?.title || ''} - General Query`,
+        question: doubtForm.question,
+        attachmentName,
+        attachmentUrl
+      });
+
+      setDoubtSubmitted(true);
+      setDoubtForm({ name: '', email: '', subject: '', question: '' });
+      setDoubtFile(null);
+      setTimeout(() => setDoubtSubmitted(false), 6000);
+    } catch (err) {
+      console.error('[StudentDashboard] doubt submit failed:', err);
+      alert('Could not submit your doubt right now. Please try again.');
+    } finally {
+      setDoubtSubmitting(false);
+    }
   };
 
   const handleDownloadFile = (noteId: string, fileName: string) => {
@@ -503,7 +527,7 @@ export default function StudentDashboard({
                   <div key={video.id} className={`${CARD} group flex flex-col overflow-hidden`}>
                     <div className="relative aspect-video w-full overflow-hidden bg-[#EFE7D8]">
                       <img
-                        src={video.thumbnail}
+                        src={video.thumbnail || getYoutubeThumbnail(extractYouTubeId(video.youtubeLink), 'hqdefault')}
                         alt={video.title}
                         referrerPolicy="no-referrer"
                         className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -705,16 +729,16 @@ export default function StudentDashboard({
 
                     <div>
                       <span className={FIELD_LABEL}>Attachment (optional)</span>
-                      <div className="flex items-center gap-2.5">
-                        <input type="text" readOnly value={doubtForm.attachmentName} placeholder="No file selected" className={`${INPUT} text-[#8A7E6F]`} />
-                        <button type="button" onClick={() => setDoubtForm({ ...doubtForm, attachmentName: 'doubt-concept-diagram.png' })} className={`${GHOST_BTN} shrink-0`}>
-                          <Paperclip size={13} /> Select
-                        </button>
-                      </div>
+                      <FileUpload
+                        value={doubtFile}
+                        onFileSelect={setDoubtFile}
+                        accept="image/*,.pdf"
+                        placeholder="Click or drag an image / PDF to attach"
+                      />
                     </div>
 
-                    <button type="submit" className={`${PRIMARY_BTN} w-full`} id="student-doubt-submit-btn">
-                      <Send size={13} /> Submit academic doubt
+                    <button type="submit" disabled={doubtSubmitting} className={`${PRIMARY_BTN} w-full`} id="student-doubt-submit-btn">
+                      <Send size={13} /> {doubtSubmitting ? 'Submitting…' : 'Submit academic doubt'}
                     </button>
                   </form>
                 </div>
@@ -785,93 +809,22 @@ export default function StudentDashboard({
 
       </div>
 
-      {/* ================= WATCH VIDEO MODAL ================= */}
+      {/* ================= WATCH VIDEO MODAL (real, from main) ================= */}
       {activeVideoModal && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <button aria-label="Close" onClick={() => setActiveVideoModal(null)} className="absolute inset-0 cursor-default bg-[#22201F]/40 backdrop-blur-[2px]" />
-          <div className="relative w-full max-w-2xl overflow-hidden rounded-2xl border border-[#EAE1D2] bg-white shadow-2xl">
-            <div className="flex items-start justify-between gap-4 border-b border-[#EFE7D8] px-5 py-4">
-              <div>
-                <span className={MICRO}>{activeVideoModal.subject} · {activeVideoModal.chapter}</span>
-                <h3 className="dash-serif mt-0.5 text-lg font-semibold text-[#22201F]">{activeVideoModal.title}</h3>
-              </div>
-              <button onClick={() => setActiveVideoModal(null)} className="rounded-lg p-1.5 text-[#8A7E6F] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"><X size={18} /></button>
-            </div>
-
-            <div className="flex aspect-video w-full flex-col items-center justify-center bg-[#22201F] p-4 text-center">
-              <div className="flex h-14 w-14 items-center justify-center rounded-full bg-[#D9C2A2]/15 text-[#D9C2A2]">
-                <Play size={24} className="ml-0.5" fill="currentColor" />
-              </div>
-              <p className="mt-4 text-sm font-semibold text-white">Interactive lecture player</p>
-              <p className="dash-mono mt-1 max-w-sm text-[10px] text-white/50">[ simulating stream from {activeVideoModal.youtubeLink} ]</p>
-              <button onClick={() => window.open(activeVideoModal.youtubeLink, '_blank')} className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white transition-colors hover:bg-white/20">
-                <ExternalLink size={12} /> Open YouTube link
-              </button>
-            </div>
-
-            <div className="border-t border-[#EFE7D8] p-5">
-              <p className="text-sm leading-relaxed text-[#5A534B]">{activeVideoModal.description}</p>
-              <div className="dash-mono mt-4 flex items-center justify-between text-[11px] text-[#8A7E6F]">
-                <span>Duration · {activeVideoModal.duration}</span>
-                <span>Instructor · Prof. Ajesh Joe</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        <VideoWatchModal
+          video={activeVideoModal}
+          playlist={filteredVideos}
+          onClose={() => setActiveVideoModal(null)}
+          onSelectVideo={(v) => setActiveVideoModal(v)}
+        />
       )}
 
-      {/* ================= PDF SIMULATION READER ================= */}
+      {/* ================= PDF VIEWER (real, from main) ================= */}
       {activePdfViewer && (
-        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
-          <button aria-label="Close" onClick={() => setActivePdfViewer(null)} className="absolute inset-0 cursor-default bg-[#22201F]/40 backdrop-blur-[2px]" />
-          <div className="relative w-full max-w-3xl overflow-hidden rounded-2xl border border-[#EAE1D2] bg-white shadow-2xl">
-            <div className="flex items-start justify-between gap-4 border-b border-[#EFE7D8] px-5 py-4">
-              <div>
-                <span className={MICRO}>Document viewer</span>
-                <h3 className="dash-serif mt-0.5 text-lg font-semibold text-[#22201F]">{activePdfViewer.title}</h3>
-              </div>
-              <button onClick={() => setActivePdfViewer(null)} className="rounded-lg p-1.5 text-[#8A7E6F] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]"><X size={18} /></button>
-            </div>
-
-            <div className="max-h-[60vh] overflow-y-auto bg-[#F6F2EA] p-6 sm:p-8">
-              <div className="mx-auto max-w-2xl rounded-xl border border-[#EAE1D2] bg-white p-8 sm:p-10">
-                <div className="mb-6 border-b border-[#EAE1D2] pb-4 text-center">
-                  <h4 className="dash-serif text-base font-semibold text-[#22201F]">Prof. Ajesh Joe · Academic Repository</h4>
-                  <p className="dash-mono mt-1 text-[10px] text-[#8A7E6F]">MODULE · {activePdfViewer.fileUrl}</p>
-                </div>
-
-                <div className="space-y-4 text-xs leading-relaxed text-[#5A534B]">
-                  <p className="text-sm font-bold text-[#22201F]">I. Foundational theorems & boundaries</p>
-                  <p>
-                    Let S be a piecewise-smooth, closed Gaussian surface enclosing a total algebraic charge Q_encl. By establishing the divergence properties of the electrostatic displacement vector D or field vector E, we state the global integral theorem:
-                  </p>
-                  <div className="dash-mono my-4 rounded-lg border border-[#EAE1D2] bg-[#FBF7F0] p-3 text-center text-[13px] text-[#4A0E1B]">
-                    ∮_S E · dA = Q_encl / ε_0
-                  </div>
-                  <p className="text-sm font-bold text-[#22201F]">II. Comprehensive proofs & integrations</p>
-                  <p>
-                    For a spherically symmetric charge distribution of radial density ρ(r), we construct a concentric Gaussian sphere of radius r. Integrating the isotropic flux yields:
-                  </p>
-                  <ul className="list-inside list-disc space-y-1.5">
-                    <li>For r &lt; R: E(r) = Q(r) / (4πε_0 r²), where Q(r) is the integral of 4π(r&#39;)² ρ(r&#39;) dr&#39;</li>
-                    <li>For r ≥ R: the distribution behaves strictly as a point charge concentrated at the centre.</li>
-                  </ul>
-                  <p className="text-sm font-bold text-[#22201F]">III. Key competitive blockers & derivations</p>
-                  <p>
-                    Under examinations, problems often couple these radial integrations with dielectric boundary transitions. Recall that the tangential component of the electric field is always continuous across interfaces, whereas the normal component undergoes a discontinuity corresponding to the free surface charge density.
-                  </p>
-                </div>
-
-                <div className="dash-mono mt-8 border-t border-[#EAE1D2] pt-6 text-center text-[10px] text-[#8A7E6F]">— end of document preview —</div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-between border-t border-[#EFE7D8] bg-[#FBF7F0] px-5 py-3.5">
-              <span className="text-[11px] text-[#8A7E6F]">Secure client-side sandbox preview</span>
-              <button onClick={() => triggerDownload(activePdfViewer.fileUrl)} className={PRIMARY_BTN}><Download size={13} /> Download full PDF</button>
-            </div>
-          </div>
-        </div>
+        <PDFViewer
+          docInfo={{ title: activePdfViewer.title, fileUrl: activePdfViewer.fileUrl, isProfessor: false }}
+          onClose={() => setActivePdfViewer(null)}
+        />
       )}
 
     </div>
