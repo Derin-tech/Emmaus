@@ -28,15 +28,15 @@ export default function ContactPage() {
   };
 
   return (
-    <section className="bg-gray-50/50 py-16 dark:bg-slate-900/50 md:py-20">
+    <section className="bg-[#111112] py-16 md:py-20 text-white">
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
         
         {/* Header Title */}
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
+          <h2 className="text-3xl font-display font-extrabold tracking-tight text-white">
             Contact Office
           </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-gray-500 dark:text-slate-400">
+          <p className="mx-auto mt-3 max-w-md text-sm text-gray-400">
             Reach out to the department office for academic questions, curriculum queries, or technical issues with the PDF downloads.
           </p>
         </div>
@@ -45,65 +45,65 @@ export default function ContactPage() {
           
           {/* Information Block */}
           <div className="space-y-6 md:col-span-5">
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
+            <h3 className="text-lg font-display font-bold text-white">
               Faculty Directory
             </h3>
 
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="border-2 border-gray-800 bg-[#1c1c1e] p-6 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]">
               <div className="space-y-5">
                 
                 <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-blue-500">
+                  <div className="mt-0.5 text-[#F1E194]">
                     <Building size={16} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-gray-800 dark:text-slate-200">Department</h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
-                      Department of Physics & Applied Mathematics
+                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">Department</h4>
+                    <p className="text-xs font-bold text-white mt-1">
+                      Department of Chemistry
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-slate-500">
+                    <p className="text-[10px] text-gray-500 mt-0.5">
                       Science Block II, Main Campus
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-blue-500">
+                  <div className="mt-0.5 text-[#F1E194]">
                     <MapPin size={16} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-gray-800 dark:text-slate-200">Office Location</h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">Office Location</h4>
+                    <p className="text-xs font-bold text-white mt-1">
                       Room 402-B, 4th Floor
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-blue-500">
+                  <div className="mt-0.5 text-[#F1E194]">
                     <Mail size={16} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-gray-800 dark:text-slate-200">Academic Email</h4>
-                    <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5 select-all">
+                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">Academic Email</h4>
+                    <p className="text-xs font-bold text-white mt-1 select-all">
                       ajesh.joe@university.edu
                     </p>
-                    <p className="text-[10px] text-gray-400 dark:text-slate-500">
+                    <p className="text-[10px] text-gray-500 mt-0.5">
                       Replies are sent during standard academic days.
                     </p>
                   </div>
                 </div>
 
                 <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-blue-500">
+                  <div className="mt-0.5 text-[#F1E194]">
                     <Clock size={16} />
                   </div>
                   <div>
-                    <h4 className="text-xs font-bold text-gray-800 dark:text-slate-200">Office Hours</h4>
-                    <p className="text-xs text-gray-500 dark:text-slate-400 mt-0.5">
+                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">Office Hours</h4>
+                    <p className="text-xs font-bold text-white mt-1">
                       Mondays & Wednesdays: 2:00 PM – 4:00 PM
                     </p>
-                    <p className="text-xs text-gray-500 dark:text-slate-400">
+                    <p className="text-xs text-gray-400 mt-0.5">
                       Fridays: 10:00 AM – 12:00 PM (By appointment)
                     </p>
                   </div>
@@ -113,24 +113,24 @@ export default function ContactPage() {
             </div>
 
             {/* Note about commercial correspondence */}
-            <div className="rounded-xl bg-blue-50/50 p-4 border border-blue-100/50 dark:bg-blue-950/20 dark:border-blue-900/30">
-              <p className="text-[11px] leading-relaxed text-blue-800 dark:text-blue-300">
-                <strong>Please Note:</strong> This office does not accept commercial marketing pitches, EdTech partnership proposals, or coaching institute sponsorships. All educational content here is strictly non-commercial.
+            <div className="border-l-4 border-[#5B0E14] bg-[#1c1c1e] p-4 shadow-[inset_0_-2px_0_rgba(0,0,0,0.3)]">
+              <p className="text-[11px] leading-relaxed text-gray-400">
+                <strong className="text-white">Please Note:</strong> This office does not accept commercial marketing pitches, EdTech partnership proposals, or coaching institute sponsorships. All educational content here is strictly non-commercial.
               </p>
             </div>
           </div>
 
           {/* Contact Form Block */}
           <div className="md:col-span-7">
-            <div className="rounded-2xl border border-gray-100 bg-white p-8 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="border-2 border-gray-800 bg-[#1c1c1e] p-8 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]">
               
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-6">
+              <h3 className="text-lg font-display font-bold text-white mb-6">
                 Send a Message
               </h3>
 
               {submitted && (
-                <div className="mb-6 flex items-center space-x-2.5 rounded-xl bg-green-50 px-4 py-3 text-xs text-green-800 border border-green-150 dark:bg-green-950/50 dark:text-green-300 dark:border-green-900/40">
-                  <CheckCircle size={16} className="text-green-600 dark:text-green-400" />
+                <div className="mb-6 flex items-center space-x-2.5 bg-[#5B0E14] px-4 py-3 text-xs text-white border-2 border-red-950">
+                  <CheckCircle size={16} className="text-[#F1E194]" />
                   <span>Your message has been sent successfully. We will respond within 48 business hours.</span>
                 </div>
               )}
@@ -138,7 +138,7 @@ export default function ContactPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 
                 <div>
-                  <label htmlFor="name" className="block text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+                  <label htmlFor="name" className="block text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">
                     Full Name
                   </label>
                   <input
@@ -147,13 +147,13 @@ export default function ContactPage() {
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3.5 py-2.5 text-sm transition focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-950/30 dark:focus:border-blue-400 dark:focus:bg-slate-950"
+                    className="mt-2 block w-full border-2 border-gray-800 bg-[#111112] px-3.5 py-3 text-sm text-white transition focus:border-gray-500 focus:outline-none"
                     placeholder="e.g. Rahul Gupta"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="email" className="block text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+                  <label htmlFor="email" className="block text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">
                     Academic Email Address
                   </label>
                   <input
@@ -162,13 +162,13 @@ export default function ContactPage() {
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3.5 py-2.5 text-sm transition focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-950/30 dark:focus:border-blue-400 dark:focus:bg-slate-950"
+                    className="mt-2 block w-full border-2 border-gray-800 bg-[#111112] px-3.5 py-3 text-sm text-white transition focus:border-gray-500 focus:outline-none"
                     placeholder="e.g. rahul@student.in"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+                  <label htmlFor="subject" className="block text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">
                     Subject / Topic
                   </label>
                   <input
@@ -176,13 +176,13 @@ export default function ContactPage() {
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3.5 py-2.5 text-sm transition focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-950/30 dark:focus:border-blue-400 dark:focus:bg-slate-950"
-                    placeholder="e.g. Syllabus doubt in JEE Main Wave Optics"
+                    className="mt-2 block w-full border-2 border-gray-800 bg-[#111112] px-3.5 py-3 text-sm text-white transition focus:border-gray-500 focus:outline-none"
+                    placeholder="e.g. Syllabus doubt in JEE Main"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-xs font-semibold text-gray-600 dark:text-slate-400 uppercase tracking-wider">
+                  <label htmlFor="message" className="block text-[9px] font-black text-gray-500 uppercase tracking-[0.2em]">
                     Message
                   </label>
                   <textarea
@@ -191,15 +191,15 @@ export default function ContactPage() {
                     rows={4}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3.5 py-2.5 text-sm transition focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-950/30 dark:focus:border-blue-400 dark:focus:bg-slate-950"
+                    className="mt-2 block w-full border-2 border-gray-800 bg-[#111112] px-3.5 py-3 text-sm text-white transition focus:border-gray-500 focus:outline-none resize-none"
                     placeholder="Type your message here..."
                   />
                 </div>
 
-                <div className="pt-2">
+                <div className="pt-4">
                   <button
                     type="submit"
-                    className="w-full rounded-xl bg-gray-900 py-3 text-center text-sm font-semibold text-white transition hover:bg-gray-800 active:scale-98 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-white"
+                    className="w-full bg-[#5B0E14] py-3.5 text-center text-[10px] font-black uppercase tracking-wider text-white border-2 border-red-950 shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-1 transition-all"
                     id="contact-submit-btn"
                   >
                     Send Message

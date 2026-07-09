@@ -287,23 +287,23 @@ export default function ProfessorDashboard({
   };
 
   return (
-    <div className="min-h-[80vh] bg-gray-50/50 dark:bg-slate-900/40 transition-colors duration-300">
+    <div className="min-h-[80vh] bg-[#111112]/50  transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
         
         <div className="grid gap-8 lg:grid-cols-12">
           
           {/* ================= SIDEBAR NAVIGATION ================= */}
           <aside className="lg:col-span-3">
-            <div className="rounded-2xl border border-gray-150 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] p-5 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
               
               {/* Professor Profile Card */}
-              <div className="flex items-center space-x-3.5 pb-5 mb-5 border-b border-gray-100 dark:border-slate-800">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500 text-white font-bold text-sm">
+              <div className="flex items-center space-x-3.5 pb-5 mb-5 border-b-2 border-gray-800 ">
+                <div className="flex h-10 w-10 items-center justify-center rounded-[12px] bg-[#5B0E14] text-white font-bold text-sm">
                   AS
                 </div>
                 <div>
-                  <h3 className="text-xs font-bold text-gray-900 dark:text-white">Prof. Ajesh Joe</h3>
-                  <span className="font-mono text-[9px] uppercase text-gray-400 dark:text-slate-500">Repository Editor</span>
+                  <h3 className="text-xs font-bold text-white ">Prof. Ajesh Joe</h3>
+                  <span className="font-sans uppercase tracking-[0.2em] font-black text-[9px] uppercase text-gray-400 ">Repository Editor</span>
                 </div>
               </div>
 
@@ -322,17 +322,17 @@ export default function ProfessorDashboard({
                     <button
                       key={item.id}
                       onClick={() => setActiveTab(item.id)}
-                      className={`flex w-full items-center space-x-3 rounded-xl px-4 py-3 text-left text-xs font-bold transition-all ${
+                      className={`flex w-full items-center space-x-3 rounded-[12px] px-4 py-3 text-left text-xs font-bold transition-all ${
                         isActive 
-                          ? 'bg-blue-50 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400' 
-                          : 'text-gray-600 hover:bg-gray-50 dark:text-slate-300 dark:hover:bg-slate-800/50'
+                          ? 'bg-[#1c1c1e] text-[#F1E194]  -[#F1E194]' 
+                          : 'text-gray-400 hover:bg-[#111112]  :bg-slate-800/50'
                       }`}
                       id={`sidebar-tab-${item.id}`}
                     >
                       {item.icon}
                       <span>{item.label}</span>
                       {item.id === 'doubts' && pendingDoubtsCount > 0 && (
-                        <span className="ml-auto rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-extrabold text-red-600 dark:bg-red-950/50 dark:text-red-400">
+                        <span className="ml-auto rounded-full bg-red-100 px-1.5 py-0.5 text-[9px] font-extrabold text-red-600  ">
                           {pendingDoubtsCount}
                         </span>
                       )}
@@ -354,14 +354,14 @@ export default function ProfessorDashboard({
                 {/* Academic Resource Counters */}
                 <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
                   {[
-                    { label: 'Study Notes', count: totalNotesCount, color: 'text-blue-600 bg-blue-50' },
-                    { label: 'Lectures', count: totalVideosCount, color: 'text-red-600 bg-red-50' },
+                    { label: 'Study Notes', count: totalNotesCount, color: 'text-[#F1E194] bg-[#1c1c1e]' },
+                    { label: 'Lectures', count: totalVideosCount, color: 'text-red-600 bg-[#1c1c1e]' },
                     { label: 'PYQ Sets', count: totalPyqsCount, color: 'text-emerald-600 bg-emerald-50' },
                     { label: 'Practice Drills', count: totalSheetsCount, color: 'text-indigo-600 bg-indigo-50' }
                   ].map((stat, i) => (
-                    <div key={i} className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                      <span className="font-mono text-[9px] font-bold text-gray-400 dark:text-slate-500 uppercase">{stat.label}</span>
-                      <p className="mt-2 text-2xl font-extrabold text-gray-900 dark:text-white">{stat.count}</p>
+                    <div key={i} className="rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] p-5 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
+                      <span className="font-sans uppercase tracking-[0.2em] font-black text-[9px] font-bold text-gray-400  uppercase">{stat.label}</span>
+                      <p className="mt-2 text-2xl font-extrabold text-white ">{stat.count}</p>
                     </div>
                   ))}
                 </div>
@@ -370,10 +370,10 @@ export default function ProfessorDashboard({
                 <div className="grid gap-6 md:grid-cols-2">
                   
                   {/* Pending doubts panel */}
-                  <div className="rounded-2xl border border-gray-150 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <div className="flex items-center justify-between pb-4 border-b border-gray-100 dark:border-slate-800">
-                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 dark:text-slate-500">Pending Doubts</h4>
-                      <span className="rounded bg-red-50 px-2 py-0.5 font-mono text-[10px] font-extrabold text-red-600">{pendingDoubtsCount} Unanswered</span>
+                  <div className="rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] p-6 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
+                    <div className="flex items-center justify-between pb-4 border-b-2 border-gray-800 ">
+                      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 ">Pending Doubts</h4>
+                      <span className="rounded bg-[#1c1c1e] px-2 py-0.5 font-sans uppercase tracking-[0.2em] font-black text-[10px] font-extrabold text-red-600">{pendingDoubtsCount} Unanswered</span>
                     </div>
 
                     <div className="mt-4 space-y-4">
@@ -382,22 +382,22 @@ export default function ProfessorDashboard({
                       ) : (
                         doubts.filter(d => !d.isAnswered).slice(0, 3).map((doubt) => (
                           <div key={doubt.id} className="flex items-start space-x-3 text-xs">
-                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-gray-50 text-gray-400 border border-gray-100">
+                            <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg bg-[#111112] text-gray-400 border-2 border-gray-800">
                               <User size={13} />
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center justify-between">
-                                <span className="font-bold text-gray-900 dark:text-slate-200 truncate">{doubt.name}</span>
-                                <span className="font-mono text-[9px] text-gray-400">{new Date(doubt.createdAt).toLocaleDateString()}</span>
+                                <span className="font-bold text-white  truncate">{doubt.name}</span>
+                                <span className="font-sans uppercase tracking-[0.2em] font-black text-[9px] text-gray-400">{new Date(doubt.createdAt).toLocaleDateString()}</span>
                               </div>
-                              <span className="text-[10px] text-blue-500 font-semibold">{doubt.subject}</span>
-                              <p className="text-gray-500 dark:text-slate-400 line-clamp-1 mt-0.5">{doubt.question}</p>
+                              <span className="text-[10px] text-[#F1E194] font-semibold">{doubt.subject}</span>
+                              <p className="text-gray-400  line-clamp-1 mt-0.5">{doubt.question}</p>
                             </div>
                           </div>
                         ))
                       )}
                       {pendingDoubtsCount > 3 && (
-                        <button onClick={() => setActiveTab('doubts')} className="w-full text-center text-[10px] font-bold text-blue-600 hover:underline">
+                        <button onClick={() => setActiveTab('doubts')} className="w-full text-center text-[10px] font-bold text-[#F1E194] hover:underline">
                           View remaining {pendingDoubtsCount - 3} doubts
                         </button>
                       )}
@@ -405,17 +405,17 @@ export default function ProfessorDashboard({
                   </div>
 
                   {/* Recent Activity */}
-                  <div className="rounded-2xl border border-gray-150 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                    <h4 className="pb-4 border-b border-gray-100 font-mono text-xs font-bold uppercase tracking-wider text-gray-400 dark:border-slate-800 dark:text-slate-500">Recent Uploads</h4>
+                  <div className="rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] p-6 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
+                    <h4 className="pb-4 border-b-2 border-gray-800 font-sans uppercase tracking-[0.2em] font-black text-xs font-bold uppercase tracking-wider text-gray-400  ">Recent Uploads</h4>
                     
                     <div className="mt-4 space-y-4">
                       {recentUploads.map((item, i) => (
-                        <div key={i} className="flex items-center justify-between text-xs border-l-2 border-blue-500 pl-3.5">
+                        <div key={i} className="flex items-center justify-between text-xs border-l-2 border-red-950 pl-3.5">
                           <div>
-                            <span className="font-bold text-gray-800 dark:text-slate-200">{item.title}</span>
-                            <span className="block text-[10px] text-gray-400 dark:text-slate-500">{item.detail}</span>
+                            <span className="font-bold text-white ">{item.title}</span>
+                            <span className="block text-[10px] text-gray-400 ">{item.detail}</span>
                           </div>
-                          <span className="rounded bg-gray-50 border border-gray-100 px-2 py-0.5 font-mono text-[9px] text-gray-500 dark:bg-slate-950/20 dark:border-slate-850">
+                          <span className="rounded bg-[#111112] border-2 border-gray-800 px-2 py-0.5 font-sans uppercase tracking-[0.2em] font-black text-[9px] text-gray-400  ">
                             {item.sub.toUpperCase()}
                           </span>
                         </div>
@@ -433,13 +433,13 @@ export default function ProfessorDashboard({
               <div className="space-y-5">
                 
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Study Notes Catalog</h3>
+                  <h3 className="text-lg font-bold text-white ">Study Notes Catalog</h3>
                   <button
                     onClick={() => {
                       setNoteForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '' });
                       setActiveModal('add-note');
                     }}
-                    className="inline-flex items-center space-x-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+                    className="inline-flex items-center space-x-1.5 rounded-[12px] bg-[#5B0E14] px-3.5 py-2 text-xs font-semibold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] hover:bg-red-900"
                     id="add-note-btn"
                   >
                     <Plus size={14} />
@@ -447,31 +447,31 @@ export default function ProfessorDashboard({
                   </button>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-gray-150 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-hidden rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50/60 font-mono text-[10px] uppercase text-gray-500 dark:border-slate-800">
+                      <tr className="border-b-2 border-gray-800 bg-[#111112]/60 font-sans uppercase tracking-[0.2em] font-black text-[10px] uppercase text-gray-400 ">
                         <th className="px-5 py-3.5">Syllabus Focus</th>
                         <th className="px-5 py-3.5">Title & Chapter</th>
                         <th className="px-5 py-3.5">Views</th>
                         <th className="px-5 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    <tbody className="divide-y divide-gray-100 ">
                       {notes.map((note) => (
-                        <tr key={note.id} className="hover:bg-gray-50/30">
+                        <tr key={note.id} className="hover:bg-[#111112]/30">
                           <td className="px-5 py-4">
-                            <span className="font-mono uppercase font-bold text-gray-500">{note.course}</span>
+                            <span className="font-sans uppercase tracking-[0.2em] font-black uppercase font-bold text-gray-400">{note.course}</span>
                             <span className="block text-[10px] text-gray-400 mt-0.5">{note.subject}</span>
                           </td>
                           <td className="px-5 py-4">
-                            <span className="font-bold text-gray-900 dark:text-slate-200">{note.title}</span>
+                            <span className="font-bold text-white ">{note.title}</span>
                             <span className="block text-gray-400 text-[10px] mt-0.5">{note.chapter}</span>
                           </td>
-                          <td className="px-5 py-4 font-mono font-semibold text-gray-600">{note.downloadCount}</td>
+                          <td className="px-5 py-4 font-sans uppercase tracking-[0.2em] font-black font-semibold text-gray-400">{note.downloadCount}</td>
                           <td className="px-5 py-4 text-right">
                             <div className="flex justify-end space-x-1">
-                              <button onClick={() => handleOpenEditNote(note)} className="p-1.5 text-gray-400 hover:text-blue-500">
+                              <button onClick={() => handleOpenEditNote(note)} className="p-1.5 text-gray-400 hover:text-[#F1E194]">
                                 <Edit size={13} />
                               </button>
                               <button onClick={() => onDeleteNote(note.id)} className="p-1.5 text-gray-400 hover:text-red-500">
@@ -493,13 +493,13 @@ export default function ProfessorDashboard({
               <div className="space-y-5">
                 
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Video Lectures Catalog</h3>
+                  <h3 className="text-lg font-bold text-white ">Video Lectures Catalog</h3>
                   <button
                     onClick={() => {
                       setVideoForm({ course: 'jee-main', subject: '', chapter: '', title: '', youtubeLink: '', thumbnail: '', description: '', duration: '' });
                       setActiveModal('add-video');
                     }}
-                    className="inline-flex items-center space-x-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+                    className="inline-flex items-center space-x-1.5 rounded-[12px] bg-[#5B0E14] px-3.5 py-2 text-xs font-semibold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] hover:bg-red-900"
                     id="add-video-btn"
                   >
                     <Plus size={14} />
@@ -507,31 +507,31 @@ export default function ProfessorDashboard({
                   </button>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-gray-150 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-hidden rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50/60 font-mono text-[10px] uppercase text-gray-500 dark:border-slate-800">
+                      <tr className="border-b-2 border-gray-800 bg-[#111112]/60 font-sans uppercase tracking-[0.2em] font-black text-[10px] uppercase text-gray-400 ">
                         <th className="px-5 py-3.5">Course</th>
                         <th className="px-5 py-3.5">Video Title</th>
                         <th className="px-5 py-3.5">Duration</th>
                         <th className="px-5 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    <tbody className="divide-y divide-gray-100 ">
                       {videos.map((vid) => (
-                        <tr key={vid.id} className="hover:bg-gray-50/30">
+                        <tr key={vid.id} className="hover:bg-[#111112]/30">
                           <td className="px-5 py-4">
-                            <span className="font-mono uppercase font-bold text-gray-500">{vid.course}</span>
+                            <span className="font-sans uppercase tracking-[0.2em] font-black uppercase font-bold text-gray-400">{vid.course}</span>
                             <span className="block text-[10px] text-gray-400 mt-0.5">{vid.subject}</span>
                           </td>
                           <td className="px-5 py-4">
-                            <span className="font-bold text-gray-900 dark:text-slate-200">{vid.title}</span>
+                            <span className="font-bold text-white ">{vid.title}</span>
                             <span className="block text-gray-400 text-[10px] mt-0.5">{vid.chapter}</span>
                           </td>
-                          <td className="px-5 py-4 font-mono font-semibold text-gray-600">{vid.duration}</td>
+                          <td className="px-5 py-4 font-sans uppercase tracking-[0.2em] font-black font-semibold text-gray-400">{vid.duration}</td>
                           <td className="px-5 py-4 text-right">
                             <div className="flex justify-end space-x-1">
-                              <button onClick={() => handleOpenEditVideo(vid)} className="p-1.5 text-gray-400 hover:text-blue-500">
+                              <button onClick={() => handleOpenEditVideo(vid)} className="p-1.5 text-gray-400 hover:text-[#F1E194]">
                                 <Edit size={13} />
                               </button>
                               <button onClick={() => onDeleteVideo(vid.id)} className="p-1.5 text-gray-400 hover:text-red-500">
@@ -553,13 +553,13 @@ export default function ProfessorDashboard({
               <div className="space-y-5">
                 
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Previous Year Questions Library</h3>
+                  <h3 className="text-lg font-bold text-white ">Previous Year Questions Library</h3>
                   <button
                     onClick={() => {
                       setPyqForm({ course: 'jee-main', subject: '', chapter: '', year: 2024, difficulty: 'Medium', questionUrl: '', solutionUrl: '' });
                       setActiveModal('add-pyq');
                     }}
-                    className="inline-flex items-center space-x-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+                    className="inline-flex items-center space-x-1.5 rounded-[12px] bg-[#5B0E14] px-3.5 py-2 text-xs font-semibold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] hover:bg-red-900"
                     id="add-pyq-btn"
                   >
                     <Plus size={14} />
@@ -567,39 +567,39 @@ export default function ProfessorDashboard({
                   </button>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-gray-150 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-hidden rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50/60 font-mono text-[10px] uppercase text-gray-500 dark:border-slate-800">
+                      <tr className="border-b-2 border-gray-800 bg-[#111112]/60 font-sans uppercase tracking-[0.2em] font-black text-[10px] uppercase text-gray-400 ">
                         <th className="px-5 py-3.5">Course</th>
                         <th className="px-5 py-3.5">Chapter & Year</th>
                         <th className="px-5 py-3.5">Difficulty</th>
                         <th className="px-5 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    <tbody className="divide-y divide-gray-100 ">
                       {pyqs.map((pyq) => (
-                        <tr key={pyq.id} className="hover:bg-gray-50/30">
+                        <tr key={pyq.id} className="hover:bg-[#111112]/30">
                           <td className="px-5 py-4">
-                            <span className="font-mono uppercase font-bold text-gray-500">{pyq.course}</span>
+                            <span className="font-sans uppercase tracking-[0.2em] font-black uppercase font-bold text-gray-400">{pyq.course}</span>
                             <span className="block text-[10px] text-gray-400 mt-0.5">{pyq.subject}</span>
                           </td>
                           <td className="px-5 py-4">
-                            <span className="font-bold text-gray-900 dark:text-slate-200">{pyq.chapter}</span>
+                            <span className="font-bold text-white ">{pyq.chapter}</span>
                             <span className="block text-gray-400 text-[10px] mt-0.5">Year: {pyq.year}</span>
                           </td>
                           <td className="px-5 py-4">
                             <span className={`inline-flex rounded-full px-2 py-0.5 text-[9px] font-semibold ${
                               pyq.difficulty === 'Easy' ? 'bg-green-50 text-green-700' :
                               pyq.difficulty === 'Medium' ? 'bg-amber-50 text-amber-700' :
-                              'bg-red-50 text-red-700'
+                              'bg-[#1c1c1e] text-red-700'
                             }`}>
                               {pyq.difficulty}
                             </span>
                           </td>
                           <td className="px-5 py-4 text-right">
                             <div className="flex justify-end space-x-1">
-                              <button onClick={() => handleOpenEditPyq(pyq)} className="p-1.5 text-gray-400 hover:text-blue-500">
+                              <button onClick={() => handleOpenEditPyq(pyq)} className="p-1.5 text-gray-400 hover:text-[#F1E194]">
                                 <Edit size={13} />
                               </button>
                               <button onClick={() => onDeletePyq(pyq.id)} className="p-1.5 text-gray-400 hover:text-red-500">
@@ -621,13 +621,13 @@ export default function ProfessorDashboard({
               <div className="space-y-5">
                 
                 <div className="flex items-center justify-between">
-                  <h3 className="text-lg font-bold text-gray-900 dark:text-white">Practice Sheets Library</h3>
+                  <h3 className="text-lg font-bold text-white ">Practice Sheets Library</h3>
                   <button
                     onClick={() => {
                       setSheetForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '' });
                       setActiveModal('add-sheet');
                     }}
-                    className="inline-flex items-center space-x-1.5 rounded-xl bg-blue-600 px-3.5 py-2 text-xs font-semibold text-white shadow-sm hover:bg-blue-700"
+                    className="inline-flex items-center space-x-1.5 rounded-[12px] bg-[#5B0E14] px-3.5 py-2 text-xs font-semibold text-white shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] hover:bg-red-900"
                     id="add-sheet-btn"
                   >
                     <Plus size={14} />
@@ -635,28 +635,28 @@ export default function ProfessorDashboard({
                   </button>
                 </div>
 
-                <div className="overflow-hidden rounded-2xl border border-gray-150 bg-white shadow-sm dark:border-slate-800 dark:bg-slate-900">
+                <div className="overflow-hidden rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
                   <table className="w-full text-left text-xs border-collapse">
                     <thead>
-                      <tr className="border-b border-gray-100 bg-gray-50/60 font-mono text-[10px] uppercase text-gray-500 dark:border-slate-800">
+                      <tr className="border-b-2 border-gray-800 bg-[#111112]/60 font-sans uppercase tracking-[0.2em] font-black text-[10px] uppercase text-gray-400 ">
                         <th className="px-5 py-3.5">Course</th>
                         <th className="px-5 py-3.5">Title</th>
                         <th className="px-5 py-3.5">Chapter</th>
                         <th className="px-5 py-3.5 text-right">Actions</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
+                    <tbody className="divide-y divide-gray-100 ">
                       {practiceSheets.map((sheet) => (
-                        <tr key={sheet.id} className="hover:bg-gray-50/30">
+                        <tr key={sheet.id} className="hover:bg-[#111112]/30">
                           <td className="px-5 py-4">
-                            <span className="font-mono uppercase font-bold text-gray-500">{sheet.course}</span>
+                            <span className="font-sans uppercase tracking-[0.2em] font-black uppercase font-bold text-gray-400">{sheet.course}</span>
                             <span className="block text-[10px] text-gray-400 mt-0.5">{sheet.subject}</span>
                           </td>
-                          <td className="px-5 py-4 font-bold text-gray-900 dark:text-slate-200">{sheet.title}</td>
-                          <td className="px-5 py-4 text-gray-500">{sheet.chapter}</td>
+                          <td className="px-5 py-4 font-bold text-white ">{sheet.title}</td>
+                          <td className="px-5 py-4 text-gray-400">{sheet.chapter}</td>
                           <td className="px-5 py-4 text-right">
                             <div className="flex justify-end space-x-1">
-                              <button onClick={() => handleOpenEditSheet(sheet)} className="p-1.5 text-gray-400 hover:text-blue-500">
+                              <button onClick={() => handleOpenEditSheet(sheet)} className="p-1.5 text-gray-400 hover:text-[#F1E194]">
                                 <Edit size={13} />
                               </button>
                               <button onClick={() => onDeletePracticeSheet(sheet.id)} className="p-1.5 text-gray-400 hover:text-red-500">
@@ -677,44 +677,44 @@ export default function ProfessorDashboard({
             {activeTab === 'doubts' && (
               <div className="space-y-5">
                 
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Student Academic Doubts</h3>
+                <h3 className="text-lg font-bold text-white ">Student Academic Doubts</h3>
 
                 <div className="space-y-4">
                   {doubts.map((doubt) => (
                     <div
                       key={doubt.id}
-                      className={`rounded-2xl border bg-white p-5 shadow-sm transition-all dark:border-slate-800 dark:bg-slate-900 ${
-                        doubt.isAnswered ? 'border-gray-100 opacity-80' : 'border-blue-200 shadow-md ring-1 ring-blue-100 dark:ring-0'
+                      className={`rounded-[12px] border bg-[#1c1c1e] p-5 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] transition-all   ${
+                        doubt.isAnswered ? 'border-gray-800 opacity-80' : 'border-gray-800 shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)] ring-1 ring-blue-100 '
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div className="space-y-1">
-                          <span className="font-mono text-[9px] uppercase tracking-wider font-bold text-blue-600 dark:text-blue-400">
+                          <span className="font-sans uppercase tracking-[0.2em] font-black text-[9px] uppercase tracking-wider font-bold text-[#F1E194] -[#F1E194]">
                             {doubt.subject}
                           </span>
-                          <h4 className="text-xs font-bold text-gray-900 dark:text-white">
-                            {doubt.name} <span className="font-normal font-mono text-[10px] text-gray-400">({doubt.email})</span>
+                          <h4 className="text-xs font-bold text-white ">
+                            {doubt.name} <span className="font-normal font-sans uppercase tracking-[0.2em] font-black text-[10px] text-gray-400">({doubt.email})</span>
                           </h4>
                         </div>
-                        <span className="font-mono text-[9px] text-gray-400">{new Date(doubt.createdAt).toLocaleDateString()}</span>
+                        <span className="font-sans uppercase tracking-[0.2em] font-black text-[9px] text-gray-400">{new Date(doubt.createdAt).toLocaleDateString()}</span>
                       </div>
 
-                      <p className="mt-3.5 text-xs text-gray-600 bg-gray-50/50 p-3 rounded-xl border border-gray-100 dark:bg-slate-950/40 dark:border-slate-850 dark:text-slate-300">
+                      <p className="mt-3.5 text-xs text-gray-400 bg-[#111112]/50 p-3 rounded-[12px] border-2 border-gray-800   ">
                         {doubt.question}
                       </p>
 
                       {doubt.attachmentName && (
-                        <span className="mt-2.5 inline-flex items-center space-x-1 font-mono text-[10px] text-gray-400">
+                        <span className="mt-2.5 inline-flex items-center space-x-1 font-sans uppercase tracking-[0.2em] font-black text-[10px] text-gray-400">
                           <span>📎 Attachment:</span>
-                          <span className="underline cursor-pointer hover:text-blue-500">{doubt.attachmentName}</span>
+                          <span className="underline cursor-pointer hover:text-[#F1E194]">{doubt.attachmentName}</span>
                         </span>
                       )}
 
                       {/* Replying view and answers */}
                       {doubt.isAnswered ? (
-                        <div className="mt-4 border-t border-gray-100 pt-4 dark:border-slate-800">
-                          <span className="font-mono text-[9px] font-bold uppercase tracking-widest text-emerald-600">✓ Your Response:</span>
-                          <p className="mt-1 text-xs text-gray-500 dark:text-slate-400 leading-relaxed italic">
+                        <div className="mt-4 border-t-2 border-gray-800 pt-4 ">
+                          <span className="font-sans uppercase tracking-[0.2em] font-black text-[9px] font-bold uppercase tracking-widest text-emerald-600">✓ Your Response:</span>
+                          <p className="mt-1 text-xs text-gray-400  leading-relaxed italic">
                             "{doubt.answerText}"
                           </p>
                           <div className="mt-3.5 flex justify-end space-x-2">
@@ -723,7 +723,7 @@ export default function ProfessorDashboard({
                                 setReplyingDoubtId(doubt.id);
                                 setReplyText(doubt.answerText || '');
                               }}
-                              className="text-[11px] font-semibold text-blue-600 hover:underline"
+                              className="text-[11px] font-semibold text-[#F1E194] hover:underline"
                             >
                               Edit Response
                             </button>
@@ -737,26 +737,26 @@ export default function ProfessorDashboard({
                           </div>
                         </div>
                       ) : (
-                        <div className="mt-4 border-t border-gray-100 pt-4 dark:border-slate-800">
+                        <div className="mt-4 border-t-2 border-gray-800 pt-4 ">
                           {replyingDoubtId === doubt.id ? (
                             <div className="space-y-3">
                               <textarea
                                 value={replyText}
                                 onChange={(e) => setReplyText(e.target.value)}
                                 rows={3}
-                                className="w-full rounded-xl border border-gray-200 bg-gray-50/30 p-3 text-xs outline-none focus:border-blue-500"
+                                className="w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 p-3 text-xs outline-none focus:border-red-950"
                                 placeholder="Type your academic response..."
                               />
                               <div className="flex justify-end space-x-2">
                                 <button
                                   onClick={() => setReplyingDoubtId(null)}
-                                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-500 hover:bg-gray-100"
+                                  className="rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-400 hover:bg-gray-100"
                                 >
                                   Cancel
                                 </button>
                                 <button
                                   onClick={() => handleReplySubmit(doubt.id)}
-                                  className="inline-flex items-center space-x-1 rounded-lg bg-blue-500 text-white px-3.5 py-1.5 text-xs font-semibold hover:bg-blue-600"
+                                  className="inline-flex items-center space-x-1 rounded-lg bg-[#5B0E14] text-white px-3.5 py-1.5 text-xs font-semibold hover:bg-[#5B0E14]"
                                 >
                                   <Send size={11} />
                                   <span>Send Answer</span>
@@ -770,7 +770,7 @@ export default function ProfessorDashboard({
                                   setReplyingDoubtId(doubt.id);
                                   setReplyText('');
                                 }}
-                                className="rounded-lg bg-gray-950 text-white px-3 py-1.5 text-xs font-semibold hover:bg-gray-800 dark:bg-slate-100 dark:text-slate-900"
+                                className="rounded-lg bg-gray-950 text-white px-3 py-1.5 text-xs font-semibold hover:bg-gray-800 -[#111112] "
                               >
                                 Answer Query
                               </button>
@@ -791,30 +791,30 @@ export default function ProfessorDashboard({
 
             {/* TAB 7: SETTINGS */}
             {activeTab === 'settings' && (
-              <div className="rounded-2xl border border-gray-150 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1.5">Professor Settings</h3>
+              <div className="rounded-[12px] border-2 border-gray-800 bg-[#1c1c1e] p-6 shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)]  ">
+                <h3 className="text-sm font-bold text-white  mb-1.5">Professor Settings</h3>
                 <p className="text-xs text-gray-400 mb-6">Configure metadata settings for your digital repository.</p>
                 
                 <div className="space-y-4 max-w-md">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Primary Designation</label>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Primary Designation</label>
                     <input
                       type="text"
                       readOnly
                       value="Professor of Physics & Applied Mathematics"
-                      className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs text-gray-400"
+                      className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/50 px-3 py-2 text-xs text-gray-400"
                     />
                   </div>
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-wider">Office Hours Location</label>
+                    <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Office Hours Location</label>
                     <input
                       type="text"
                       readOnly
                       value="Room 402-B, Science Block II"
-                      className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/50 px-3 py-2 text-xs text-gray-400"
+                      className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/50 px-3 py-2 text-xs text-gray-400"
                     />
                   </div>
-                  <div className="rounded-xl bg-blue-50/30 p-4 border border-blue-100/50">
+                  <div className="rounded-[12px] bg-[#1c1c1e]/30 p-4 border-2 border-gray-800/50">
                     <p className="text-[11px] leading-relaxed text-blue-800">
                       <strong>Client-Side Engine State:</strong> All notes, pyqs, videos, and student doubts are persisted in your web browser's <code>localStorage</code> cache. To simulate a full system reset, you can clear your cache or click Reset State under Settings.
                     </p>
@@ -834,9 +834,9 @@ export default function ProfessorDashboard({
       {/* NOTES MODAL */}
       {(activeModal === 'add-note' || activeModal === 'edit-note') && (
         <div className="fixed inset-0 z-55 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-slate-800">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[12px] bg-[#1c1c1e] shadow-2xl  border-2 border-gray-800 ">
+            <div className="flex items-center justify-between border-b-2 border-gray-800 px-5 py-4 ">
+              <h3 className="text-sm font-bold text-white ">
                 {activeModal === 'add-note' ? 'Add Study Note' : 'Edit Study Note'}
               </h3>
               <button onClick={() => setActiveModal(null)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100">
@@ -847,71 +847,71 @@ export default function ProfessorDashboard({
             <form onSubmit={handleNoteSubmit} className="p-5 space-y-4">
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Syllabus Focus</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Syllabus Focus</label>
                   <select
                     value={noteForm.course}
                     onChange={(e) => setNoteForm({ ...noteForm, course: e.target.value as ExamType })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   >
                     {exams.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Subject</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Subject</label>
                   <input
                     type="text"
                     required
                     value={noteForm.subject}
                     onChange={(e) => setNoteForm({ ...noteForm, subject: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="Physics"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Chapter</label>
+                <label className="block text-[10px] font-bold text-gray-400">Chapter</label>
                 <input
                   type="text"
                   required
                   value={noteForm.chapter}
                   onChange={(e) => setNoteForm({ ...noteForm, chapter: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="e.g. Electrostatics"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Document Title</label>
+                <label className="block text-[10px] font-bold text-gray-400">Document Title</label>
                 <input
                   type="text"
                   required
                   value={noteForm.title}
                   onChange={(e) => setNoteForm({ ...noteForm, title: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="Gauss's Law Formulations"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Short Description</label>
+                <label className="block text-[10px] font-bold text-gray-400">Short Description</label>
                 <textarea
                   required
                   rows={3}
                   value={noteForm.description}
                   onChange={(e) => setNoteForm({ ...noteForm, description: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="A breakdown of electric fluxes and Gaussian integrations..."
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">PDF File Name / Simulator Path</label>
+                <label className="block text-[10px] font-bold text-gray-400">PDF File Name / Simulator Path</label>
                 <input
                   type="text"
                   value={noteForm.fileUrl}
                   onChange={(e) => setNoteForm({ ...noteForm, fileUrl: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="gauss_notes_final.pdf"
                 />
               </div>
@@ -920,13 +920,13 @@ export default function ProfessorDashboard({
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-500 hover:bg-gray-50"
+                  className="rounded-[12px] px-4 py-2.5 text-xs font-semibold text-gray-400 hover:bg-[#111112]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-blue-600 text-white px-4 py-2.5 text-xs font-semibold hover:bg-blue-700"
+                  className="rounded-[12px] bg-[#5B0E14] text-white px-4 py-2.5 text-xs font-semibold hover:bg-red-900"
                 >
                   {activeModal === 'add-note' ? 'Upload Note' : 'Update Note'}
                 </button>
@@ -940,9 +940,9 @@ export default function ProfessorDashboard({
       {/* VIDEOS MODAL */}
       {(activeModal === 'add-video' || activeModal === 'edit-video') && (
         <div className="fixed inset-0 z-55 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-slate-800">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[12px] bg-[#1c1c1e] shadow-2xl  border-2 border-gray-800 ">
+            <div className="flex items-center justify-between border-b-2 border-gray-800 px-5 py-4 ">
+              <h3 className="text-sm font-bold text-white ">
                 {activeModal === 'add-video' ? 'Add Video Lecture' : 'Edit Video Lecture'}
               </h3>
               <button onClick={() => setActiveModal(null)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100">
@@ -953,23 +953,23 @@ export default function ProfessorDashboard({
             <form onSubmit={handleVideoSubmit} className="p-5 space-y-4">
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Syllabus Focus</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Syllabus Focus</label>
                   <select
                     value={videoForm.course}
                     onChange={(e) => setVideoForm({ ...videoForm, course: e.target.value as ExamType })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   >
                     {exams.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Subject</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Subject</label>
                   <input
                     type="text"
                     required
                     value={videoForm.subject}
                     onChange={(e) => setVideoForm({ ...videoForm, subject: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="Physics"
                   />
                 </div>
@@ -977,71 +977,71 @@ export default function ProfessorDashboard({
 
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Chapter</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Chapter</label>
                   <input
                     type="text"
                     required
                     value={videoForm.chapter}
                     onChange={(e) => setVideoForm({ ...videoForm, chapter: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="e.g. Calculus"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Duration</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Duration</label>
                   <input
                     type="text"
                     required
                     value={videoForm.duration}
                     onChange={(e) => setVideoForm({ ...videoForm, duration: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="e.g. 45:12"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Lecture Title</label>
+                <label className="block text-[10px] font-bold text-gray-400">Lecture Title</label>
                 <input
                   type="text"
                   required
                   value={videoForm.title}
                   onChange={(e) => setVideoForm({ ...videoForm, title: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="e.g. Limits Introduction"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">YouTube / Stream Link</label>
+                <label className="block text-[10px] font-bold text-gray-400">YouTube / Stream Link</label>
                 <input
                   type="url"
                   value={videoForm.youtubeLink}
                   onChange={(e) => setVideoForm({ ...videoForm, youtubeLink: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="https://youtube.com/..."
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Thumbnail Image URL</label>
+                <label className="block text-[10px] font-bold text-gray-400">Thumbnail Image URL</label>
                 <input
                   type="text"
                   value={videoForm.thumbnail}
                   onChange={(e) => setVideoForm({ ...videoForm, thumbnail: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="Unsplash image URL..."
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Description</label>
+                <label className="block text-[10px] font-bold text-gray-400">Description</label>
                 <textarea
                   required
                   rows={2}
                   value={videoForm.description}
                   onChange={(e) => setVideoForm({ ...videoForm, description: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="Visual representation of geometric limits..."
                 />
               </div>
@@ -1050,13 +1050,13 @@ export default function ProfessorDashboard({
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-500 hover:bg-gray-50"
+                  className="rounded-[12px] px-4 py-2.5 text-xs font-semibold text-gray-400 hover:bg-[#111112]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-blue-600 text-white px-4 py-2.5 text-xs font-semibold hover:bg-blue-700"
+                  className="rounded-[12px] bg-[#5B0E14] text-white px-4 py-2.5 text-xs font-semibold hover:bg-red-900"
                 >
                   {activeModal === 'add-video' ? 'Publish Lecture' : 'Update Lecture'}
                 </button>
@@ -1070,9 +1070,9 @@ export default function ProfessorDashboard({
       {/* PYQ MODAL */}
       {(activeModal === 'add-pyq' || activeModal === 'edit-pyq') && (
         <div className="fixed inset-0 z-55 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-slate-800">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[12px] bg-[#1c1c1e] shadow-2xl  border-2 border-gray-800 ">
+            <div className="flex items-center justify-between border-b-2 border-gray-800 px-5 py-4 ">
+              <h3 className="text-sm font-bold text-white ">
                 {activeModal === 'add-pyq' ? 'Add PYQ Booklet' : 'Edit PYQ Booklet'}
               </h3>
               <button onClick={() => setActiveModal(null)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100">
@@ -1083,23 +1083,23 @@ export default function ProfessorDashboard({
             <form onSubmit={handlePyqSubmit} className="p-5 space-y-4">
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Syllabus Focus</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Syllabus Focus</label>
                   <select
                     value={pyqForm.course}
                     onChange={(e) => setPyqForm({ ...pyqForm, course: e.target.value as ExamType })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   >
                     {exams.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Subject</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Subject</label>
                   <input
                     type="text"
                     required
                     value={pyqForm.subject}
                     onChange={(e) => setPyqForm({ ...pyqForm, subject: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="e.g. Physics"
                   />
                 </div>
@@ -1107,21 +1107,21 @@ export default function ProfessorDashboard({
 
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Year</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Year</label>
                   <input
                     type="number"
                     required
                     value={pyqForm.year}
                     onChange={(e) => setPyqForm({ ...pyqForm, year: Number(e.target.value) })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Difficulty</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Difficulty</label>
                   <select
                     value={pyqForm.difficulty}
                     onChange={(e) => setPyqForm({ ...pyqForm, difficulty: e.target.value as 'Easy' | 'Medium' | 'Hard' })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   >
                     <option value="Easy">Easy</option>
                     <option value="Medium">Medium</option>
@@ -1131,35 +1131,35 @@ export default function ProfessorDashboard({
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Chapter</label>
+                <label className="block text-[10px] font-bold text-gray-400">Chapter</label>
                 <input
                   type="text"
                   required
                   value={pyqForm.chapter}
                   onChange={(e) => setPyqForm({ ...pyqForm, chapter: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="e.g. Rotational Dynamics"
                 />
               </div>
 
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Question PDF File Path</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Question PDF File Path</label>
                   <input
                     type="text"
                     value={pyqForm.questionUrl}
                     onChange={(e) => setPyqForm({ ...pyqForm, questionUrl: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="pyq_questions_2024.pdf"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Solution PDF File Path</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Solution PDF File Path</label>
                   <input
                     type="text"
                     value={pyqForm.solutionUrl}
                     onChange={(e) => setPyqForm({ ...pyqForm, solutionUrl: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="pyq_solutions_2024.pdf"
                   />
                 </div>
@@ -1169,13 +1169,13 @@ export default function ProfessorDashboard({
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-500 hover:bg-gray-50"
+                  className="rounded-[12px] px-4 py-2.5 text-xs font-semibold text-gray-400 hover:bg-[#111112]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-blue-600 text-white px-4 py-2.5 text-xs font-semibold hover:bg-blue-700"
+                  className="rounded-[12px] bg-[#5B0E14] text-white px-4 py-2.5 text-xs font-semibold hover:bg-red-900"
                 >
                   {activeModal === 'add-pyq' ? 'Publish PYQ' : 'Update PYQ'}
                 </button>
@@ -1189,9 +1189,9 @@ export default function ProfessorDashboard({
       {/* PRACTICE SHEET MODAL */}
       {(activeModal === 'add-sheet' || activeModal === 'edit-sheet') && (
         <div className="fixed inset-0 z-55 flex items-center justify-center bg-black/50 p-4">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-slate-900 border border-gray-100 dark:border-slate-800">
-            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-slate-800">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+          <div className="relative w-full max-w-md overflow-hidden rounded-[12px] bg-[#1c1c1e] shadow-2xl  border-2 border-gray-800 ">
+            <div className="flex items-center justify-between border-b-2 border-gray-800 px-5 py-4 ">
+              <h3 className="text-sm font-bold text-white ">
                 {activeModal === 'add-sheet' ? 'Add Practice Sheet' : 'Edit Practice Sheet'}
               </h3>
               <button onClick={() => setActiveModal(null)} className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100">
@@ -1202,71 +1202,71 @@ export default function ProfessorDashboard({
             <form onSubmit={handleSheetSubmit} className="p-5 space-y-4">
               <div className="grid gap-3 grid-cols-2">
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Syllabus Focus</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Syllabus Focus</label>
                   <select
                     value={sheetForm.course}
                     onChange={(e) => setSheetForm({ ...sheetForm, course: e.target.value as ExamType })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   >
                     {exams.map(e => <option key={e.id} value={e.id}>{e.title}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-500">Subject</label>
+                  <label className="block text-[10px] font-bold text-gray-400">Subject</label>
                   <input
                     type="text"
                     required
                     value={sheetForm.subject}
                     onChange={(e) => setSheetForm({ ...sheetForm, subject: e.target.value })}
-                    className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                    className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                     placeholder="Physics"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Chapter</label>
+                <label className="block text-[10px] font-bold text-gray-400">Chapter</label>
                 <input
                   type="text"
                   required
                   value={sheetForm.chapter}
                   onChange={(e) => setSheetForm({ ...sheetForm, chapter: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="e.g. Fluid Mechanics"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Sheet Title</label>
+                <label className="block text-[10px] font-bold text-gray-400">Sheet Title</label>
                 <input
                   type="text"
                   required
                   value={sheetForm.title}
                   onChange={(e) => setSheetForm({ ...sheetForm, title: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="Electrostatic Potential Drill"
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">Description</label>
+                <label className="block text-[10px] font-bold text-gray-400">Description</label>
                 <textarea
                   required
                   rows={3}
                   value={sheetForm.description}
                   onChange={(e) => setSheetForm({ ...sheetForm, description: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="45 multiple-choice targets with dielectric insertion questions..."
                 />
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-gray-500">File Simulator Path</label>
+                <label className="block text-[10px] font-bold text-gray-400">File Simulator Path</label>
                 <input
                   type="text"
                   value={sheetForm.fileUrl}
                   onChange={(e) => setSheetForm({ ...sheetForm, fileUrl: e.target.value })}
-                  className="mt-1.5 block w-full rounded-xl border border-gray-200 bg-gray-50/30 px-3 py-2 text-xs"
+                  className="mt-1.5 block w-full rounded-[12px] border-2 border-gray-800 bg-[#111112]/30 px-3 py-2 text-xs"
                   placeholder="practice_sheets_dynamics.pdf"
                 />
               </div>
@@ -1275,13 +1275,13 @@ export default function ProfessorDashboard({
                 <button
                   type="button"
                   onClick={() => setActiveModal(null)}
-                  className="rounded-xl px-4 py-2.5 text-xs font-semibold text-gray-500 hover:bg-gray-50"
+                  className="rounded-[12px] px-4 py-2.5 text-xs font-semibold text-gray-400 hover:bg-[#111112]"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="rounded-xl bg-blue-600 text-white px-4 py-2.5 text-xs font-semibold hover:bg-blue-700"
+                  className="rounded-[12px] bg-[#5B0E14] text-white px-4 py-2.5 text-xs font-semibold hover:bg-red-900"
                 >
                   {activeModal === 'add-sheet' ? 'Upload Sheet' : 'Update Sheet'}
                 </button>
