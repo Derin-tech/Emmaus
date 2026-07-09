@@ -86,7 +86,7 @@ export default function ContactPage() {
                   <div>
                     <h4 className="text-xs font-bold text-gray-800 dark:text-slate-200">Academic Email</h4>
                     <p className="text-xs text-blue-600 dark:text-blue-400 mt-0.5 select-all">
-                      anand.sen@university.edu
+                      ajesh.joe@university.edu
                     </p>
                     <p className="text-[10px] text-gray-400 dark:text-slate-500">
                       Replies are sent during standard academic days.

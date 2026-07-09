@@ -31,10 +31,10 @@ export default function AboutPage() {
           <div className="flex flex-col space-y-4 text-center md:text-left">
             <div>
               <h2 className="text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white">
-                Prof. Anand Sen, Ph.D.
+                Prof. Ajesh Joe
               </h2>
               <p className="mt-1 font-mono text-xs tracking-wider text-blue-600 uppercase dark:text-blue-400 font-semibold">
-                Senior Professor of Mathematical Physics
+                Senior Professor of Chemistry
               </p>
             </div>
 
@@ -64,7 +64,7 @@ export default function AboutPage() {
               Biography
             </h3>
             <p className="text-sm leading-relaxed text-gray-500 dark:text-slate-400">
-              Professor Anand Sen completed his Ph.D. in Theoretical Physics from the Indian Institute of Science (IISc), followed by postdoctoral research at the University of Cambridge, UK. Over the last two decades, he has lectured in classical mechanics, electromagnetism, and advanced mathematical physics. 
+              Professor Ajesh Joe completed his Ph.D. in Chemistry from the Indian Institute of Science (IISc), followed by postdoctoral research at the University of Cambridge, UK. Over the last two decades, he has lectured in organic chemistry, physical chemistry, and advanced materials science. 
             </p>
             <p className="text-sm leading-relaxed text-gray-500 dark:text-slate-400">
               Recognizing the challenges students encounter in bridging foundational theories with high-difficulty problem structures, he started writing these unified note modules, previous year guides, and concept booklets to offer complete, open-access study resources for state and national-level scientific entrances.

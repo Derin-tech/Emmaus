@@ -24,7 +24,8 @@ import {
   Compass,
   Activity,
   BookOpen,
-  GraduationCap
+  GraduationCap,
+  ArrowRight
 } from 'lucide-react';
 import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ } from '../types';
 
@@ -210,7 +211,7 @@ export default function StudentDashboard({
   };
 
   return (
-    <div className="bg-white py-12 dark:bg-slate-900 transition-colors duration-300">
+    <div className="bg-[#111112] py-12 transition-colors duration-300 text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         
         {/* ================= BREADCRUMBS ================= */}
@@ -240,40 +241,56 @@ export default function StudentDashboard({
         {!selectedExam && (
           <div>
             <div className="text-center mb-12">
-              <p className="font-mono text-xs font-semibold tracking-widest text-blue-600 uppercase dark:text-blue-400">
+              <p className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-[#F1E194]">
                 Course Repositories
               </p>
-              <h2 className="mt-2 text-3xl font-extrabold tracking-tight text-gray-900 dark:text-white sm:text-4xl">
+              <h2 className="mt-2 text-3xl font-display font-extrabold tracking-tight text-white sm:text-4xl">
                 Choose Your Examination
               </h2>
-              <p className="mx-auto mt-3 max-w-md text-sm text-gray-500 dark:text-slate-400">
+              <p className="mx-auto mt-3 max-w-md text-sm text-gray-400">
                 Select your academic category below to unlock a highly organized directory of learning materials.
               </p>
             </div>
 
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {exams.map((exam) => (
-                <div
-                  key={exam.id}
-                  onClick={() => setSelectedExam(exam.id)}
-                  className="group relative cursor-pointer overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-all hover:-translate-y-1 hover:border-blue-200 hover:shadow-md dark:border-slate-800 dark:bg-slate-900 dark:hover:border-slate-700"
-                  id={`exam-card-${exam.id}`}
-                >
-                  <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gray-50/70 border border-gray-100/50 dark:bg-slate-850 dark:border-slate-800">
-                    {renderExamIcon(exam.icon)}
+              {exams.map((exam) => {
+                const getEmoji = (id: string) => {
+                  switch(id) {
+                    case 'jee-main': return 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Alembic.png';
+                    case 'jee-advanced': return 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Test%20Tube.png';
+                    case 'neet': return 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Animals%20and%20nature/Microbe.png';
+                    case 'net': return 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Microscope.png';
+                    case 'msc-entrance': return 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Graduation%20Cap.png';
+                    default: return 'https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Books.png';
+                  }
+                };
+                
+                return (
+                  <div
+                    key={exam.id}
+                    onClick={() => setSelectedExam(exam.id)}
+                    className="group relative cursor-pointer rounded-[12px] bg-[#1c1c1e] p-8 transition-all duration-300 hover:bg-[#232325] hover:-translate-y-1 hover:rotate-1 shadow-[inset_0_-4px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-0"
+                    id={`exam-card-${exam.id}`}
+                  >
+                    
+                    <div className="relative mb-6 flex h-16 w-16 items-center justify-center rounded-xl bg-[#111112] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] transition-transform duration-300 group-hover:scale-[1.05]">
+                      <img src={getEmoji(exam.id)} alt={exam.title} className="h-10 w-10 object-contain drop-shadow-[0_12px_16px_rgba(0,0,0,0.3)]" />
+                    </div>
+                    
+                    <h3 className="relative text-xl font-display font-bold tracking-tight text-white mb-3">
+                      {exam.title}
+                    </h3>
+                    <p className="relative text-sm leading-relaxed text-gray-400 line-clamp-3">
+                      {exam.description}
+                    </p>
+                    
+                    <div className="relative mt-8 flex items-center space-x-2 text-[9px] uppercase tracking-[0.2em] font-black text-[#F1E194] opacity-0 transition-all duration-300 group-hover:opacity-100 group-hover:translate-x-1">
+                      <span>Explore Course</span>
+                      <ArrowRight size={14} />
+                    </div>
                   </div>
-                  <h3 className="mt-5 text-lg font-bold text-gray-900 dark:text-white">
-                    {exam.title}
-                  </h3>
-                  <p className="mt-2 text-xs leading-relaxed text-gray-500 dark:text-slate-400">
-                    {exam.description}
-                  </p>
-                  <div className="mt-6 flex items-center space-x-1.5 font-mono text-[10px] uppercase font-bold text-blue-600 dark:text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <span>Open Library</span>
-                    <span>→</span>
-                  </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
@@ -819,7 +836,7 @@ export default function StudentDashboard({
                     Submit Academic Doubt
                   </h3>
                   <p className="text-xs text-gray-400 dark:text-slate-500 mb-6">
-                    Explain your concept difficulty or problem blocker. Professor Anand Sen will review and provide step-by-step guidance.
+                    Explain your concept difficulty or problem blocker. Professor Ajesh Joe will review and provide step-by-step guidance.
                   </p>
 
                   {doubtSubmitted && (
@@ -1069,7 +1086,7 @@ export default function StudentDashboard({
               </p>
               <div className="mt-4 flex items-center justify-between text-[11px] font-mono text-gray-400">
                 <span>Duration: {activeVideoModal.duration}</span>
-                <span>Instructor: Prof. Anand Sen, Ph.D.</span>
+                <span>Instructor: Prof. Ajesh Joe</span>
               </div>
             </div>
           </div>
@@ -1098,7 +1115,7 @@ export default function StudentDashboard({
               <div className="mx-auto max-w-2xl bg-white p-10 shadow-md dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded">
                 {/* Simulated Header */}
                 <div className="border-b border-gray-200 pb-4 mb-6 text-center dark:border-slate-800">
-                  <h4 className="font-bold text-base text-gray-900 dark:text-white uppercase tracking-wider">Prof. Anand Sen Academic Repository</h4>
+                  <h4 className="font-bold text-base text-gray-900 dark:text-white uppercase tracking-wider">Prof. Ajesh Joe Academic Repository</h4>
                   <p className="font-mono text-[9px] text-gray-400 mt-1">MODULE: {activePdfViewer.fileUrl}</p>
                 </div>
 

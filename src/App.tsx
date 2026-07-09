@@ -273,7 +273,7 @@ export default function App() {
   // ================= MAIN RENDER ROUTER =================
 
   return (
-    <div className="min-h-screen flex flex-col bg-white text-gray-900 transition-colors duration-300 dark:bg-slate-900 dark:text-slate-100">
+    <div className="min-h-screen flex flex-col bg-[#111112] text-white transition-colors duration-300">
       
       {/* Sticky Top Navbar */}
       <Navbar

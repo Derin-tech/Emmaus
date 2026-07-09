@@ -38,7 +38,7 @@ export default function Navbar({
   };
 
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-gray-100 bg-white/92 backdrop-blur-md transition-colors duration-300 dark:border-slate-800 dark:bg-slate-900/92">
+    <nav className="sticky top-0 z-50 w-full border-b-2 border-gray-800 bg-[#1c1c1e] transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           
@@ -48,14 +48,18 @@ export default function Navbar({
             className="flex cursor-pointer items-center space-x-3 transition-opacity hover:opacity-90"
             id="nav-logo"
           >
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500 text-white dark:bg-blue-600">
-              <GraduationCap size={20} />
+            <div className="flex h-11 w-11 items-center justify-center drop-shadow-sm">
+              <img 
+                src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Open%20Book.png" 
+                alt="Portal Logo" 
+                className="h-full w-full object-contain transition-transform duration-300 hover:-rotate-6 hover:scale-110"
+              />
             </div>
             <div className="flex flex-col">
-              <span className="text-base font-semibold tracking-tight text-gray-900 dark:text-slate-50">
-                Prof. Anand Sen
+              <span className="text-base font-display font-bold tracking-tight text-white">
+                Prof. Ajesh Joe
               </span>
-              <span className="font-mono text-[10px] tracking-widest text-gray-500 uppercase dark:text-slate-400">
+              <span className="font-sans text-[9px] uppercase tracking-[0.2em] font-black text-[#F1E194]">
                 Academic Library
               </span>
             </div>
@@ -74,16 +78,16 @@ export default function Navbar({
                   <button
                     key={item.label}
                     onClick={() => handleNavClick(item.view)}
-                    className={`relative py-2 text-sm font-medium transition-colors duration-200 hover:text-blue-600 dark:hover:text-blue-400 ${
+                    className={`relative py-2 text-[10px] uppercase tracking-[0.1em] font-black transition-colors duration-200 hover:text-white ${
                       isActive 
-                        ? 'text-blue-600 dark:text-blue-400' 
-                        : 'text-gray-500 dark:text-slate-400'
+                        ? 'text-white' 
+                        : 'text-gray-500'
                     }`}
                     id={`nav-item-${item.label.toLowerCase().replace(' ', '-')}`}
                   >
                     {item.label}
                     {isActive && (
-                      <span className="absolute bottom-0 left-0 h-[2px] w-full bg-blue-500 dark:bg-blue-400" />
+                      <span className="absolute bottom-[-22px] left-0 h-1 w-full bg-[#5B0E14]" />
                     )}
                   </button>
                 );
@@ -96,18 +100,18 @@ export default function Navbar({
               {/* Dark mode button */}
               <button
                 onClick={onToggleDarkMode}
-                className="rounded-xl p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200"
+                className="rounded-lg border-2 border-gray-800 bg-[#111112] p-2 text-gray-400 hover:bg-[#232325] hover:text-[#F1E194] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] transition-all"
                 aria-label="Toggle theme"
                 id="theme-toggle-btn"
               >
-                {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                {darkMode ? <Sun size={14} /> : <Moon size={14} />}
               </button>
 
               {/* Portal Access Badge */}
               {userRole ? (
                 <div className="flex items-center space-x-2">
-                  <span className="flex items-center space-x-1 rounded-lg bg-gray-50 px-2.5 py-1 font-mono text-[11px] font-medium text-gray-600 border border-gray-100 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700">
-                    <UserCheck size={12} className="text-blue-500" />
+                  <span className="flex items-center space-x-1 border-2 border-gray-800 bg-[#111112] px-2.5 py-1 font-sans text-[9px] uppercase tracking-[0.2em] font-black text-gray-400">
+                    <UserCheck size={12} className="text-[#F1E194]" />
                     <span>Role: {userRole === 'professor' ? 'Professor' : 'Student'}</span>
                   </span>
                   <button
@@ -115,7 +119,7 @@ export default function Navbar({
                       onRoleChange(null);
                       handleNavClick('selection');
                     }}
-                    className="text-xs font-medium text-gray-500 hover:text-red-500 dark:text-slate-400 dark:hover:text-red-400"
+                    className="text-[9px] font-black uppercase tracking-wider text-gray-500 hover:text-red-500 transition-colors"
                     id="switch-role-btn"
                   >
                     Switch
@@ -124,7 +128,7 @@ export default function Navbar({
               ) : (
                 <button
                   onClick={() => handleNavClick('selection')}
-                  className="rounded-xl bg-gray-900 px-4 py-2 text-xs font-semibold text-white transition-all hover:bg-gray-800 active:scale-98 dark:bg-slate-150 dark:text-slate-900 dark:hover:bg-white"
+                  className="rounded-lg bg-[#5B0E14] px-4 py-2 text-[10px] uppercase font-black tracking-wider text-white border-2 border-red-950 shadow-[inset_0_-3px_0_rgba(0,0,0,0.5)] active:shadow-[inset_0_0px_0_rgba(0,0,0,0.5)] active:translate-y-[1px] transition-all hover:bg-red-900"
                   id="nav-get-started-btn"
                 >
                   Enter Portal

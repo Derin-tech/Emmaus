@@ -35,7 +35,7 @@ export default function Footer({ onNavigate, userRole }: FooterProps) {
               <GraduationCap size={15} />
             </div>
             <span className="font-sans text-sm font-semibold tracking-tight text-gray-800 dark:text-slate-200">
-              Prof. Anand Sen
+              Prof. Ajesh Joe
             </span>
           </div>
 
@@ -77,7 +77,7 @@ export default function Footer({ onNavigate, userRole }: FooterProps) {
 
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
           <p className="text-center font-mono text-[11px] leading-relaxed text-gray-400 dark:text-slate-500 md:text-left">
-            © {currentYear} Prof. Anand Sen, Ph.D. All rights reserved. This repository is hosted solely as an open educational resource for university students and aspirants.
+            © {currentYear} Prof. Ajesh Joe. All rights reserved. This repository is hosted solely as an open educational resource for university students and aspirants.
           </p>
           <div className="flex space-x-4">
             <span className="font-mono text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider">
