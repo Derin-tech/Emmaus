@@ -242,10 +242,10 @@ export default function StudentDashboard({
                   )}
                   <div className="flex-1">
                     <p className="font-medium text-[#1D1D1F] text-[13px]">{ann.title}</p>
-                    <p className="mt-1 text-[#86868B] text-xs leading-relaxed">{ann.content}</p>
+                    <p className="mt-1 text-[#86868B] text-xs leading-relaxed">{ann.body}</p>
                     <div className="mt-2 flex items-center text-[10px] font-semibold text-[#86868B] space-x-3">
                       <span className="bg-white px-2 py-0.5 rounded-full border border-gray-100">{new Date(ann.createdAt).toLocaleDateString()}</span>
-                      {ann.targetCourse && <span className="bg-blue-50 text-[#0071E3] px-2 py-0.5 rounded-full">For: {exams.find(e => e.id === ann.targetCourse)?.title || ann.targetCourse}</span>}
+                      {ann.category !== 'general' && <span className="bg-blue-50 text-[#0071E3] px-2 py-0.5 rounded-full capitalize">{ann.category}</span>}
                     </div>
                   </div>
                 </div>
