@@ -25,46 +25,50 @@ export default function Footer({ onNavigate, userRole }: FooterProps) {
   };
 
   return (
-    <footer className="w-full border-t border-gray-100 bg-gray-50 py-12 transition-colors duration-300 dark:border-slate-800 dark:bg-slate-950">
+    <footer className="w-full border-t-2 border-gray-800 bg-[#1c1c1e] py-12 transition-colors duration-300">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
           
           {/* Brand */}
-          <div className="flex items-center space-x-2.5">
-            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
-              <GraduationCap size={15} />
+          <div className="flex items-center space-x-3">
+            <div className="flex h-8 w-8 items-center justify-center bg-[#111112] shadow-[inset_0_-2px_0_rgba(0,0,0,0.5)] rounded-lg">
+              <img 
+                src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Open%20Book.png" 
+                alt="Footer Logo" 
+                className="h-5 w-5 object-contain drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]"
+              />
             </div>
-            <span className="font-sans text-sm font-semibold tracking-tight text-gray-800 dark:text-slate-200">
+            <span className="font-display text-sm font-bold tracking-tight text-white">
               Prof. Ajesh Joe
             </span>
           </div>
 
           {/* Quick Links */}
-          <div className="flex flex-wrap justify-center gap-x-8 gap-y-2">
+          <div className="flex flex-wrap justify-center gap-x-8 gap-y-4">
             <button
               onClick={() => onNavigate('home')}
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+              className="text-[10px] uppercase tracking-[0.1em] font-black text-gray-400 hover:text-white transition-colors"
               id="footer-link-home"
             >
               Home
             </button>
             <button
               onClick={handleResourceClick}
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+              className="text-[10px] uppercase tracking-[0.1em] font-black text-gray-400 hover:text-white transition-colors"
               id="footer-link-resources"
             >
               Library Resources
             </button>
             <button
               onClick={() => onNavigate('about')}
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+              className="text-[10px] uppercase tracking-[0.1em] font-black text-gray-400 hover:text-white transition-colors"
               id="footer-link-about"
             >
               About the Professor
             </button>
             <button
               onClick={() => onNavigate('contact')}
-              className="text-xs font-medium text-gray-500 hover:text-blue-600 dark:text-slate-400 dark:hover:text-blue-400"
+              className="text-[10px] uppercase tracking-[0.1em] font-black text-gray-400 hover:text-white transition-colors"
               id="footer-link-contact"
             >
               Contact Office
@@ -73,15 +77,15 @@ export default function Footer({ onNavigate, userRole }: FooterProps) {
 
         </div>
 
-        <div className="my-8 h-px bg-gray-200/50 dark:bg-slate-800" />
+        <div className="my-8 h-[2px] bg-gray-800" />
 
-        <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-center font-mono text-[11px] leading-relaxed text-gray-400 dark:text-slate-500 md:text-left">
+        <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
+          <p className="text-center text-[9px] uppercase tracking-[0.2em] font-black text-gray-500 md:text-left max-w-xl leading-relaxed">
             © {currentYear} Prof. Ajesh Joe. All rights reserved. This repository is hosted solely as an open educational resource for university students and aspirants.
           </p>
           <div className="flex space-x-4">
-            <span className="font-mono text-[10px] text-gray-400 dark:text-slate-500 uppercase tracking-wider">
-              Department of Physics & Applied Mathematics
+            <span className="text-[9px] uppercase tracking-[0.2em] font-black text-[#F1E194] border-2 border-gray-800 bg-[#111112] px-3 py-1.5">
+              Department of Chemistry
             </span>
           </div>
         </div>
