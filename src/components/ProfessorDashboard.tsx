@@ -1231,9 +1231,54 @@ export default function ProfessorDashboard({
                         <p className="mt-1.5 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] p-3.5 text-sm leading-relaxed text-[#3A342E]">{doubt.question}</p>
 
                         {doubt.attachmentName && (
-                          <span className="mt-2 inline-flex items-center gap-1.5 text-xs text-[#8A7E6F]">
-                            📎 <span className="cursor-pointer underline decoration-[#D9C2A2] underline-offset-2 hover:text-[#4A0E1B]">{doubt.attachmentName}</span>
-                          </span>
+                          <div className="mt-2">
+                            {doubt.attachmentDataUrl ? (
+                              doubt.attachmentDataUrl.startsWith('data:image/') ? (
+                                /* Image: show thumbnail + open in new tab */
+                                <div className="rounded-xl border border-[#EFE7D8] overflow-hidden">
+                                  <img
+                                    src={doubt.attachmentDataUrl}
+                                    alt={doubt.attachmentName}
+                                    className="w-full max-h-48 object-contain bg-[#FBF7F0] cursor-pointer"
+                                    onClick={() => {
+                                      const win = window.open();
+                                      if (win) { win.document.write(`<img src="${doubt.attachmentDataUrl}" style="max-width:100%">`); }
+                                    }}
+                                    title="Click to open full size"
+                                  />
+                                  <div className="flex items-center justify-between px-3 py-1.5 bg-[#FBF7F0] border-t border-[#EFE7D8]">
+                                    <span className="text-[10px] text-[#8A7E6F] truncate">📎 {doubt.attachmentName}</span>
+                                    <a
+                                      href={doubt.attachmentDataUrl}
+                                      download={doubt.attachmentName}
+                                      className="text-[10px] font-semibold text-[#A9772E] hover:text-[#4A0E1B] shrink-0 ml-2"
+                                    >Download</a>
+                                  </div>
+                                </div>
+                              ) : (
+                                /* Other file type: download button */
+                                <div className="flex items-center gap-2.5 rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] px-3.5 py-2.5">
+                                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-semibold text-[#3A342E] truncate">📎 {doubt.attachmentName}</p>
+                                  </div>
+                                  <a
+                                    href={doubt.attachmentDataUrl}
+                                    download={doubt.attachmentName}
+                                    className="shrink-0 rounded-lg bg-[#A9772E] px-2.5 py-1 text-[10px] font-bold text-white hover:bg-[#4A0E1B] transition-colors"
+                                  >Open / Download</a>
+                                </div>
+                              )
+                            ) : (
+                              /* Legacy: no data URL stored */
+                              <span className="inline-flex items-center gap-1.5 text-xs text-[#8A7E6F]">
+                                📎 <span className="italic">{doubt.attachmentName}</span>
+                                <span className="text-[10px] text-[#C7C7CC]">(file not available)</span>
+                              </span>
+                            )}
+                          </div>
                         )}
 
                         {/* Answer / reply zone */}
