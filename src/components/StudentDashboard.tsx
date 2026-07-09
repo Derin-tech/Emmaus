@@ -303,7 +303,7 @@ export default function StudentDashboard({
               <div className="space-y-1.5">
                 <button
                   onClick={handleBackToExams}
-                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-gray-400 hover:text-blue-600"
+                  className="inline-flex items-center space-x-1.5 text-xs font-semibold text-blue-500 hover:text-blue-400"
                   id="back-to-exams-btn"
                 >
                   <ArrowLeft size={14} />
@@ -411,7 +411,7 @@ export default function StudentDashboard({
             {/* Header with Search and Filter */}
             <div className="flex flex-col space-y-4 border-b-2 border-gray-800 pb-6 mb-8">
               <div className="flex items-center justify-between">
-                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-gray-400 hover:text-blue-500">
+                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-blue-500 hover:text-blue-400">
                   <ArrowLeft size={12} />
                   <span>Back to Categories</span>
                 </button>
@@ -507,7 +507,7 @@ export default function StudentDashboard({
           <div>
             <div className="flex flex-col space-y-4 border-b-2 border-gray-800 pb-6 mb-8">
               <div className="flex items-center justify-between">
-                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-gray-400 hover:text-blue-500">
+                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-blue-500 hover:text-blue-400">
                   <ArrowLeft size={12} />
                   <span>Back to Categories</span>
                 </button>
@@ -598,7 +598,7 @@ export default function StudentDashboard({
           <div>
             <div className="flex flex-col space-y-4 border-b-2 border-gray-800 pb-6 mb-8">
               <div className="flex items-center justify-between">
-                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-gray-400 hover:text-blue-500">
+                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-blue-500 hover:text-blue-400">
                   <ArrowLeft size={12} />
                   <span>Back to Categories</span>
                 </button>
@@ -725,7 +725,7 @@ export default function StudentDashboard({
           <div>
             <div className="flex flex-col space-y-4 border-b-2 border-gray-800 pb-6 mb-8">
               <div className="flex items-center justify-between">
-                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-gray-400 hover:text-blue-500">
+                <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-blue-500 hover:text-blue-400">
                   <ArrowLeft size={12} />
                   <span>Back to Categories</span>
                 </button>
@@ -808,7 +808,7 @@ export default function StudentDashboard({
         {selectedExam && activeCategory === 'doubts' && (
           <div>
             <div className="flex items-center justify-between border-b-2 border-gray-800 pb-6 mb-8">
-              <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-gray-400 hover:text-blue-500">
+              <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-blue-500 hover:text-blue-400">
                 <ArrowLeft size={12} />
                 <span>Back to Categories</span>
               </button>
@@ -978,7 +978,7 @@ export default function StudentDashboard({
         {selectedExam && activeCategory === 'resources' && (
           <div>
             <div className="flex items-center justify-between border-b-2 border-gray-800 pb-6 mb-8">
-              <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-gray-400 hover:text-blue-500">
+              <button onClick={handleBackToCategories} className="inline-flex items-center space-x-1 font-semibold text-xs text-blue-500 hover:text-blue-400">
                 <ArrowLeft size={12} />
                 <span>Back to Categories</span>
               </button>
