@@ -10,15 +10,11 @@ import React, { useState, useEffect } from 'react';
 import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
-import Hero from './components/Hero';
-import SelectionPage from './components/SelectionPage';
-import AboutPage from './components/AboutPage';
-import ContactPage from './components/ContactPage';
-import StudentDashboard from './components/StudentDashboard';
-import ProfessorDashboard from './components/ProfessorDashboard';
-
-import { EXAMS, INITIAL_FAQS } from './data';
-import { usePortalData } from './context/PortalDataContext';
+import HomePage from './pages/HomePage';
+import SelectionPage from './pages/SelectionPage';
+import AboutPage from './pages/AboutPage';
+import ContactPage from './pages/ContactPage';
+import ResourcesPage from './pages/ResourcesPage';
 
 export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
   const navigate = useNavigate();
@@ -64,52 +60,6 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
     navigate('/resources');
   };
 
-  // ─── Data from context ────────────────────────────────────────────────────
-  const {
-    notes, videos, pyqs, practiceSheets, doubts, announcements,
-    loading, error, reload,
-    handleAddNote, handleEditNote, handleDeleteNote, handleIncrementNoteDownload,
-    handleAddVideo, handleEditVideo, handleDeleteVideo,
-    handleAddPyq, handleEditPyq, handleDeletePyq,
-    handleAddPracticeSheet, handleEditPracticeSheet, handleDeletePracticeSheet,
-    handleAddDoubt, handleReplyDoubt, handleDeleteDoubt,
-    handleAddAnnouncement, handleEditAnnouncement, handleDeleteAnnouncement, handleTogglePinAnnouncement,
-  } = usePortalData();
-
-  // ─── Loading / Error UI ───────────────────────────────────────────────────
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F3EC] dark:bg-[#1A1817]">
-        <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-[#4A0E1B] border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-[#4A0E1B] dark:text-[#F4E7E5]">
-            Loading Portal…
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#F7F3EC] dark:bg-[#1A1817] p-6">
-        <div className="max-w-md text-center space-y-4">
-          <p className="text-3xl">⚠️</p>
-          <h2 className="text-lg font-black uppercase tracking-[0.2em] text-[#4A0E1B] dark:text-[#F4E7E5]">
-            Failed to connect
-          </h2>
-          <p className="text-sm text-[#22201F] dark:text-[#F6F2EA]/80">{error}</p>
-          <button
-            onClick={reload}
-            className="px-6 py-3 bg-[#4A0E1B] text-white text-xs font-black uppercase tracking-[0.2em] rounded-lg hover:bg-[#7C2532] transition-colors"
-          >
-            Retry
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   // ─── Main Render ──────────────────────────────────────────────────────────
   return (
     <div className="min-h-screen flex flex-col bg-[#F7F3EC] dark:bg-[#1A1817] text-[#22201F] dark:text-[#F6F2EA] transition-colors duration-300">
@@ -124,55 +74,11 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
 
       <main className="flex-grow">
         <Routes>
-          <Route path="/" element={<Hero onGetStarted={() => handleNavigate('selection')} onNavigate={handleNavigate} />} />
+          <Route path="/" element={<HomePage onGetStarted={() => handleNavigate('selection')} onNavigate={handleNavigate} />} />
           
           <Route path="/selection" element={<SelectionPage onSelectRole={handleSelectRole} />} />
           
-          <Route path="/resources/*" element={
-            !userRole ? <Navigate to="/selection" replace /> :
-            userRole === 'student' ? (
-              <StudentDashboard
-                exams={EXAMS}
-                notes={notes}
-                videos={videos}
-                pyqs={pyqs}
-                practiceSheets={practiceSheets}
-                doubts={doubts}
-                faqs={INITIAL_FAQS}
-                announcements={announcements}
-                onAddDoubt={handleAddDoubt}
-                onIncrementNoteDownload={handleIncrementNoteDownload}
-              />
-            ) : (
-              <ProfessorDashboard
-                exams={EXAMS}
-                notes={notes}
-                videos={videos}
-                pyqs={pyqs}
-                practiceSheets={practiceSheets}
-                doubts={doubts}
-                announcements={announcements}
-                onAddNote={handleAddNote}
-                onEditNote={handleEditNote}
-                onDeleteNote={handleDeleteNote}
-                onAddVideo={handleAddVideo}
-                onEditVideo={handleEditVideo}
-                onDeleteVideo={handleDeleteVideo}
-                onAddPyq={handleAddPyq}
-                onEditPyq={handleEditPyq}
-                onDeletePyq={handleDeletePyq}
-                onAddPracticeSheet={handleAddPracticeSheet}
-                onEditPracticeSheet={handleEditPracticeSheet}
-                onDeletePracticeSheet={handleDeletePracticeSheet}
-                onReplyDoubt={handleReplyDoubt}
-                onDeleteDoubt={handleDeleteDoubt}
-                onAddAnnouncement={handleAddAnnouncement}
-                onEditAnnouncement={handleEditAnnouncement}
-                onDeleteAnnouncement={handleDeleteAnnouncement}
-                onTogglePinAnnouncement={handleTogglePinAnnouncement}
-              />
-            )
-          } />
+          <Route path="/resources/*" element={<ResourcesPage userRole={userRole} />} />
 
           <Route path="/about" element={<AboutPage onNavigate={handleNavigate} />} />
           <Route path="/contact" element={<ContactPage />} />

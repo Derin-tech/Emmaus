@@ -5,7 +5,7 @@
 
 import React, { useState } from 'react';
 import { Mail, Clock, Building, MapPin, CheckCircle } from 'lucide-react';
-import { PremiumCard } from './PremiumCard';
+import { PremiumCard } from '../components/PremiumCard';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
