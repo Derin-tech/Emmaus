@@ -54,68 +54,19 @@ import { extractYouTubeId, getYoutubeThumbnail } from '../lib/youtube';
 import type { PDFDocumentInfo } from './pdf/PDFContext';
 import { PremiumCard } from './PremiumCard';
 import { SUBJECTS, SUBJECT_BADGE } from '../constants/subjects';
+import { PremiumBreadcrumb } from './PremiumBreadcrumb';
+import { EmptyState } from './ui/EmptyState';
+import { SubjectBadge } from './ui/SubjectBadge';
+import { DifficultyChip } from './ui/DifficultyChip';
+import { CARD, INPUT, PRIMARY_BTN, GHOST_BTN, MICRO, BACK_BTN, FIELD_LABEL, PILL_SOFT, PILL_GHOST, PILL_GOLD } from './ui/tokens';
 
-/* ------------------------------------------------------------------ *
- * Design tokens — shared "Professor's Study" system (see DESIGN_SYSTEM.md)
- * ------------------------------------------------------------------ */
-const CARD =
-  'rounded-2xl border border-[#EAE1D2] dark:border-[#4A433E] bg-white dark:bg-[#22201F] shadow-[0_1px_2px_rgba(34,32,31,0.04),0_18px_36px_-26px_rgba(34,32,31,0.35)]';
-const INPUT =
-  'w-full rounded-xl border border-[#E3D8C5] bg-[#FBF7F0] dark:bg-[#2A2726] px-3.5 py-2.5 text-sm text-[#22201F] dark:text-[#F6F2EA] placeholder:text-[#B3A996] outline-none transition focus:border-[#4A0E1B]/50 focus:bg-white dark:bg-[#22201F] focus:ring-4 focus:ring-[#4A0E1B]/10';
-const PRIMARY_BTN =
-  'inline-flex items-center justify-center gap-2 rounded-xl bg-[#4A0E1B] px-4 py-2.5 text-xs font-bold tracking-wide text-white transition-colors hover:bg-[#380A14] focus:outline-none focus-visible:ring-4 focus-visible:ring-[#4A0E1B]/20 disabled:opacity-50';
-const GHOST_BTN =
-  'inline-flex items-center justify-center gap-2 rounded-xl border border-[#E3D8C5] bg-white dark:bg-[#22201F] px-4 py-2.5 text-xs font-semibold text-[#4A443E] transition-colors hover:bg-[#F6F2EA] dark:bg-[#1A1817]';
-const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F] dark:text-[#A89F91]';
-const BACK_BTN =
-  'inline-flex items-center gap-1.5 text-xs font-bold text-[#4A0E1B] transition-colors hover:text-[#380A14]';
-const FIELD_LABEL = 'mb-1.5 block text-[11px] font-bold uppercase tracking-[0.1em] text-[#8A7E6F] dark:text-[#A89F91]';
-const PILL_SOFT =
-  'inline-flex items-center gap-1.5 rounded-lg bg-[#F4E7E5] dark:bg-[#38151A] px-2.5 py-1.5 text-[11px] font-bold text-[#4A0E1B] transition-colors hover:bg-[#EEDAD7]';
-const PILL_GHOST =
-  'inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[11px] font-semibold text-[#6E645A] transition-colors hover:bg-[#F6F2EA] dark:bg-[#1A1817] hover:text-[#22201F] dark:text-[#F6F2EA]';
-const PILL_GOLD =
-  'inline-flex items-center gap-1.5 rounded-lg bg-[#F7EFD9] dark:bg-[#362A0D] px-2.5 py-1.5 text-[11px] font-bold text-[#8A6A16] transition-colors hover:bg-[#F1E6C9]';
-
+/* ─── Announcement category map (local to StudentDashboard) ─────────────── */
 const ANN_CAT: Record<AnnouncementCategory, { label: string; cls: string }> = {
   general: { label: 'General', cls: 'bg-[#EFE7D8] text-[#6E645A]' },
   exam: { label: 'Exam', cls: 'bg-[#F4E4E4] text-[#4A0E1B]' },
   resource: { label: 'Resource', cls: 'bg-[#F7EFD9] dark:bg-[#362A0D] text-[#8A6A16]' },
   schedule: { label: 'Schedule', cls: 'bg-[#F4E2E5] text-[#7C2532]' }
 };
-
-/* ─── Subject badge component ────────────────────────────────────────────── */
-function SubjectBadge({ subject }: { subject: string }) {
-  const s = SUBJECT_BADGE[subject as keyof typeof SUBJECT_BADGE];
-  if (!s) return <span className="text-[9px] font-bold uppercase tracking-wider text-[#8A7E6F] dark:text-[#A89F91]">{subject}</span>;
-  return (
-    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold ${s.bg} ${s.text}`}>
-      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
-      {s.emoji} {s.label}
-    </span>
-  );
-}
-
-function DifficultyChip({ level }: { level: 'Easy' | 'Moderate' | 'Hard' }) {
-  const map = {
-    Easy: 'bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]',
-    Moderate: 'bg-[#FFF8E1] text-[#F57F17] border-[#FFECB3]',
-    Hard: 'bg-[#FFEBEE] text-[#C62828] border-[#FFCDD2]',
-  };
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold border ${map[level]}`}>{level}</span>;
-}
-
-function EmptyState({ label }: { label: string }) {
-  return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-[#E0D5C2] bg-[#FBF7F0] dark:bg-[#2A2726] px-6 py-16 text-center">
-      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#F7EFD9] dark:bg-[#362A0D] text-[#8A6A16]">
-        <Search size={22} />
-      </div>
-      <p className="mt-4 text-sm font-semibold text-[#22201F] dark:text-[#F6F2EA]">Nothing found</p>
-      <p className="mt-1 max-w-sm text-sm text-[#8A7E6F] dark:text-[#A89F91]">{label}</p>
-    </div>
-  );
-}
 
 interface StudentDashboardProps {
   exams: ExamInfo[];
