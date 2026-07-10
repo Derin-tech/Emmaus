@@ -34,7 +34,10 @@ import {
   FlaskConical,
   Stethoscope,
   Hexagon,
-  Star
+  Star,
+  LayoutGrid,
+  List,
+  ArrowDownUp
 } from 'lucide-react';
 import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ, Announcement, AnnouncementCategory } from '../types';
 import { VideoWatchModal } from './VideoWatchModal';
@@ -44,6 +47,7 @@ import { uploadDoubtAttachment } from '../services/doubtsService';
 import { extractYouTubeId, getYoutubeThumbnail } from '../lib/youtube';
 import type { PDFDocumentInfo } from './pdf/PDFContext';
 import { PremiumCard } from './PremiumCard';
+import { SUBJECTS, SUBJECT_BADGE } from '../constants/subjects';
 
 /* ------------------------------------------------------------------ *
  * Design tokens — shared "Professor's Study" system (see DESIGN_SYSTEM.md)
@@ -73,6 +77,18 @@ const ANN_CAT: Record<AnnouncementCategory, { label: string; cls: string }> = {
   resource: { label: 'Resource', cls: 'bg-[#F7EFD9] text-[#8A6A16]' },
   schedule: { label: 'Schedule', cls: 'bg-[#F4E2E5] text-[#7C2532]' }
 };
+
+/* ─── Subject badge component ────────────────────────────────────────────── */
+function SubjectBadge({ subject }: { subject: string }) {
+  const s = SUBJECT_BADGE[subject as keyof typeof SUBJECT_BADGE];
+  if (!s) return <span className="text-[9px] font-bold uppercase tracking-wider text-[#8A7E6F]">{subject}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold ${s.bg} ${s.text}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+      {s.emoji} {s.label}
+    </span>
+  );
+}
 
 function DifficultyChip({ level }: { level: 'Easy' | 'Medium' | 'Hard' }) {
   const map = {
@@ -135,6 +151,10 @@ export default function StudentDashboard({
   const [activePdfViewer, setActivePdfViewer] = useState<{ title: string; fileUrl: string } | null>(null);
   const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
 
+  // Notes View & Sort States
+  const [noteViewMode, setNoteViewMode] = useState<'grid' | 'list'>('grid');
+  const [noteSort, setNoteSort] = useState<'recent' | 'popular'>('recent');
+
   // Doubt Form State
   const [doubtForm, setDoubtForm] = useState({
     name: '',
@@ -192,21 +212,10 @@ export default function StudentDashboard({
     setSelectedSubject('All');
   };
 
-  // SUBJECT filters dynamically computed based on active contents
+  // SUBJECT filters — always the canonical three subjects (+ 'All')
   const availableSubjects = useMemo(() => {
-    if (!selectedExam) return ['All'];
-    let list: string[] = [];
-    if (activeCategory === 'notes') {
-      list = notes.filter(n => n.course === selectedExam).map(n => n.subject);
-    } else if (activeCategory === 'videos') {
-      list = videos.filter(v => v.course === selectedExam).map(v => v.subject);
-    } else if (activeCategory === 'pyqs') {
-      list = pyqs.filter(p => p.course === selectedExam).map(p => p.subject);
-    } else if (activeCategory === 'sheets') {
-      list = practiceSheets.filter(p => p.course === selectedExam).map(p => p.subject);
-    }
-    return ['All', ...Array.from(new Set(list))];
-  }, [selectedExam, activeCategory, notes, videos, pyqs, practiceSheets]);
+    return ['All', ...SUBJECTS];
+  }, []);
 
   // Dynamic filtering algorithms
   const filteredNotes = useMemo(() => {
@@ -312,6 +321,17 @@ export default function StudentDashboard({
     });
   }, [announcements]);
 
+  const recentUploads = useMemo(() => {
+    return [
+      ...notes.slice(0, 2).map(n => ({ type: 'Note', title: n.title, course: n.course })),
+      ...videos.slice(0, 2).map(v => ({ type: 'Video', title: v.title, course: v.course }))
+    ].slice(0, 3);
+  }, [notes, videos]);
+
+  const popularResources = useMemo(() => {
+    return [...notes].sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0)).slice(0, 4);
+  }, [notes]);
+
   // Category cards (Step 2) with live counts for the selected exam
   const categoryCards = [
     { id: 'notes' as const, title: 'Study Notes', desc: 'Rigorous mechanism summaries and multi-concept chapter breakdowns.', icon: <BookOpen size={20} />, count: notes.filter(n => n.course === selectedExam).length, unit: 'notes' },
@@ -326,33 +346,141 @@ export default function StudentDashboard({
     <div className="dash-root min-h-screen bg-[#F6F2EA] py-12 text-[#22201F]">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
 
-        {/* ================= PROFESSOR ANNOUNCEMENTS ================= */}
-        {!selectedExam && announcements.length > 0 && (
-          <div className={`${CARD} mb-8 p-5 sm:p-6`}>
-            <div className="mb-4 flex items-center gap-2.5">
-              <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]">
-                <Megaphone size={16} />
-              </span>
-              <h3 className={MICRO}>Professor announcements</h3>
-            </div>
-            <div className="space-y-2.5">
-              {sortedAnnouncements.slice(0, 3).map(ann => (
-                <div key={ann.id} className="rounded-xl border border-[#EFE7D8] bg-[#FBF7F0] p-4">
-                  <div className="flex items-start gap-2.5">
-                    {ann.pinned && <Pin size={14} className="mt-0.5 shrink-0 text-[#4A0E1B]" fill="currentColor" />}
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-[#22201F]">{ann.title}</p>
-                      <p className="mt-1 text-xs leading-relaxed text-[#5A534B]">{ann.body}</p>
-                      <div className="mt-2.5 flex items-center gap-2">
-                        <span className="dash-mono text-[11px] text-[#A79A88]">{new Date(ann.createdAt).toLocaleDateString()}</span>
-                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${ANN_CAT[ann.category].cls}`}>
-                          {ANN_CAT[ann.category].label}
-                        </span>
-                      </div>
-                    </div>
+        {/* ================= LANDING PAGE (REDESIGNED V2) ================= */}
+        {!selectedExam && (
+          <div className="flex flex-col gap-6 pb-12">
+            {/* Hero Section */}
+            <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A0E1B] to-[#7C2532] p-7 text-white shadow-[0_22px_44px_-24px_rgba(74,14,27,0.75)] sm:p-10 animate-[fadeInUp_0.8s_ease-out_forwards]">
+              <div className="pointer-events-none absolute -right-16 -top-20 h-60 w-60 rounded-full bg-[#D9C2A2]/20 blur-3xl" />
+              <div className="pointer-events-none absolute -bottom-24 left-20 h-52 w-52 rounded-full bg-[#D9C2A2]/10 blur-3xl" />
+
+              <div className="relative flex flex-col items-center gap-7 text-center md:flex-row md:items-center md:gap-9 md:text-left">
+                {/* Academic Icon */}
+                <div className="relative shrink-0 animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
+                  <div className="flex h-28 w-28 items-center justify-center rounded-[28px] bg-gradient-to-br from-[#EAD3AE] to-[#D9C2A2] shadow-lg sm:h-32 sm:w-32">
+                    <Atom className="text-[#4A0E1B]" size={48} strokeWidth={1.5} />
+                  </div>
+                  <span className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl border-4 border-[#4A0E1B] bg-white text-[#4A0E1B]">
+                    <BookOpen size={18} />
+                  </span>
+                </div>
+
+                {/* Identity / Text */}
+                <div className="max-w-xl">
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#D9C2A2] animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>COURSE REPOSITORIES</p>
+                  <h1 className="dash-serif mt-2 text-3xl font-semibold leading-tight sm:text-[2.5rem] animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.3s', animationFillMode: 'both' }}>Choose Your Examination</h1>
+                  <p className="mt-3 text-sm leading-relaxed text-white/70 animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+                    Organize your chemistry resources by examination and access carefully curated notes, lectures, PYQs, and practice material.
+                  </p>
+
+                  <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
+                    {[
+                      { icon: <Compass size={13} />, text: '5 Examination Tracks' },
+                      { icon: <FileText size={13} />, text: '24 Study Notes' },
+                      { icon: <VideoIcon size={13} />, text: '18 Video Lectures' },
+                      { icon: <BookOpen size={13} />, text: '12 Practice Sheets' },
+                      { icon: <FileSpreadsheet size={13} />, text: 'PYQs Included' }
+                    ].map((chip, i) => (
+                      <span
+                        key={i}
+                        className="inline-flex items-center gap-1.5 rounded-full border border-[#D9C2A2]/30 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/90 hover:border-[#D9C2A2] hover:shadow-[0_0_12px_rgba(217,194,162,0.3)] hover:-translate-y-0.5 transition-all duration-300 animate-[fadeInUp_0.8s_ease-out_forwards]"
+                        style={{ animationDelay: `${0.5 + i * 0.1}s`, animationFillMode: 'both' }}
+                      >
+                        <span className="text-[#D9C2A2]">{chip.icon}</span>
+                        {chip.text}
+                      </span>
+                    ))}
                   </div>
                 </div>
+              </div>
+            </div>
+
+            {/* Examination Grid */}
+            <div className="flex flex-wrap justify-center gap-6 mt-4">
+              {exams.map((exam) => (
+                <button
+                  key={exam.id}
+                  onClick={() => setSelectedExam(exam.id)}
+                  className="group relative flex w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#EAE1D2] bg-white p-6 text-left shadow-[0_4px_12px_rgba(34,32,31,0.04)] transition-all duration-[220ms] ease-out hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(74,14,27,0.12)] sm:w-[calc(50%-12px)] lg:w-[340px] h-[230px]"
+                >
+                  <div className="absolute bottom-0 left-0 h-1 w-full scale-x-0 bg-[#C9A13B] transition-transform duration-[220ms] ease-out group-hover:scale-x-100 origin-left"></div>
+                  
+                  <div className="flex items-start justify-between w-full">
+                    <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#F4E7E5] text-[#4A0E1B] transition-colors duration-[220ms] ease-out group-hover:bg-[#F7EFD9] group-hover:text-[#8A6A16]">
+                      {renderExamIcon(exam.icon)}
+                    </span>
+                    <span className="dash-mono rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2.5 py-1 text-[10px] font-medium text-[#8A7E6F]">
+                      {notes.filter(n => n.course === exam.id).length + videos.filter(v => v.course === exam.id).length + practiceSheets.filter(s => s.course === exam.id).length + pyqs.filter(p => p.course === exam.id).length} Resources
+                    </span>
+                  </div>
+                  
+                  <h3 className="dash-serif mt-5 text-xl font-bold text-[#22201F]">{exam.title}</h3>
+                  <p className="mt-2 text-sm text-[#8A7E6F] line-clamp-1">{exam.description}</p>
+                  
+                  <div className="mt-auto pt-4 flex items-center text-[#4A0E1B] font-bold text-xs uppercase tracking-widest">
+                    Explore <ArrowRight size={14} className="ml-1.5 transition-transform duration-[220ms] ease-out group-hover:translate-x-2" />
+                  </div>
+                </button>
               ))}
+            </div>
+
+            {/* Supporting Panels - Reduced Visual Weight */}
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 items-start border-t border-[#EAE1D2] pt-8">
+              
+              {/* Quick Statistics */}
+              <div className="rounded-2xl border border-[#EAE1D2] bg-white p-5 shadow-sm lg:col-span-1">
+                <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]">Platform Stats</h3>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center justify-between"><span className="text-xs text-[#5A534B]">Notes</span><span className="text-xs font-bold">{notes.length}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-xs text-[#5A534B]">Videos</span><span className="text-xs font-bold">{videos.length}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-xs text-[#5A534B]">Practice Sheets</span><span className="text-xs font-bold">{practiceSheets.length}</span></div>
+                  <div className="flex items-center justify-between"><span className="text-xs text-[#5A534B]">PYQs</span><span className="text-xs font-bold">{pyqs.length}</span></div>
+                </div>
+              </div>
+
+              {/* Featured Announcements */}
+              <div className="rounded-2xl border border-[#EAE1D2] bg-white p-5 shadow-sm lg:col-span-1">
+                 <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]">Announcements</h3>
+                 <div className="space-y-4">
+                   {sortedAnnouncements.filter(a => a.pinned).slice(0, 2).map(ann => (
+                     <div key={ann.id}>
+                       <p className="text-xs font-bold text-[#22201F] line-clamp-1">{ann.title}</p>
+                       <p className="mt-1 text-[10px] text-[#5A534B] line-clamp-2">{ann.body}</p>
+                     </div>
+                   ))}
+                   {sortedAnnouncements.filter(a => a.pinned).length === 0 && <p className="text-xs text-[#8A7E6F]">No pinned announcements.</p>}
+                 </div>
+              </div>
+
+              {/* Recently Added */}
+              <div className="rounded-2xl border border-[#EAE1D2] bg-white p-5 shadow-sm lg:col-span-1">
+                <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]">Recently Added</h3>
+                <div className="space-y-3">
+                  {recentUploads.map((item, i) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                       <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#F4E7E5] text-[#4A0E1B]">{item.type === 'Note' ? <BookOpen size={10} /> : <VideoIcon size={10} />}</span>
+                       <div>
+                         <p className="text-xs font-semibold text-[#22201F] line-clamp-1">{item.title}</p>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Popular Resources */}
+              <div className="rounded-2xl border border-[#EAE1D2] bg-white p-5 shadow-sm lg:col-span-1">
+                <h3 className="mb-4 text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F]">Popular</h3>
+                <div className="space-y-3">
+                  {popularResources.map(res => (
+                    <div key={res.id} className="cursor-pointer group flex items-center gap-2.5" onClick={() => setActivePdfViewer({ title: res.title, fileUrl: res.fileUrl })}>
+                       <span className="flex h-6 w-6 items-center justify-center rounded-md bg-[#F7EFD9] text-[#8A6A16]"><Download size={10} /></span>
+                       <div>
+                         <p className="text-xs font-semibold text-[#22201F] line-clamp-1 group-hover:text-[#4A0E1B] transition-colors">{res.title}</p>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         )}
@@ -381,61 +509,6 @@ export default function StudentDashboard({
           </nav>
         )}
 
-        {/* ================= STEP 1: EXAM SELECTION ================= */}
-        {!selectedExam && (
-          <div>
-            <div className="mb-10 text-center">
-              <p className="dash-mono mb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-[#C0713D]">Course repositories</p>
-              <h2 className="dash-serif mt-2 text-3xl font-semibold text-[#22201F] sm:text-4xl">Choose your examination</h2>
-              <p className="mx-auto mt-3 max-w-md text-sm text-[#8A7E6F]">
-                Select your academic category below to unlock a highly organised directory of learning materials.
-              </p>
-            </div>
-
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {exams.map((exam) => {
-                const accentColor = getExamColor(exam.id);
-                return (
-                  <button
-                    key={exam.id}
-                    onClick={() => setSelectedExam(exam.id)}
-                    className="group relative flex h-full flex-col overflow-hidden rounded-[10px] border border-[#E0D4BC] bg-[#FFFEF9] p-7 text-left shadow-[0_4px_16px_rgba(58,46,31,0.06)] transition-all duration-300 hover:-translate-y-[3px] hover:shadow-[0_8px_20px_rgba(58,46,31,0.1)]"
-                    id={`exam-card-${exam.id}`}
-                  >
-                    {/* Left Accent Bar */}
-                    <div 
-                      className="absolute bottom-0 left-0 top-0 w-1 transition-all duration-300 group-hover:w-[6px]"
-                      style={{ backgroundColor: accentColor }}
-                    />
-                    
-                    {/* Dog Ear Fold effect using border triangles */}
-                    <div className="absolute right-0 top-0 h-0 w-0 border-b-[24px] border-r-[24px] border-b-transparent border-r-[#FAF3E7] opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <div className="absolute right-0 top-0 h-0 w-0 border-l-[24px] border-t-[24px] border-l-[#E0D4BC]/30 border-t-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    
-                    <span 
-                      className="mb-5 flex items-start text-left" 
-                      style={{ color: accentColor }}
-                    >
-                      {renderExamIcon(exam.icon)}
-                    </span>
-                    <h3 className="dash-serif text-[20px] font-semibold text-[#3A2E1F]">{exam.title}</h3>
-                    <p className="mb-6 mt-2 text-[14px] leading-relaxed text-[#6E6155]">{exam.description}</p>
-                    
-                    <div className="mt-auto border-t border-dashed border-[#E0D4BC] pt-4">
-                      <span 
-                        className="dash-mono inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide transition-all duration-200"
-                        style={{ color: accentColor }}
-                      >
-                        Explore course 
-                        <ArrowRight size={14} className="transition-transform duration-300 group-hover:translate-x-1" strokeWidth={2} />
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        )}
 
         {/* ================= STEP 2: CATEGORY DASHBOARD ================= */}
         {selectedExam && !activeCategory && (
@@ -482,60 +555,130 @@ export default function StudentDashboard({
 
         {/* ================= NOTES EXPLORER ================= */}
         {selectedExam && activeCategory === 'notes' && (
-          <div>
-            <button onClick={handleBackToCategories} className={BACK_BTN}><ArrowLeft size={14} /> Back to categories</button>
-            <div className="mt-4 mb-6">
-              <p className={MICRO}>{currentExamInfo?.title} · Study notes</p>
-              <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F]">Study notes</h2>
-            </div>
-
-            <div className="mb-8 flex flex-col gap-2.5 sm:flex-row sm:items-center">
-              <div className="relative flex-1">
-                <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B3A996]" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search notes by title, chapter or concept…"
-                  className={`${INPUT} pl-10`}
-                />
+          <div className="animate-[fadeInUp_0.4s_ease-out_forwards]">
+            <button onClick={handleBackToCategories} className={`${BACK_BTN} mb-4`}><ArrowLeft size={14} /> Back to categories</button>
+            
+            {/* 1. Premium Hero */}
+            <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#4A0E1B] to-[#7C2532] p-6 sm:p-8 text-white shadow-[0_12px_24px_-12px_rgba(74,14,27,0.5)] mb-8">
+              <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#D9C2A2]/20 blur-3xl" />
+              <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                  <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#D9C2A2]">
+                    {currentExamInfo?.title}
+                  </p>
+                  <h2 className="dash-serif mt-1 text-2xl md:text-3xl font-semibold">Study Notes</h2>
+                  <p className="mt-2 text-sm text-white/70 max-w-md">
+                    Access high-quality study materials, comprehensive chapter summaries, and class notes.
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-4">
+                  <div className="rounded-2xl bg-white/10 p-4 backdrop-blur-md border border-white/20 text-center min-w-[100px]">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#D9C2A2]">Total</p>
+                    <p className="dash-mono text-2xl font-bold mt-1">{notes.filter(n => n.course === selectedExam).length}</p>
+                  </div>
+                </div>
               </div>
-              <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className={`${INPUT} sm:w-52`}>
-                {availableSubjects.map((subject) => (
-                  <option key={subject} value={subject}>{subject === 'All' ? 'All subjects' : subject}</option>
-                ))}
-              </select>
             </div>
 
+            {/* 2. Unified Toolbar & 3. Subject Navigation */}
+            <div className={`${CARD} mb-6 flex flex-col p-2 sm:flex-row sm:items-center sm:justify-between gap-2 overflow-hidden`}>
+              <div className="flex flex-1 items-center gap-1 overflow-x-auto pb-2 sm:pb-0 hide-scrollbar pl-2">
+                {availableSubjects.map((subject) => (
+                  <button
+                    key={subject}
+                    onClick={() => setSelectedSubject(subject)}
+                    className={`whitespace-nowrap rounded-lg px-4 py-2 text-[11px] font-bold transition-all ${
+                      selectedSubject === subject
+                        ? 'bg-[#4A0E1B] text-white shadow-md'
+                        : 'text-[#6E645A] hover:bg-[#F6F2EA] hover:text-[#22201F]'
+                    }`}
+                  >
+                    {subject === 'All' ? 'All' : subject}
+                  </button>
+                ))}
+              </div>
+              
+              <div className="flex items-center gap-2 border-t border-[#F2ECDF] pt-2 sm:border-none sm:pt-0 pl-2 pr-2">
+                {/* Search */}
+                <div className="relative w-full sm:w-56 lg:w-64">
+                  <Search size={14} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-[#B3A996]" />
+                  <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search notes..."
+                    className="w-full rounded-lg border border-[#E3D8C5] bg-[#FBF7F0] py-2 pl-9 pr-3 text-xs text-[#22201F] placeholder:text-[#B3A996] outline-none transition focus:border-[#4A0E1B]/50 focus:bg-white focus:ring-2 focus:ring-[#4A0E1B]/10"
+                  />
+                </div>
+                
+                {/* Sort Toggle (Visual) */}
+                <button 
+                  onClick={() => setNoteSort(s => s === 'recent' ? 'popular' : 'recent')}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-[#E3D8C5] bg-[#FBF7F0] text-[#6E645A] transition-colors hover:bg-white hover:text-[#22201F]"
+                  title={`Sort: ${noteSort === 'recent' ? 'Recently Added' : 'Most Popular'}`}
+                >
+                  <ArrowDownUp size={14} />
+                </button>
+
+                {/* View Toggle (Visual) */}
+                <div className="flex h-9 shrink-0 items-center rounded-lg border border-[#E3D8C5] bg-[#FBF7F0] p-1">
+                  <button
+                    onClick={() => setNoteViewMode('grid')}
+                    className={`flex h-full w-8 items-center justify-center rounded-md transition-all ${noteViewMode === 'grid' ? 'bg-white text-[#4A0E1B] shadow-sm' : 'text-[#8A7E6F] hover:text-[#22201F]'}`}
+                  >
+                    <LayoutGrid size={14} />
+                  </button>
+                  <button
+                    onClick={() => setNoteViewMode('list')}
+                    className={`flex h-full w-8 items-center justify-center rounded-md transition-all ${noteViewMode === 'list' ? 'bg-white text-[#4A0E1B] shadow-sm' : 'text-[#8A7E6F] hover:text-[#22201F]'}`}
+                  >
+                    <List size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Notes Grid & 5. Premium Note Card */}
             {filteredNotes.length === 0 ? (
               <EmptyState label="No study notes match your search or subject filter." />
             ) : (
-              <div className="space-y-8">
-                {Array.from(new Set(filteredNotes.map(n => n.subject))).map((subj) => (
-                  <div key={subj}>
-                    <h3 className="dash-serif mb-4 border-b border-[#EAE1D2] pb-2 text-lg font-semibold text-[#22201F]">{subj}</h3>
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {filteredNotes.filter(n => n.subject === subj).map((note) => (
-                        <div key={note.id} className={`${CARD} flex flex-col p-5`}>
-                          <div className="flex items-start justify-between gap-3">
-                            <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]"><FileText size={18} /></span>
-                            <span className="rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2.5 py-1 text-[10px] font-bold text-[#8A7E6F]">{note.chapter}</span>
-                          </div>
-                          <h4 className="mt-4 text-sm font-bold text-[#22201F]">{note.title}</h4>
-                          <p className="mt-1 text-xs leading-relaxed text-[#8A7E6F] line-clamp-2">{note.description}</p>
-                          <div className="mt-4 flex items-center justify-between border-t border-[#F2ECDF] pt-4">
-                            <span className="dash-mono text-[11px] text-[#A79A88]">{note.fileSize} · {note.downloadCount || 0} downloads</span>
-                            <div className="flex gap-1.5">
-                              <button onClick={() => setActivePdfViewer({ title: note.title, fileUrl: note.fileUrl })} className={PILL_GHOST}>
-                                <Eye size={12} /> View
-                              </button>
-                              <button onClick={() => handleDownloadFile(note.id, note.fileUrl)} className={PILL_SOFT}>
-                                <Download size={12} /> Download
-                              </button>
-                            </div>
-                          </div>
+              <div className={`grid gap-5 ${noteViewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                {filteredNotes.map((note) => (
+                  <div key={note.id} className={`${CARD} flex flex-col p-5 group transition-all duration-[220ms] hover:-translate-y-1 hover:shadow-[0_12px_24px_-12px_rgba(34,32,31,0.15)]`}>
+                    <div className="flex items-start gap-3">
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B] transition-colors group-hover:bg-[#4A0E1B] group-hover:text-white">
+                        <FileText size={18} />
+                      </span>
+                      <div className="min-w-0 flex-1">
+                        <div className="mb-1.5 flex flex-wrap items-center gap-1.5">
+                          <span className="inline-block rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-[#8A7E6F]">
+                            {note.chapter}
+                          </span>
+                          <SubjectBadge subject={note.subject} />
                         </div>
-                      ))}
+                        <h4 className="text-sm font-bold text-[#22201F] truncate group-hover:text-[#4A0E1B] transition-colors">
+                          {note.title}
+                        </h4>
+                      </div>
+                    </div>
+                    
+                    <p className="mt-3 text-xs leading-relaxed text-[#8A7E6F] line-clamp-2 min-h-[2.5rem]">
+                      {note.description}
+                    </p>
+                    
+                    <div className="mt-4 flex items-center justify-between border-t border-[#F2ECDF] pt-4">
+                      <div className="flex flex-col">
+                        <span className="dash-mono text-[10px] text-[#A79A88]">{note.fileSize}</span>
+                        <span className="dash-mono text-[10px] text-[#A79A88]">{note.downloadCount || 0} downloads</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button onClick={() => setActivePdfViewer({ title: note.title, fileUrl: note.fileUrl })} className="flex h-8 w-8 items-center justify-center rounded-lg border border-[#E3D8C5] bg-white text-[#6E645A] transition-colors hover:bg-[#F6F2EA] hover:text-[#22201F]">
+                          <Eye size={14} />
+                        </button>
+                        <button onClick={() => handleDownloadFile(note.id, note.fileUrl)} className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#F4E7E5] text-[#4A0E1B] transition-colors hover:bg-[#EEDAD7]">
+                          <Download size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                 ))}
@@ -588,9 +731,7 @@ export default function StudentDashboard({
 
                     <div className="flex flex-1 flex-col p-5">
                       <div className="flex items-center justify-between gap-2">
-                        <span className="inline-flex items-center gap-1.5 rounded-full bg-[#F4E7E5] px-2.5 py-1 text-[10px] font-bold text-[#4A0E1B]">
-                          <span className="h-1.5 w-1.5 rounded-full bg-[#4A0E1B]" />{video.subject}
-                        </span>
+                        <SubjectBadge subject={video.subject} />
                         <span className={MICRO}>{video.chapter}</span>
                       </div>
                       <h4 className="mt-3.5 text-sm font-bold text-[#22201F] line-clamp-1">{video.title}</h4>
@@ -622,7 +763,7 @@ export default function StudentDashboard({
               </div>
               <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className={INPUT}>
                 {availableSubjects.map((subject) => (
-                  <option key={subject} value={subject}>{subject === 'All' ? 'All subjects' : subject}</option>
+                  <option key={subject} value={subject}>{subject === 'All' ? 'All' : subject}</option>
                 ))}
               </select>
               <select value={selectedDifficulty} onChange={(e) => setSelectedDifficulty(e.target.value)} className={INPUT}>
@@ -652,7 +793,7 @@ export default function StudentDashboard({
                       {filteredPyqs.map((pyq) => (
                         <tr key={pyq.id} className="transition-colors hover:bg-[#FBF7F0]">
                           <td className="px-5 py-3.5">
-                            <span className="font-semibold text-[#22201F]">{pyq.subject}</span>
+                            <SubjectBadge subject={pyq.subject} />
                             <span className="mt-0.5 block text-xs text-[#8A7E6F]">{pyq.chapter}</span>
                           </td>
                           <td className="px-5 py-3.5 dash-mono text-xs font-medium tabular-nums text-[#6E645A]">{pyq.year}</td>
@@ -695,7 +836,7 @@ export default function StudentDashboard({
               </div>
               <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className={`${INPUT} sm:w-52`}>
                 {availableSubjects.map((subject) => (
-                  <option key={subject} value={subject}>{subject === 'All' ? 'All subjects' : subject}</option>
+                  <option key={subject} value={subject}>{subject === 'All' ? 'All' : subject}</option>
                 ))}
               </select>
             </div>
@@ -708,7 +849,10 @@ export default function StudentDashboard({
                   <div key={sheet.id} className={`${CARD} flex flex-col p-5`}>
                     <div className="flex items-start justify-between gap-3">
                       <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F7EFD9] text-[#8A6A16]"><FileText size={18} /></span>
-                      <span className="rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2.5 py-1 text-[10px] font-bold text-[#8A7E6F]">{sheet.chapter} · {sheet.subject}</span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2.5 py-1 text-[10px] font-bold text-[#8A7E6F]">{sheet.chapter}</span>
+                        <SubjectBadge subject={sheet.subject} />
+                      </div>
                     </div>
                     <h4 className="mt-4 text-sm font-bold text-[#22201F]">{sheet.title}</h4>
                     <p className="mt-1 text-xs leading-relaxed text-[#8A7E6F]">{sheet.description}</p>
