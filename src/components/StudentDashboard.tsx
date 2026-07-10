@@ -51,6 +51,8 @@ import { uploadDoubtAttachment } from '../services/doubtsService';
 import { extractYouTubeId, getYoutubeThumbnail } from '../lib/youtube';
 import type { PDFDocumentInfo } from './pdf/PDFContext';
 import { PremiumCard } from './PremiumCard';
+import { useLightbox, ClickableImage, type LightboxImage } from './ImageLightbox';
+import { DoubtThread } from './doubts/DoubtThread';
 import { SUBJECTS, SUBJECT_BADGE } from '../constants/subjects';
 
 /* ------------------------------------------------------------------ *
@@ -167,6 +169,9 @@ function StudentDashboardContent({
   const [activeVideoModal, setActiveVideoModal] = useState<Video | null>(null);
   const [activePdfViewer, setActivePdfViewer] = useState<{ title: string; fileUrl: string } | null>(null);
   const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
+
+  // ─── Image Lightbox ───────────────────────────────────────────────────────────
+  const { open: openLightbox, lightbox } = useLightbox();
 
   // Notes View & Sort States
   const [noteViewMode, setNoteViewMode] = useState<'grid' | 'list'>('grid');
@@ -1119,6 +1124,22 @@ function StudentDashboardContent({
                 </div>
               </div>
             </div>
+            {/* Answered Doubts Feed */}
+            {doubts.filter(d => d.isAnswered).length > 0 && (
+              <div className="mt-12">
+                <h3 className="dash-serif text-xl font-semibold text-[#22201F] mb-6">Recent Answered Queries</h3>
+                <div className="space-y-6">
+                  {doubts.filter(d => d.isAnswered).map(doubt => (
+                    <DoubtThread 
+                      key={doubt.id} 
+                      doubt={doubt} 
+                      openLightbox={openLightbox}
+                      isProfessorView={false}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         )}
 
@@ -1176,6 +1197,9 @@ function StudentDashboardContent({
           onClose={() => setActivePdfViewer(null)}
         />
       )}
+
+      {/* ================= IMAGE LIGHTBOX ================= */}
+      {lightbox}
 
     </div>
   );
