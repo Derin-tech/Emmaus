@@ -17,6 +17,7 @@ export const SUBJECTS = [
   'Physical Chemistry',
   'Organic Chemistry',
   'Inorganic Chemistry',
+  'Analytical Chemistry',
 ] as const;
 
 export type SubjectType = typeof SUBJECTS[number];
@@ -49,6 +50,13 @@ export const SUBJECT_BADGE: Record<
     text: 'text-[#512DA8]',
     dot: 'bg-[#7C4DFF]',
     label: 'Inorganic Chemistry',
+  },
+  'Analytical Chemistry': {
+    emoji: '🔵',
+    bg: 'bg-[#E3F2FD]',
+    text: 'text-[#1565C0]',
+    dot: 'bg-[#1976D2]',
+    label: 'Analytical Chemistry',
   },
 };
 

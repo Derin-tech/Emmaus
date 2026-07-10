@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { Routes, Route, useNavigate, useLocation, Navigate } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import Hero from './components/Hero';
@@ -44,17 +45,8 @@ interface AppState {
 }
 
 export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
-  // ─── Navigation & Role ────────────────────────────────────────────────────
-  const [currentView, setCurrentView] = useState<
-    'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact'
-  >(() => {
-    try {
-      const saved = localStorage.getItem('prof_portal_view_v1');
-      return saved ? (JSON.parse(saved) as any) : 'home';
-    } catch {
-      return 'home';
-    }
-  });
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const [userRole, setUserRole] = useState<'student' | 'professor' | null>(() => {
     try {
@@ -67,12 +59,29 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
 
   useEffect(() => {
     try {
-      localStorage.setItem('prof_portal_view_v1', JSON.stringify(currentView));
       localStorage.setItem('prof_portal_user_role_v1', JSON.stringify(userRole));
     } catch (e) {
       console.warn(e);
     }
-  }, [currentView, userRole]);
+  }, [userRole]);
+
+  // Derived current view for legacy components
+  let currentView: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact' = 'home';
+  if (location.pathname.startsWith('/selection')) currentView = 'selection';
+  else if (location.pathname.startsWith('/resources')) currentView = userRole === 'professor' ? 'professor' : 'student';
+  else if (location.pathname.startsWith('/about')) currentView = 'about';
+  else if (location.pathname.startsWith('/contact')) currentView = 'contact';
+
+  const handleNavigate = useCallback((view: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact') => {
+    switch (view) {
+      case 'home': navigate('/'); break;
+      case 'selection': navigate('/selection'); break;
+      case 'student':
+      case 'professor': navigate('/resources'); break;
+      case 'about': navigate('/about'); break;
+      case 'contact': navigate('/contact'); break;
+    }
+  }, [navigate]);
 
   // ─── Data State ───────────────────────────────────────────────────────────
   const [state, setState] = useState<AppState>({
@@ -92,8 +101,22 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
 
     // No Supabase configured → use local seed data
     if (!hasSupabase) {
+      const badTitles = ['Projectile Motion on Inclined Planes', 'Limits, Continuity, and Differentiability', 'dfv', 'df'];
+      let filteredNotes = INITIAL_NOTES.filter(n => !badTitles.includes(n.title));
+      
+      const NEW_CARDS: Note[] = [
+        { id: 'custom-card-1', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Thermodynamics', title: 'First and Second Law Applications', description: 'Enthalpy, entropy, and Gibbs free energy derivations with worked numerical problems on spontaneity and heat engines.', fileUrl: 'sample.pdf', fileSize: '1.2 MB', downloadCount: 50, tags: [] },
+        { id: 'custom-card-2', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Equilibrium', title: 'Chemical and Ionic Equilibrium', description: "Le Chatelier's principle, equilibrium constant relations, buffer solutions, and pH calculations for competitive-exam problem types.", fileUrl: 'sample.pdf', fileSize: '1.5 MB', downloadCount: 75, tags: [] },
+        { id: 'custom-card-3', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Electrochemistry', title: 'Cells, EMF, and Nernst Equation', description: 'Galvanic and electrolytic cells, standard electrode potentials, and Nernst equation applications with previous year question patterns.', fileUrl: 'sample.pdf', fileSize: '1.3 MB', downloadCount: 60, tags: [] },
+        { id: 'custom-card-4', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Kinetics', title: 'Rate Laws and Reaction Order', description: 'Integrated rate equations, half-life derivations, and Arrhenius equation problems with graphical interpretation.', fileUrl: 'sample.pdf', fileSize: '1.4 MB', downloadCount: 85, tags: [] },
+      ];
+      
+      const existingNewTitles = filteredNotes.map(n => n.title);
+      const notesToAppend = NEW_CARDS.filter(c => !existingNewTitles.includes(c.title));
+      filteredNotes = [...filteredNotes, ...notesToAppend];
+
       setState({
-        notes: INITIAL_NOTES,
+        notes: filteredNotes,
         videos: INITIAL_VIDEOS,
         pyqs: INITIAL_PYQS,
         practiceSheets: INITIAL_PRACTICE_SHEETS,
@@ -115,7 +138,21 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
         fetchAnnouncements(),
       ]);
       // Normalise any legacy subjects that may exist in the database
-      const normNotes = notes.map(n => ({ ...n, subject: normaliseSubject(n.subject) }));
+      const badTitles = ['Projectile Motion on Inclined Planes', 'Limits, Continuity, and Differentiability', 'dfv', 'df'];
+      let filteredNotes = notes.filter(n => !badTitles.includes(n.title));
+      
+      const NEW_CARDS: Note[] = [
+        { id: 'custom-card-1', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Thermodynamics', title: 'First and Second Law Applications', description: 'Enthalpy, entropy, and Gibbs free energy derivations with worked numerical problems on spontaneity and heat engines.', fileUrl: 'sample.pdf', fileSize: '1.2 MB', downloadCount: 50, tags: [] },
+        { id: 'custom-card-2', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Equilibrium', title: 'Chemical and Ionic Equilibrium', description: "Le Chatelier's principle, equilibrium constant relations, buffer solutions, and pH calculations for competitive-exam problem types.", fileUrl: 'sample.pdf', fileSize: '1.5 MB', downloadCount: 75, tags: [] },
+        { id: 'custom-card-3', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Electrochemistry', title: 'Cells, EMF, and Nernst Equation', description: 'Galvanic and electrolytic cells, standard electrode potentials, and Nernst equation applications with previous year question patterns.', fileUrl: 'sample.pdf', fileSize: '1.3 MB', downloadCount: 60, tags: [] },
+        { id: 'custom-card-4', course: 'jee-main', subject: 'Physical Chemistry', chapter: 'Kinetics', title: 'Rate Laws and Reaction Order', description: 'Integrated rate equations, half-life derivations, and Arrhenius equation problems with graphical interpretation.', fileUrl: 'sample.pdf', fileSize: '1.4 MB', downloadCount: 85, tags: [] },
+      ];
+      
+      const existingNewTitles = filteredNotes.map(n => n.title);
+      const notesToAppend = NEW_CARDS.filter(c => !existingNewTitles.includes(c.title));
+      filteredNotes = [...filteredNotes, ...notesToAppend];
+
+      const normNotes = filteredNotes.map(n => ({ ...n, subject: normaliseSubject(n.subject) }));
       const normVideos = videos.map(v => ({ ...v, subject: normaliseSubject(v.subject) }));
       const normPyqs = pyqs.map(p => ({ ...p, subject: normaliseSubject(p.subject) }));
       const normSheets = practiceSheets.map(s => ({ ...s, subject: normaliseSubject(s.subject) }));
@@ -134,7 +171,7 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
   // ─── Role Selection ───────────────────────────────────────────────────────
   const handleSelectRole = (selected: 'student' | 'professor') => {
     setUserRole(selected);
-    setCurrentView(selected === 'student' ? 'student' : 'professor');
+    navigate('/resources');
   };
 
   // ─── NOTES CRUD ───────────────────────────────────────────────────────────
@@ -227,12 +264,18 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
     setState(prev => ({ ...prev, doubts: [created, ...prev.doubts] }));
   }, []);
 
-  const handleReplyDoubt = useCallback(async (id: string, answerText: string) => {
-    const updated = await replyToDoubt(id, answerText);
-    setState(prev => ({
-      ...prev,
-      doubts: prev.doubts.map(d => d.id === id ? updated : d),
-    }));
+  const handleReplyDoubt = useCallback(async (id: string, replyData: { reply_text?: string, image_urls?: string[], video_urls?: string[], audio_urls?: string[], attachment_urls?: string[] }) => {
+    try {
+      const professorId = '00000000-0000-0000-0000-000000000000'; // Replace with actual user ID later
+      const updated = await replyToDoubt(id, professorId, replyData);
+      setState(prev => ({
+        ...prev,
+        doubts: prev.doubts.map(d => d.id === id ? updated : d),
+      }));
+    } catch (e: any) {
+      console.error('Error replying to doubt', e);
+      alert(e.message);
+    }
   }, []);
 
   const handleDeleteDoubt = useCallback(async (id: string) => {
@@ -311,75 +354,73 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
         theme={theme}
         toggleTheme={toggleTheme}
         currentView={currentView}
-        onNavigate={setCurrentView}
+        onNavigate={handleNavigate}
         userRole={userRole}
         onRoleChange={setUserRole}
       />
 
       {/* Main Core View Area */}
       <main className="flex-grow">
-        {currentView === 'home' && (
-          <Hero
-            onGetStarted={() => setCurrentView('selection')}
-            onNavigate={setCurrentView}
-          />
-        )}
+        <Routes>
+          <Route path="/" element={<Hero onGetStarted={() => handleNavigate('selection')} onNavigate={handleNavigate} />} />
+          
+          <Route path="/selection" element={<SelectionPage onSelectRole={handleSelectRole} />} />
+          
+          <Route path="/resources/*" element={
+            !userRole ? <Navigate to="/selection" replace /> :
+            userRole === 'student' ? (
+              <StudentDashboard
+                exams={EXAMS}
+                notes={state.notes}
+                videos={state.videos}
+                pyqs={state.pyqs}
+                practiceSheets={state.practiceSheets}
+                doubts={state.doubts}
+                faqs={INITIAL_FAQS}
+                announcements={state.announcements}
+                onAddDoubt={handleAddDoubt}
+                onIncrementNoteDownload={handleIncrementNoteDownload}
+              />
+            ) : (
+              <ProfessorDashboard
+                exams={EXAMS}
+                notes={state.notes}
+                videos={state.videos}
+                pyqs={state.pyqs}
+                practiceSheets={state.practiceSheets}
+                doubts={state.doubts}
+                announcements={state.announcements}
+                onAddNote={handleAddNote}
+                onEditNote={handleEditNote}
+                onDeleteNote={handleDeleteNote}
+                onAddVideo={handleAddVideo}
+                onEditVideo={handleEditVideo}
+                onDeleteVideo={handleDeleteVideo}
+                onAddPyq={handleAddPyq}
+                onEditPyq={handleEditPyq}
+                onDeletePyq={handleDeletePyq}
+                onAddPracticeSheet={handleAddPracticeSheet}
+                onEditPracticeSheet={handleEditPracticeSheet}
+                onDeletePracticeSheet={handleDeletePracticeSheet}
+                onReplyDoubt={handleReplyDoubt}
+                onDeleteDoubt={handleDeleteDoubt}
+                onAddAnnouncement={handleAddAnnouncement}
+                onEditAnnouncement={handleEditAnnouncement}
+                onDeleteAnnouncement={handleDeleteAnnouncement}
+                onTogglePinAnnouncement={handleTogglePinAnnouncement}
+              />
+            )
+          } />
 
-        {currentView === 'selection' && (
-          <SelectionPage onSelectRole={handleSelectRole} />
-        )}
-
-        {currentView === 'student' && (
-          <StudentDashboard
-            exams={EXAMS}
-            notes={state.notes}
-            videos={state.videos}
-            pyqs={state.pyqs}
-            practiceSheets={state.practiceSheets}
-            doubts={state.doubts}
-            faqs={INITIAL_FAQS}
-            announcements={state.announcements}
-            onAddDoubt={handleAddDoubt}
-            onIncrementNoteDownload={handleIncrementNoteDownload}
-          />
-        )}
-
-        {currentView === 'professor' && (
-          <ProfessorDashboard
-            exams={EXAMS}
-            notes={state.notes}
-            videos={state.videos}
-            pyqs={state.pyqs}
-            practiceSheets={state.practiceSheets}
-            doubts={state.doubts}
-            announcements={state.announcements}
-            onAddNote={handleAddNote}
-            onEditNote={handleEditNote}
-            onDeleteNote={handleDeleteNote}
-            onAddVideo={handleAddVideo}
-            onEditVideo={handleEditVideo}
-            onDeleteVideo={handleDeleteVideo}
-            onAddPyq={handleAddPyq}
-            onEditPyq={handleEditPyq}
-            onDeletePyq={handleDeletePyq}
-            onAddPracticeSheet={handleAddPracticeSheet}
-            onEditPracticeSheet={handleEditPracticeSheet}
-            onDeletePracticeSheet={handleDeletePracticeSheet}
-            onReplyDoubt={handleReplyDoubt}
-            onDeleteDoubt={handleDeleteDoubt}
-            onAddAnnouncement={handleAddAnnouncement}
-            onEditAnnouncement={handleEditAnnouncement}
-            onDeleteAnnouncement={handleDeleteAnnouncement}
-            onTogglePinAnnouncement={handleTogglePinAnnouncement}
-          />
-        )}
-
-        {currentView === 'about' && <AboutPage onNavigate={setCurrentView} />}
-        {currentView === 'contact' && <ContactPage />}
+          <Route path="/about" element={<AboutPage onNavigate={handleNavigate} />} />
+          <Route path="/contact" element={<ContactPage />} />
+          
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
 
       {/* Minimal Academic Footer */}
-      <Footer onNavigate={setCurrentView} userRole={userRole} />
+      <Footer onNavigate={handleNavigate} userRole={userRole} />
     </div>
   );
 }
