@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BrowserRouter } from 'react-router-dom';
 import { AppNew } from './AppNew';
 import { AppOriginal } from './AppOriginal';
 
@@ -20,6 +21,9 @@ export default function App() {
   if (theme === 'dark') {
     return <AppOriginal theme={theme} toggleTheme={toggleTheme} />;
   }
-  
-  return <AppNew theme={theme} toggleTheme={toggleTheme} />;
+  return (
+    <BrowserRouter>
+      <AppNew theme={theme} toggleTheme={toggleTheme} />
+    </BrowserRouter>
+  );
 }

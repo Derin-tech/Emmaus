@@ -13,6 +13,10 @@ export interface ExamInfo {
   title: string;
   description: string;
   icon: string; // lucide icon name
+  heroTitle?: string;
+  heroDescription?: string;
+  themeGradient?: string;
+  filters?: string[];
 }
 
 export interface Note {
@@ -25,6 +29,10 @@ export interface Note {
   fileUrl: string;
   fileSize: string;
   downloadCount: number;
+  tags?: string[];
+  difficulty?: 'Easy' | 'Moderate' | 'Hard';
+  year?: number;
+  isAdvanced?: boolean;
 }
 
 export interface Video {

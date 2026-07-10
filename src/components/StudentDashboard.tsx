@@ -3,7 +3,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
+import { Routes, Route, useNavigate, useParams } from 'react-router-dom';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Search,
   ArrowLeft,
@@ -13,6 +15,7 @@ import {
   FolderOpen,
   Download,
   Eye,
+  Bookmark,
   ChevronDown,
   ChevronRight,
   X,
@@ -38,19 +41,16 @@ import {
   LayoutGrid,
   List,
   ArrowDownUp,
-  Library,
+  Check
 } from 'lucide-react';
 import { ExamType, ExamInfo, Note, Video, PYQ, PracticeSheet, Doubt, FAQ, Announcement, AnnouncementCategory } from '../types';
-import { ResourceCard, ResourcePageLayout, ResourceHero, ResourceToolbar, ResourceEmptyState, ResourceGrid } from './resources';
-import { BreadcrumbBar } from './BreadcrumbBar';
-import { ExamHero, QuickAccessGrid, FeaturedResource, ResourceOverview, RecentUpdates, DownloadsLeaderboard, ExamSearchToolbar } from './exam';
 import { VideoWatchModal } from './VideoWatchModal';
 import { PDFViewer } from './pdf/PDFViewer';
 import { FileUpload } from './FileUpload';
 import { uploadDoubtAttachment } from '../services/doubtsService';
 import { extractYouTubeId, getYoutubeThumbnail } from '../lib/youtube';
 import type { PDFDocumentInfo } from './pdf/PDFContext';
-
+import { PremiumCard } from './PremiumCard';
 import { SUBJECTS, SUBJECT_BADGE } from '../constants/subjects';
 
 /* ------------------------------------------------------------------ *
@@ -94,13 +94,13 @@ function SubjectBadge({ subject }: { subject: string }) {
   );
 }
 
-function DifficultyChip({ level }: { level: 'Easy' | 'Medium' | 'Hard' }) {
+function DifficultyChip({ level }: { level: 'Easy' | 'Moderate' | 'Hard' }) {
   const map = {
-    Easy: 'bg-[#F7EFD9] text-[#8A6A16]',
-    Medium: 'bg-[#F4E2E5] text-[#7C2532]',
-    Hard: 'bg-[#F4E4E4] text-[#4A0E1B]'
-  } as const;
-  return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold ${map[level]}`}>{level}</span>;
+    Easy: 'bg-[#E8F5E9] text-[#2E7D32] border-[#C8E6C9]',
+    Moderate: 'bg-[#FFF8E1] text-[#F57F17] border-[#FFECB3]',
+    Hard: 'bg-[#FFEBEE] text-[#C62828] border-[#FFCDD2]',
+  };
+  return <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold border ${map[level]}`}>{level}</span>;
 }
 
 function EmptyState({ label }: { label: string }) {
@@ -128,7 +128,17 @@ interface StudentDashboardProps {
   onIncrementNoteDownload: (id: string) => void;
 }
 
-export default function StudentDashboard({
+export default function StudentDashboard(props: StudentDashboardProps) {
+  return (
+    <Routes>
+      <Route path="/" element={<StudentDashboardContent {...props} />} />
+      <Route path="/:examId" element={<StudentDashboardContent {...props} />} />
+      <Route path="/:examId/:categoryId" element={<StudentDashboardContent {...props} />} />
+    </Routes>
+  );
+}
+
+function StudentDashboardContent({
   exams,
   notes,
   videos,
@@ -140,9 +150,12 @@ export default function StudentDashboard({
   onAddDoubt,
   onIncrementNoteDownload
 }: StudentDashboardProps) {
-  // Navigation States within student portal
-  const [selectedExam, setSelectedExam] = useState<ExamType | null>(null);
-  const [activeCategory, setActiveCategory] = useState<'notes' | 'videos' | 'pyqs' | 'sheets' | 'doubts' | 'resources' | null>(null);
+  const { examId, categoryId } = useParams();
+  const navigate = useNavigate();
+
+  // Navigation States within student portal derived from URL
+  const selectedExam = examId || null;
+  const activeCategory = categoryId as 'notes' | 'videos' | 'pyqs' | 'sheets' | 'doubts' | 'resources' | null;
 
   // Filter/Search States
   const [searchQuery, setSearchQuery] = useState('');
@@ -156,8 +169,53 @@ export default function StudentDashboard({
   const [expandedFaqId, setExpandedFaqId] = useState<string | null>(null);
 
   // Notes View & Sort States
-  const [resourceViewMode, setResourceViewMode] = useState<'grid' | 'list'>('grid');
-  const [resourceSort, setResourceSort] = useState<'recent' | 'popular'>('recent');
+  const [noteViewMode, setNoteViewMode] = useState<'grid' | 'list'>('grid');
+  const [noteSort, setNoteSort] = useState<'recent' | 'popular' | 'alphabetical' | 'size'>('recent');
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+  const [isSortDropdownOpen, setIsSortDropdownOpen] = useState(false);
+  
+  // Ref for click-outside detection for custom sort dropdown
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setIsSortDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Ref and logic for "/" search hotkey
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === '/' && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        searchInputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
+  // Progress State
+  const [studiedNotes, setStudiedNotes] = useState<Set<string>>(() => {
+    try { return new Set(JSON.parse(localStorage.getItem('studiedNotes') || '[]')); } catch { return new Set(); }
+  });
+
+  useEffect(() => {
+    localStorage.setItem('studiedNotes', JSON.stringify([...studiedNotes]));
+  }, [studiedNotes]);
+
+  const toggleStudied = (id: string) => {
+    setStudiedNotes(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   // Doubt Form State
   const [doubtForm, setDoubtForm] = useState({
@@ -204,17 +262,19 @@ export default function StudentDashboard({
 
   // RESET state on nav back
   const handleBackToExams = () => {
-    setSelectedExam(null);
-    setActiveCategory(null);
+    navigate('/resources');
     setSearchQuery('');
     setSelectedSubject('All');
   };
 
   const handleBackToCategories = () => {
-    setActiveCategory(null);
+    navigate(`/resources/${selectedExam}`);
     setSearchQuery('');
     setSelectedSubject('All');
   };
+
+  const setSelectedExam = (id: string) => navigate(`/resources/${id}`);
+  const setActiveCategory = (id: string) => navigate(`/resources/${selectedExam}/${id}`);
 
   // SUBJECT filters — always the canonical three subjects (+ 'All')
   const availableSubjects = useMemo(() => {
@@ -223,15 +283,30 @@ export default function StudentDashboard({
 
   // Dynamic filtering algorithms
   const filteredNotes = useMemo(() => {
-    return notes.filter(note => {
+    const filtered = notes.filter(note => {
       if (note.course !== selectedExam) return false;
       const matchesSearch = note.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             note.chapter.toLowerCase().includes(searchQuery.toLowerCase()) ||
                             note.description.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSubject = selectedSubject === 'All' || note.subject === selectedSubject;
+      const matchesSubject = selectedSubject === 'All' || 
+                             note.subject === selectedSubject || 
+                             (note.tags && note.tags.includes(selectedSubject));
       return matchesSearch && matchesSubject;
     });
-  }, [notes, selectedExam, searchQuery, selectedSubject]);
+
+    // Apply Sorting
+    return filtered.sort((a, b) => {
+      if (noteSort === 'popular') return (b.downloadCount || 0) - (a.downloadCount || 0);
+      if (noteSort === 'alphabetical') return a.title.localeCompare(b.title);
+      if (noteSort === 'size') {
+        const sizeA = parseFloat(a.fileSize) || 0;
+        const sizeB = parseFloat(b.fileSize) || 0;
+        return sizeB - sizeA;
+      }
+      // 'recent' by default - using ID or mock date (here we'll just reverse order for recent simulation)
+      return -1; // Assuming initial order is from data source
+    });
+  }, [notes, selectedExam, searchQuery, selectedSubject, noteSort]);
 
   const filteredVideos = useMemo(() => {
     return videos.filter(vid => {
@@ -432,365 +507,530 @@ export default function StudentDashboard({
           </div>
         )}
 
-                {/* ================= BREADCRUMBS ================= */}
+        {/* ================= BREADCRUMBS ================= */}
         {(selectedExam || activeCategory) && (
-          <BreadcrumbBar
-            backLabel={activeCategory ? "Back to " + (currentExamInfo?.title || "Library") : "Back to Library"}
-            onBack={activeCategory ? handleBackToCategories : handleBackToExams}
-            items={[
-              { id: 'lib', label: 'Library', icon: <Library size={12} />, onClick: handleBackToExams },
-              ...(selectedExam ? [{ 
-                id: 'exam', 
-                label: currentExamInfo?.title || '', 
-                icon: <FlaskConical size={12} />, 
-                onClick: activeCategory ? handleBackToCategories : undefined 
-              }] : []),
-              ...(activeCategory ? [{ 
-                id: 'cat', 
-                label: activeCategory === 'pyqs' ? 'PYQs' : activeCategory, 
-                icon: activeCategory === 'notes' ? <BookOpen size={12} /> : 
-                      activeCategory === 'videos' ? <VideoIcon size={12} /> : 
-                      activeCategory === 'pyqs' ? <FileSpreadsheet size={12} /> :
-                      activeCategory === 'sheets' ? <FileText size={12} /> :
-                      activeCategory === 'doubts' ? <HelpCircle size={12} /> : <FolderOpen size={12} />
-              }] : [])
-            ]}
-          />
+          <nav className="mb-6 flex flex-wrap items-center gap-1.5 text-xs font-semibold text-[#8A7E6F]">
+            <button onClick={handleBackToExams} className="transition-colors hover:text-[#4A0E1B]">Library</button>
+            {selectedExam && (
+              <>
+                <ChevronRight size={13} className="text-[#C0A98B]" />
+                <button
+                  onClick={handleBackToCategories}
+                  className={`transition-colors hover:text-[#4A0E1B] ${!activeCategory ? 'text-[#4A0E1B]' : ''}`}
+                >
+                  {currentExamInfo?.title}
+                </button>
+              </>
+            )}
+            {activeCategory && (
+              <>
+                <ChevronRight size={13} className="text-[#C0A98B]" />
+                <span className="capitalize text-[#4A0E1B]">{activeCategory}</span>
+              </>
+            )}
+          </nav>
         )}
+
 
         {/* ================= STEP 2: CATEGORY DASHBOARD ================= */}
         {selectedExam && !activeCategory && (
-          <div className="animate-[fadeInUp_0.4s_ease-out_forwards]">
+          <div>
+            <button onClick={handleBackToExams} className={`${BACK_BTN} mb-4`} id="back-to-exams-btn">
+              <ArrowLeft size={14} /> Back to examinations
+            </button>
 
-            <ExamHero
-              title={currentExamInfo?.title || ''}
-              description={currentExamInfo?.description || ''}
-              stats={{
-                notes: notes.filter(n => n.course === selectedExam).length,
-                videos: videos.filter(v => v.course === selectedExam).length,
-                pyqs: pyqs.filter(p => p.course === selectedExam).length,
-                sheets: practiceSheets.filter(s => s.course === selectedExam).length,
-                downloads: [...notes, ...pyqs, ...practiceSheets].reduce((acc, curr) => acc + (('downloadCount' in curr ? curr.downloadCount : 0) as number), 0)
-              }}
-            />
-
-            <ExamSearchToolbar
-              onSearch={setSearchQuery}
-              selectedSubject={selectedSubject}
-              onSubjectSelect={setSelectedSubject}
-            />
-
-            <QuickAccessGrid
-              categories={categoryCards}
-                onSelectCategory={(id: string) => setActiveCategory(id as any)}
-            />
-            
-            <div className="mt-16 space-y-16">
-              <FeaturedResource 
-                item={notes.filter(n => n.course === selectedExam)[0]} 
-                onPreview={() => {
-                  const item = notes.filter(n => n.course === selectedExam)[0];
-                  if(item) setActivePdfViewer({ title: item.title, fileUrl: item.fileUrl });
-                }}
-                onDownload={() => {
-                  const item = notes.filter(n => n.course === selectedExam)[0];
-                  if(item) handleDownloadFile(item.id, item.fileUrl);
-                }}
-              />
-
-              <ResourceOverview 
-                notesCount={notes.filter(n => n.course === selectedExam).length}
-                videosCount={videos.filter(v => v.course === selectedExam).length}
-                pyqsCount={pyqs.filter(p => p.course === selectedExam).length}
-                sheetsCount={practiceSheets.filter(s => s.course === selectedExam).length}
-              />
-
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <RecentUpdates updates={announcements.filter(a => a.category === 'exam' || a.category === 'resource')} />
-                <DownloadsLeaderboard items={[...notes].filter(n => n.course === selectedExam).sort((a, b) => (b.downloadCount || 0) - (a.downloadCount || 0)).slice(0, 5)} />
+            <div className="mb-10 border-b border-[#EAE1D2] pb-8">
+              <div className="flex items-center gap-4">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#F4E7E5] to-[#F3EAD8] text-[#4A0E1B]">
+                  {renderExamIcon(currentExamInfo?.icon)}
+                </span>
+                <h2 className="dash-serif text-3xl font-semibold text-[#22201F] sm:text-4xl">
+                  {currentExamInfo?.title} Library
+                </h2>
               </div>
+              <p className="mt-3 max-w-2xl text-sm leading-relaxed text-[#8A7E6F]">{currentExamInfo?.description}</p>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {categoryCards.map((cat) => (
+                <button
+                  key={cat.id}
+                  onClick={() => setActiveCategory(cat.id)}
+                  className={`${CARD} group w-full p-6 text-left transition-all duration-200 hover:-translate-y-1 hover:-rotate-1`}
+                  id={`cat-card-${cat.id}`}
+                >
+                  <div className="flex items-start justify-between">
+                    <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]">{cat.icon}</span>
+                    {cat.count !== null && (
+                      <span className="dash-mono rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2.5 py-1 text-[11px] font-medium text-[#8A7E6F]">
+                        {cat.count} {cat.unit}
+                      </span>
+                    )}
+                  </div>
+                  <h3 className="dash-serif mt-4 text-lg font-semibold text-[#22201F]">{cat.title}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-[#8A7E6F]">{cat.desc}</p>
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-{/* ================= NOTES EXPLORER ================= */}
+        {/* ================= NOTES EXPLORER ================= */}
         {selectedExam && activeCategory === 'notes' && (
-          <ResourcePageLayout
-            onBack={handleBackToCategories}
-            hero={
-              <ResourceHero
-                courseTitle={currentExamInfo?.title}
-                title="Study Notes"
-                description="Access high-quality study materials, comprehensive chapter summaries, and class notes."
-                totalCount={notes.filter(n => n.course === selectedExam).length}
-                totalLabel="Total Notes"
-              />
-            }
-            toolbar={
-              <ResourceToolbar
-                subjects={availableSubjects}
-                selectedSubject={selectedSubject}
-                onSubjectChange={setSelectedSubject}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                sortMode={resourceSort}
-                onSortToggle={() => setResourceSort(s => s === 'recent' ? 'popular' : 'recent')}
-                sortLabel={resourceSort === 'recent' ? 'Recently Added' : 'Most Popular'}
-                viewMode={resourceViewMode}
-                onViewModeChange={setResourceViewMode}
-              />
-            }
-          >
-            {filteredNotes.length === 0 ? (
-              <ResourceEmptyState label="No study notes match your search or subject filter." />
-            ) : (
-              <ResourceGrid viewMode={resourceViewMode}>
-                {filteredNotes.map((note) => (
-                  <ResourceCard
-                    key={note.id}
-                    icon={FileText}
-                    title={note.title}
-                    description={note.description}
-                    chapter={note.chapter}
-                    subject={note.subject}
-                    metadata={[
-                      note.fileSize,
-                      `${note.downloadCount || 0} downloads`
-                    ]}
-                    actions={[
-                      {
-                        icon: Eye,
-                        label: 'View',
-                        onClick: () => setActivePdfViewer({ title: note.title, fileUrl: note.fileUrl }),
-                        variant: 'ghost'
-                      },
-                      {
-                        icon: Download,
-                        label: 'Download',
-                        onClick: () => handleDownloadFile(note.id, note.fileUrl),
-                        variant: 'primary'
-                      }
-                    ]}
+          <div key={selectedExam} className="animate-[fadeInUp_0.4s_ease-out_forwards]">
+            
+            {/* Dynamic Breadcrumbs */}
+            <div className="mb-4 flex items-center gap-2 text-xs font-medium text-[#8A7E6F]">
+              <button onClick={handleBackToExams} className="transition-colors hover:text-[#4A0E1B]">Library</button>
+              <span>›</span>
+              <button onClick={handleBackToCategories} className="transition-colors hover:text-[#4A0E1B]">{currentExamInfo?.title}</button>
+              <span>›</span>
+              <span className="text-[#22201F]">Study Notes</span>
+            </div>
+            
+            {/* 1. Premium Hero */}
+            <div className={`relative overflow-hidden rounded-[24px] bg-gradient-to-br ${currentExamInfo?.themeGradient || 'from-[#4A0E1B] to-[#7C2532]'} p-6 sm:p-8 text-white shadow-[0_12px_24px_-12px_rgba(74,14,27,0.5)] mb-8`}>
+              <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-[#D9C2A2]/20 blur-3xl" />
+              <div className="relative flex flex-col md:flex-row md:items-center justify-between gap-6">
+                <div>
+                  <h2 className="dash-serif text-2xl md:text-3xl font-semibold">{currentExamInfo?.heroTitle || 'Study Notes'}</h2>
+                  <p className="mt-2 text-sm text-white/70 max-w-md">
+                    {currentExamInfo?.heroDescription || 'Access chapter-wise Chemistry notes for JEE Main covering Physical, Organic and Inorganic Chemistry with formula sheets, NCERT concepts and previous year important topics.'}
+                  </p>
+                </div>
+                <div className="flex shrink-0 items-center gap-4">
+                  <div className="rounded-[12px] bg-[#5A2436] p-4 text-center min-w-[160px]">
+                    <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#A8909A]">Total Notes</p>
+                    <p className="dash-mono text-[32px] font-bold text-white mt-2 leading-none">{notes.filter(n => n.course === selectedExam).length}</p>
+                    
+                    <div className="mt-[8px] text-left w-full">
+                      <div className="text-[11px] font-medium text-[#C9B8C0] mb-1">
+                        Progress
+                      </div>
+                      <div className="h-[6px] w-full bg-[#4A1D2D] rounded-[3px] overflow-hidden">
+                        <div 
+                          className="h-full bg-[#E8B4A8] transition-all duration-500 ease-out" 
+                          style={{ width: `${Math.max(5, Math.round((notes.filter(n => n.course === selectedExam && studiedNotes.has(n.id)).length / Math.max(1, notes.filter(n => n.course === selectedExam).length)) * 100))}%`, borderRadius: '3px' }} 
+                        />
+                      </div>
+                      <div className="mt-1 text-[11px] font-medium text-[#C9B8C0]">
+                        {notes.filter(n => n.course === selectedExam && studiedNotes.has(n.id)).length} / {notes.filter(n => n.course === selectedExam).length} reviewed
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 2. Unified Toolbar & 3. Subject Navigation */}
+            <div className="my-[20px] flex flex-col sm:flex-row sm:items-center sm:justify-between flex-wrap gap-[16px] bg-[#FFFFFF] rounded-[16px] py-[10px] px-[16px] shadow-[0_2px_8px_rgba(90,36,54,0.05),0_1px_2px_rgba(90,36,54,0.04)] border border-[#F0E9E2]">
+              
+              {/* LEFT GROUP - Subject tabs */}
+              <div className="flex relative bg-[#F7F2EC] rounded-[12px] p-[4px] gap-[2px] w-full sm:w-auto overflow-x-auto no-scrollbar">
+                {(currentExamInfo?.filters || availableSubjects).map((subject) => {
+                  const isActive = selectedSubject === subject;
+                  let Icon = LayoutGrid;
+                  if (subject === 'Physical Chemistry') Icon = Atom;
+                  else if (subject === 'Organic Chemistry') Icon = Hexagon;
+                  else if (subject === 'Inorganic Chemistry') Icon = FlaskConical;
+                  
+                  return (
+                    <button
+                      key={subject}
+                      onClick={() => setSelectedSubject(subject)}
+                      className={`relative z-10 flex items-center gap-[6px] px-[16px] py-[8px] text-[13px] font-semibold rounded-[9px] transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] shrink-0 active:scale-95 ${
+                        isActive
+                          ? 'text-[#FFFFFF]'
+                          : 'text-[#6B5D54] hover:bg-[#EFE6DC] hover:text-[#3A2E28]'
+                      }`}
+                    >
+                      {isActive && (
+                        <motion.div 
+                          layoutId="subject-pill"
+                          className="absolute inset-0 bg-[#5A2436] rounded-[9px] shadow-[0_2px_6px_rgba(90,36,54,0.35)] -z-10"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                        />
+                      )}
+                      <Icon size={14} className={`transition-colors duration-[250ms] ${isActive ? 'text-[#F3D9CE]' : 'text-[#B8A99C]'}`} />
+                      {subject}
+                    </button>
+                  );
+                })}
+              </div>
+              
+              {/* RIGHT GROUP - Search, Sort, View */}
+              <div className="flex flex-col sm:flex-row items-center gap-[10px] w-full sm:w-auto">
+                {/* Search */}
+                <div className={`relative flex items-center transition-all duration-[250ms] ease-[cubic-bezier(0.4,0,0.2,1)] ${isSearchFocused ? 'w-full sm:w-[320px]' : 'w-full sm:w-[240px]'}`}>
+                  <Search size={16} className={`pointer-events-none absolute left-[12px] transition-colors duration-[250ms] ${isSearchFocused ? 'text-[#5A2436]' : 'text-[#B8A99C]'}`} />
+                  <input
+                    ref={searchInputRef}
+                    type="text"
+                    value={searchQuery}
+                    onFocus={() => setIsSearchFocused(true)}
+                    onBlur={() => setIsSearchFocused(false)}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    placeholder="Search notes..."
+                    className="w-full h-[40px] rounded-[10px] border-[1.5px] border-transparent bg-[#FAF6F1] pl-[38px] pr-[14px] text-[13px] text-[#22201F] placeholder:text-[#B0A296] outline-none transition-all duration-[250ms] focus:border-[#D9A9A0] focus:bg-[#FFFFFF] focus:shadow-[0_0_0_4px_rgba(217,169,160,0.15)]"
                   />
-                ))}
-              </ResourceGrid>
+                  {!searchQuery && !isSearchFocused && (
+                    <div className="pointer-events-none absolute right-[12px] flex h-[20px] items-center justify-center rounded-[4px] bg-[#EBE3DC] px-[6px] text-[11px] font-bold text-[#C4B6AA]">
+                      /
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-[10px] w-full sm:w-auto">
+                  {/* Custom Sort Dropdown */}
+                  <div className="relative w-full sm:w-auto" ref={sortDropdownRef}>
+                    <button
+                      onClick={() => setIsSortDropdownOpen(!isSortDropdownOpen)}
+                      className={`h-[40px] w-full sm:w-auto flex items-center justify-between gap-[8px] rounded-[10px] border-[1.5px] bg-[#FAF6F1] px-[14px] text-[13px] font-medium text-[#3A2E28] transition-all duration-[250ms] ${
+                        isSortDropdownOpen
+                          ? 'border-[#D9A9A0] bg-white shadow-[0_0_0_4px_rgba(217,169,160,0.15)]'
+                          : 'border-[#F0E9E2] hover:border-[#D9C7B8]'
+                      }`}
+                    >
+                      <span className="whitespace-nowrap">
+                        {noteSort === 'recent' ? 'Most Recent' : 
+                         noteSort === 'popular' ? 'Most Downloaded' :
+                         noteSort === 'alphabetical' ? 'Alphabetical A-Z' : 'File Size'}
+                      </span>
+                      <ChevronDown size={12} className={`text-[#8A7A6D] transition-transform duration-[200ms] ${isSortDropdownOpen ? 'rotate-180' : ''}`} />
+                    </button>
+  
+                    <AnimatePresence>
+                      {isSortDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 5, scale: 0.95 }}
+                          animate={{ opacity: 1, y: 0, scale: 1 }}
+                          exit={{ opacity: 0, y: 5, scale: 0.95 }}
+                          transition={{ duration: 0.15, ease: "easeOut" }}
+                          className="absolute right-0 top-[calc(100%+8px)] z-50 w-full sm:min-w-[180px] rounded-[10px] bg-white p-[6px] shadow-[0_8px_24px_rgba(0,0,0,0.12)] border border-[#F0E9E2]"
+                        >
+                          {[
+                            { id: 'recent', label: 'Most Recent' },
+                            { id: 'popular', label: 'Most Downloaded' },
+                            { id: 'alphabetical', label: 'Alphabetical A-Z' },
+                            { id: 'size', label: 'File Size' }
+                          ].map(opt => (
+                            <button
+                              key={opt.id}
+                              onClick={() => {
+                                setNoteSort(opt.id as any);
+                                setIsSortDropdownOpen(false);
+                              }}
+                              className="flex w-full items-center justify-between rounded-[6px] px-[12px] py-[8px] text-left text-[13px] text-[#3A2E28] transition-colors hover:bg-[#F7F2EC]"
+                            >
+                              {opt.label}
+                              {noteSort === opt.id && <Check size={14} className="text-[#5A2436]" />}
+                            </button>
+                          ))}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+  
+                  {/* Grid/List View Toggle */}
+                  <div className="flex relative bg-[#F7F2EC] rounded-[10px] p-[3px] h-[40px] shrink-0 ml-auto sm:ml-0">
+                    <button
+                      onClick={() => setNoteViewMode('grid')}
+                      className={`relative z-10 flex h-[34px] w-[34px] items-center justify-center rounded-[7px] transition-colors duration-[200ms] active:scale-95 ${noteViewMode === 'grid' ? 'text-[#5A2436]' : 'text-[#B8A99C] hover:bg-black/5'}`}
+                    >
+                      {noteViewMode === 'grid' && (
+                        <motion.div 
+                          layoutId="view-pill"
+                          className="absolute inset-0 bg-white rounded-[7px] shadow-[0_1px_3px_rgba(0,0,0,0.1)] -z-10"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                        />
+                      )}
+                      <LayoutGrid size={14} />
+                    </button>
+                    <button
+                      onClick={() => setNoteViewMode('list')}
+                      className={`relative z-10 flex h-[34px] w-[34px] items-center justify-center rounded-[7px] transition-colors duration-[200ms] active:scale-95 ${noteViewMode === 'list' ? 'text-[#5A2436]' : 'text-[#B8A99C] hover:bg-black/5'}`}
+                    >
+                      {noteViewMode === 'list' && (
+                        <motion.div 
+                          layoutId="view-pill"
+                          className="absolute inset-0 bg-white rounded-[7px] shadow-[0_1px_3px_rgba(0,0,0,0.1)] -z-10"
+                          transition={{ type: "spring", bounce: 0.2, duration: 0.4 }}
+                        />
+                      )}
+                      <List size={14} />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. Notes Grid & 5. Premium Note Card */}
+            {filteredNotes.length === 0 ? (
+              <EmptyState label="No study notes match your search or subject filter." />
+            ) : (
+              <div className={`grid gap-[20px] ${noteViewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'}`}>
+                {filteredNotes.map((note, idx) => {
+                  let customStyles = { bg: '#F4E7E5', text: '#4A0E1B' }; // fallback
+                  if (note.title === 'First and Second Law Applications') customStyles = { bg: '#FDECEA', text: '#C0392B' };
+                  else if (note.title === 'Chemical and Ionic Equilibrium') customStyles = { bg: '#EAF4EC', text: '#3C8C5B' };
+                  else if (note.title === 'Cells, EMF, and Nernst Equation') customStyles = { bg: '#EAF0FB', text: '#3A5FA6' };
+                  else if (note.title === 'Rate Laws and Reaction Order') customStyles = { bg: '#FBF0E4', text: '#B8792E' };
+                  else {
+                    const iconColors = [
+                      { bg: '#F4E7E5', text: '#4A0E1B' },
+                      { bg: '#E8F5E9', text: '#2E7D32' },
+                      { bg: '#E3F2FD', text: '#1565C0' },
+                      { bg: '#FFF3E0', text: '#E65100' },
+                    ];
+                    customStyles = iconColors[idx % iconColors.length];
+                  }
+                  
+                  return (
+                  <div key={note.id} className="flex flex-col h-full p-[20px] rounded-[16px] bg-[#FFFFFF] shadow-[0_1px_3px_rgba(0,0,0,0.06)] hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] hover:-translate-y-[2px] transition-all duration-[0.15s] ease-[ease] group">
+                    <div className="flex items-start gap-4">
+                      <span 
+                        className="flex h-[40px] w-[40px] shrink-0 items-center justify-center rounded-[10px]"
+                        style={{ backgroundColor: customStyles.bg, color: customStyles.text }}
+                      >
+                        <FileText size={20} />
+                      </span>
+                      <div className="min-w-0 flex-1 pt-0.5">
+                        <div className="mb-[12px] flex flex-wrap items-center gap-[8px]">
+                          <span className="inline-flex items-center rounded-full bg-[#F4F4F4] px-[10px] py-[4px] text-[11px] font-bold text-[#4A4A4A]">
+                            Topic: {note.chapter}
+                          </span>
+                          <span className="inline-flex items-center rounded-full bg-[#F4F4F4] px-[10px] py-[4px] text-[11px] font-bold text-[#4A4A4A] gap-1.5">
+                            <span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: '#D4A24C' }} />
+                            {note.subject}
+                          </span>
+                        </div>
+                        <h4 className="text-[15px] font-bold text-[#22201F] line-clamp-2 leading-[1.3]">
+                          {note.title}
+                        </h4>
+                      </div>
+                    </div>
+                    
+                    <p className="mt-[12px] text-[13px] leading-[1.5] text-[#5C5C5C] line-clamp-2">
+                      {note.description}
+                    </p>
+                    
+                    <div className="mt-auto pt-[16px]">
+                      <div className="h-[1px] w-full bg-[#EEE8E0] mb-[16px]" />
+                      
+                      <div className="flex items-center justify-between">
+                        <label className="flex items-center gap-2 cursor-pointer group/check">
+                          <input 
+                            type="checkbox" 
+                            checked={studiedNotes.has(note.id)} 
+                            onChange={() => toggleStudied(note.id)}
+                            className="h-[14px] w-[14px] rounded border-[#C0A98B] text-[#5A2436] focus:ring-[#5A2436]/30 cursor-pointer"
+                          />
+                          <span className={`text-[11px] font-bold uppercase tracking-[0.05em] transition-colors ${studiedNotes.has(note.id) ? 'text-[#5A2436]' : 'text-[#8B8B8B] group-hover/check:text-[#4A4A4A]'}`}>
+                            MARK REVIEWED
+                          </span>
+                        </label>
+  
+                        <div className="flex gap-[8px]">
+                          <button onClick={() => setActivePdfViewer({ title: note.title, fileUrl: note.fileUrl })} className="flex h-[40px] items-center justify-center rounded-[8px] border border-[#E0D5CC] bg-white px-[16px] text-[13px] font-bold text-[#5A2436] transition-all hover:bg-[#F9F7F5]">
+                            <Eye size={14} className="mr-1.5" /> View
+                          </button>
+                          <button onClick={() => handleDownloadFile(note.id, note.fileUrl)} className="flex h-[40px] items-center justify-center rounded-[8px] bg-[#F3D9CE] px-[16px] text-[13px] font-bold text-[#8A3D2C] transition-all hover:bg-[#EBD2C7]">
+                            <Download size={14} className="mr-1.5" /> Download
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )})}
+              </div>
             )}
-          </ResourcePageLayout>
+          </div>
         )}
 
         {/* ================= LECTURES EXPLORER ================= */}
         {selectedExam && activeCategory === 'videos' && (
-          <ResourcePageLayout
-            onBack={handleBackToCategories}
-            hero={
-              <ResourceHero
-                courseTitle={currentExamInfo?.title}
-                title="Video Lectures"
-                description="Watch curated chemistry lectures from Prof. Ajesh Joe."
-                totalCount={videos.filter(v => v.course === selectedExam).length}
-                totalLabel="Total Videos"
-              />
-            }
-            toolbar={
-              <ResourceToolbar
-                subjects={availableSubjects}
-                selectedSubject={selectedSubject}
-                onSubjectChange={setSelectedSubject}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                sortMode={resourceSort}
-                onSortToggle={() => setResourceSort(s => s === 'recent' ? 'popular' : 'recent')}
-                sortLabel={resourceSort === 'recent' ? 'Recently Added' : 'Most Popular'}
-                viewMode={resourceViewMode}
-                onViewModeChange={setResourceViewMode}
-              />
-            }
-          >
-            {filteredVideos.length === 0 ? (
-              <ResourceEmptyState label="No lecture recordings match your search or subject filter." />
-            ) : (
-              <ResourceGrid viewMode={resourceViewMode}>
-                {filteredVideos.map((video) => (
-                  <ResourceCard
-                    key={video.id}
-                    icon={VideoIcon}
-                    title={video.title}
-                    description={video.description}
-                    chapter={video.chapter}
-                    subject={video.subject}
-                    image={video.thumbnail || getYoutubeThumbnail(extractYouTubeId(video.youtubeLink), 'hqdefault')}
-                    metadata={[
-                      `Duration: ${video.duration}`
-                    ]}
-                    actions={[
-                      {
-                        icon: Play,
-                        label: 'Watch',
-                        onClick: () => setActiveVideoModal(video),
-                        variant: 'primary'
-                      },
-                      {
-                        icon: Paperclip,
-                        label: 'Bookmark',
-                        onClick: () => alert('Bookmarked'),
-                        variant: 'secondary'
-                      }
-                    ]}
-                  />
+          <div>
+            <button onClick={handleBackToCategories} className={BACK_BTN}><ArrowLeft size={14} /> Back to categories</button>
+            <div className="mt-4 mb-6">
+              <p className={MICRO}>{currentExamInfo?.title} · Video lectures</p>
+              <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F]">Video lectures</h2>
+            </div>
+
+            <div className="mb-8 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+              <div className="relative flex-1">
+                <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B3A996]" />
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search lectures…" className={`${INPUT} pl-10`} />
+              </div>
+              <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className={`${INPUT} sm:w-52`}>
+                {availableSubjects.map((subject) => (
+                  <option key={subject} value={subject}>{subject === 'All' ? 'All subjects' : subject}</option>
                 ))}
-              </ResourceGrid>
+              </select>
+            </div>
+
+            {filteredVideos.length === 0 ? (
+              <EmptyState label="No lecture recordings match your search or subject filter." />
+            ) : (
+              <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {filteredVideos.map((video) => (
+                  <div key={video.id} className={`${CARD} group flex flex-col overflow-hidden`}>
+                    <div className="relative aspect-video w-full overflow-hidden bg-[#EFE7D8]">
+                      <img
+                        src={video.thumbnail || getYoutubeThumbnail(extractYouTubeId(video.youtubeLink), 'hqdefault')}
+                        alt={video.title}
+                        referrerPolicy="no-referrer"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center bg-[#22201F]/25 opacity-80 transition-opacity group-hover:opacity-100">
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white/95 text-[#4A0E1B] shadow-lg transition-transform group-hover:scale-105">
+                          <Play size={20} className="ml-0.5" fill="currentColor" />
+                        </div>
+                      </div>
+                      <span className="dash-mono absolute bottom-2 right-2 rounded-md bg-[#22201F]/80 px-1.5 py-0.5 text-[10px] font-medium text-white">{video.duration}</span>
+                    </div>
+
+                    <div className="flex flex-1 flex-col p-5">
+                      <div className="flex items-center justify-between gap-2">
+                        <SubjectBadge subject={video.subject} />
+                        <span className={MICRO}>{video.chapter}</span>
+                      </div>
+                      <h4 className="mt-3.5 text-sm font-bold text-[#22201F] line-clamp-1">{video.title}</h4>
+                      <p className="mt-1 text-xs leading-relaxed text-[#8A7E6F] line-clamp-2">{video.description}</p>
+                      <button onClick={() => setActiveVideoModal(video)} className={`${PRIMARY_BTN} mt-5 w-full`}>
+                        <VideoIcon size={14} /> Watch lecture
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
-          </ResourcePageLayout>
+          </div>
         )}
 
         {/* ================= PYQ EXPLORER ================= */}
         {selectedExam && activeCategory === 'pyqs' && (
-          <ResourcePageLayout
-            onBack={handleBackToCategories}
-            hero={
-              <ResourceHero
-                courseTitle={currentExamInfo?.title}
-                title="Previous Year Questions"
-                description="Original exam questions with step-by-step analytical solutions."
-                totalCount={pyqs.filter(p => p.course === selectedExam).length}
-                totalLabel="Total Sets"
-              />
-            }
-            toolbar={
-              <ResourceToolbar
-                subjects={availableSubjects}
-                selectedSubject={selectedSubject}
-                onSubjectChange={setSelectedSubject}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                sortMode={resourceSort}
-                onSortToggle={() => setResourceSort(s => s === 'recent' ? 'popular' : 'recent')}
-                sortLabel={resourceSort === 'recent' ? 'Recently Added' : 'Most Popular'}
-                viewMode={resourceViewMode}
-                onViewModeChange={setResourceViewMode}
-                extraFilters={
-                  <select value={selectedDifficulty} onChange={(e) => setSelectedDifficulty(e.target.value)} className="w-full sm:w-auto rounded-lg border border-[#E3D8C5] bg-[#FBF7F0] px-3 py-2 text-xs text-[#22201F] outline-none transition focus:border-[#4A0E1B]/50 focus:bg-white focus:ring-2 focus:ring-[#4A0E1B]/10">
-                    <option value="All">All difficulties</option>
-                    <option value="Easy">Easy</option>
-                    <option value="Medium">Medium</option>
-                    <option value="Hard">Hard</option>
-                  </select>
-                }
-              />
-            }
-          >
-            {filteredPyqs.length === 0 ? (
-              <ResourceEmptyState label="No PYQ booklets match your search or filters." />
-            ) : (
-              <ResourceGrid viewMode={resourceViewMode}>
-                {filteredPyqs.map((pyq) => (
-                  <ResourceCard
-                    key={pyq.id}
-                    icon={FileSpreadsheet}
-                    title={`${pyq.chapter} - ${pyq.year}`}
-                    description={`Previous year question paper for ${pyq.chapter} from ${pyq.year}. Difficulty: ${pyq.difficulty}.`}
-                    chapter={pyq.chapter}
-                    subject={pyq.subject}
-                    badges={[
-                      <span key="year" className="inline-flex rounded-full px-2.5 py-0.5 text-[9px] font-bold bg-[#F4E2E5] text-[#7C2532]">{pyq.year}</span>,
-                      <span key="diff" className="inline-flex rounded-full px-2.5 py-0.5 text-[9px] font-bold bg-[#F7EFD9] text-[#8A6A16]">{pyq.difficulty}</span>
-                    ]}
-                    metadata={[
-                      `Q: ${pyq.questionSize} | Sol: ${pyq.solutionSize}`,
-                      `Solutions Available`
-                    ]}
-                    actions={[
-                      {
-                        icon: Eye,
-                        label: 'View Paper',
-                        onClick: () => setActivePdfViewer({ title: `PYQ Question · ${pyq.chapter} (${pyq.year})`, fileUrl: pyq.questionUrl }),
-                        variant: 'ghost'
-                      },
-                      {
-                        icon: Download,
-                        label: 'Download',
-                        onClick: () => triggerDownload(pyq.questionUrl),
-                        variant: 'primary'
-                      },
-                      {
-                        icon: Eye,
-                        label: 'Solutions',
-                        onClick: () => setActivePdfViewer({ title: `PYQ Solution · ${pyq.chapter} (${pyq.year})`, fileUrl: pyq.solutionUrl }),
-                        variant: 'secondary'
-                      }
-                    ]}
-                  />
+          <div>
+            <button onClick={handleBackToCategories} className={BACK_BTN}><ArrowLeft size={14} /> Back to categories</button>
+            <div className="mt-4 mb-6">
+              <p className={MICRO}>{currentExamInfo?.title} · Previous year questions</p>
+              <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F]">Previous year questions</h2>
+            </div>
+
+            <div className="mb-8 grid gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+              <div className="relative lg:col-span-2">
+                <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B3A996]" />
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by chapter…" className={`${INPUT} pl-10`} />
+              </div>
+              <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className={INPUT}>
+                {availableSubjects.map((subject) => (
+                  <option key={subject} value={subject}>{subject === 'All' ? 'All' : subject}</option>
                 ))}
-              </ResourceGrid>
+              </select>
+              <select value={selectedDifficulty} onChange={(e) => setSelectedDifficulty(e.target.value)} className={INPUT}>
+                <option value="All">All difficulties</option>
+                <option value="Easy">Easy</option>
+                <option value="Medium">Medium</option>
+                <option value="Hard">Hard</option>
+              </select>
+            </div>
+
+            {filteredPyqs.length === 0 ? (
+              <EmptyState label="No PYQ booklets match your search or filters." />
+            ) : (
+              <div className={`${CARD} overflow-hidden`}>
+                <div className="overflow-x-auto">
+                  <table className="w-full min-w-[720px] text-left text-sm">
+                    <thead>
+                      <tr className="border-b border-[#EAE1D2] bg-[#FBF7F0]">
+                        <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A7E6F]">Subject & chapter</th>
+                        <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A7E6F]">Year</th>
+                        <th className="px-5 py-3 text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A7E6F]">Difficulty</th>
+                        <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A7E6F]">Question paper</th>
+                        <th className="px-5 py-3 text-right text-[10px] font-bold uppercase tracking-[0.12em] text-[#8A7E6F]">Step solution</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-[#F2ECDF]">
+                      {filteredPyqs.map((pyq) => (
+                        <tr key={pyq.id} className="transition-colors hover:bg-[#FBF7F0]">
+                          <td className="px-5 py-3.5">
+                            <SubjectBadge subject={pyq.subject} />
+                            <span className="mt-0.5 block text-xs text-[#8A7E6F]">{pyq.chapter}</span>
+                          </td>
+                          <td className="px-5 py-3.5 dash-mono text-xs font-medium tabular-nums text-[#6E645A]">{pyq.year}</td>
+                          <td className="px-5 py-3.5"><DifficultyChip level={pyq.difficulty} /></td>
+                          <td className="px-5 py-3.5 text-right">
+                            <div className="inline-flex justify-end gap-1.5">
+                              <button onClick={() => setActivePdfViewer({ title: `PYQ Question · ${pyq.chapter} (${pyq.year})`, fileUrl: pyq.questionUrl })} className="rounded-lg p-2 text-[#8A7E6F] transition-colors hover:bg-[#F4E7E5] hover:text-[#4A0E1B]"><Eye size={15} /></button>
+                              <button onClick={() => triggerDownload(pyq.questionUrl)} className={PILL_SOFT}><Download size={11} /> {pyq.questionSize}</button>
+                            </div>
+                          </td>
+                          <td className="px-5 py-3.5 text-right">
+                            <div className="inline-flex justify-end gap-1.5">
+                              <button onClick={() => setActivePdfViewer({ title: `PYQ Solution · ${pyq.chapter} (${pyq.year})`, fileUrl: pyq.solutionUrl })} className="rounded-lg p-2 text-[#8A7E6F] transition-colors hover:bg-[#F7EFD9] hover:text-[#8A6A16]"><Eye size={15} /></button>
+                              <button onClick={() => triggerDownload(pyq.solutionUrl)} className={PILL_GOLD}><Download size={11} /> {pyq.solutionSize}</button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             )}
-          </ResourcePageLayout>
+          </div>
         )}
 
         {/* ================= PRACTICE SHEETS ================= */}
         {selectedExam && activeCategory === 'sheets' && (
-          <ResourcePageLayout
-            onBack={handleBackToCategories}
-            hero={
-              <ResourceHero
-                courseTitle={currentExamInfo?.title}
-                title="Practice Sheets"
-                description="Chapter drills graded by complexity to build proficiency."
-                totalCount={practiceSheets.filter(s => s.course === selectedExam).length}
-                totalLabel="Total Sheets"
-              />
-            }
-            toolbar={
-              <ResourceToolbar
-                subjects={availableSubjects}
-                selectedSubject={selectedSubject}
-                onSubjectChange={setSelectedSubject}
-                searchQuery={searchQuery}
-                onSearchChange={setSearchQuery}
-                sortMode={resourceSort}
-                onSortToggle={() => setResourceSort(s => s === 'recent' ? 'popular' : 'recent')}
-                sortLabel={resourceSort === 'recent' ? 'Recently Added' : 'Most Popular'}
-                viewMode={resourceViewMode}
-                onViewModeChange={setResourceViewMode}
-              />
-            }
-          >
-            {filteredSheets.length === 0 ? (
-              <ResourceEmptyState label="No practice drills match your search or subject filter." />
-            ) : (
-              <ResourceGrid viewMode={resourceViewMode}>
-                {filteredSheets.map((sheet) => (
-                  <ResourceCard
-                    key={sheet.id}
-                    icon={FileText}
-                    title={sheet.title}
-                    description={sheet.description}
-                    chapter={sheet.chapter}
-                    subject={sheet.subject}
-                    metadata={[
-                      `Size: ${sheet.fileSize}`
-                    ]}
-                    actions={[
-                      {
-                        icon: Eye,
-                        label: 'Open Sheet',
-                        onClick: () => setActivePdfViewer({ title: sheet.title, fileUrl: sheet.fileUrl }),
-                        variant: 'ghost'
-                      },
-                      {
-                        icon: Download,
-                        label: 'Download',
-                        onClick: () => triggerDownload(sheet.fileUrl),
-                        variant: 'primary'
-                      }
-                    ]}
-                  />
+          <div>
+            <button onClick={handleBackToCategories} className={BACK_BTN}><ArrowLeft size={14} /> Back to categories</button>
+            <div className="mt-4 mb-6">
+              <p className={MICRO}>{currentExamInfo?.title} · Practice sheets</p>
+              <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F]">Practice sheets</h2>
+            </div>
+
+            <div className="mb-8 flex flex-col gap-2.5 sm:flex-row sm:items-center">
+              <div className="relative flex-1">
+                <Search size={16} className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-[#B3A996]" />
+                <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search by title or chapter…" className={`${INPUT} pl-10`} />
+              </div>
+              <select value={selectedSubject} onChange={(e) => setSelectedSubject(e.target.value)} className={`${INPUT} sm:w-52`}>
+                {availableSubjects.map((subject) => (
+                  <option key={subject} value={subject}>{subject === 'All' ? 'All' : subject}</option>
                 ))}
-              </ResourceGrid>
+              </select>
+            </div>
+
+            {filteredSheets.length === 0 ? (
+              <EmptyState label="No practice drills match your search or subject filter." />
+            ) : (
+              <div className="grid gap-5 sm:grid-cols-2">
+                {filteredSheets.map((sheet) => (
+                  <div key={sheet.id} className={`${CARD} flex flex-col p-5`}>
+                    <div className="flex items-start justify-between gap-3">
+                      <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-[#F7EFD9] text-[#8A6A16]"><FileText size={18} /></span>
+                      <div className="flex flex-col items-end gap-1">
+                        <span className="rounded-full border border-[#EFE7D8] bg-[#FBF7F0] px-2.5 py-1 text-[10px] font-bold text-[#8A7E6F]">{sheet.chapter}</span>
+                        <SubjectBadge subject={sheet.subject} />
+                      </div>
+                    </div>
+                    <h4 className="mt-4 text-sm font-bold text-[#22201F]">{sheet.title}</h4>
+                    <p className="mt-1 text-xs leading-relaxed text-[#8A7E6F]">{sheet.description}</p>
+                    <div className="mt-4 flex items-center justify-between border-t border-[#F2ECDF] pt-4">
+                      <span className="dash-mono text-[11px] text-[#A79A88]">File size · {sheet.fileSize}</span>
+                      <div className="flex gap-1.5">
+                        <button onClick={() => setActivePdfViewer({ title: sheet.title, fileUrl: sheet.fileUrl })} className={PILL_GHOST}><Eye size={12} /> View</button>
+                        <button onClick={() => triggerDownload(sheet.fileUrl)} className={PILL_SOFT}><Download size={12} /> Download</button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
             )}
-          </ResourcePageLayout>
+          </div>
         )}
 
-{/* ================= DOUBT SUBMISSION ================= */}
+        {/* ================= DOUBT SUBMISSION ================= */}
         {selectedExam && activeCategory === 'doubts' && (
           <div>
             <button onClick={handleBackToCategories} className={BACK_BTN}><ArrowLeft size={14} /> Back to categories</button>
@@ -879,157 +1119,44 @@ export default function StudentDashboard({
                 </div>
               </div>
             </div>
-
-            {/* Answered Doubts Feed */}
-            {doubts.filter(d => d.isAnswered).length > 0 && (
-              <div className="mt-12">
-                <h3 className="dash-serif text-xl font-semibold text-[#22201F] mb-6">Recent Answered Queries</h3>
-                <div className="space-y-6">
-                  {doubts.filter(d => d.isAnswered).map(doubt => (
-                    <div key={doubt.id} className={`${CARD} p-6`}>
-                      <div className="flex flex-col gap-6">
-                        {/* Student Question (Right aligned like iMessage) */}
-                        <div className="flex justify-end">
-                          <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-tr-sm bg-[#4A0E1B] text-white p-4 shadow-sm">
-                            <p className="text-xs text-white/70 mb-1 font-semibold">{doubt.name} • {doubt.subject}</p>
-                            <p className="text-sm leading-relaxed">{doubt.question}</p>
-                            {doubt.attachmentUrl && (
-                              <a href={doubt.attachmentUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-flex items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-xs hover:bg-white/20 transition-colors">
-                                <FileText size={14} /> Attached File
-                              </a>
-                            )}
-                          </div>
-                        </div>
-
-                        {/* Professor Reply (Left aligned like iMessage) */}
-                        <div className="flex justify-start">
-                          <div className="max-w-[85%] sm:max-w-[70%] rounded-2xl rounded-tl-sm bg-[#FBF6EA] border border-[#F7EFD9] text-[#3A342E] p-4 shadow-sm">
-                            <div className="flex items-center gap-2 mb-2">
-                              <span className="flex h-6 w-6 items-center justify-center rounded-full bg-[#C9A13B] text-white font-bold text-[10px]">AJ</span>
-                              <p className="text-xs font-bold text-[#8A6A16]">Prof. Ajesh Joe</p>
-                            </div>
-                            
-                            {/* Rich Replies */}
-                            {doubt.replies && doubt.replies.length > 0 ? (
-                              <div className="space-y-4">
-                                {doubt.replies.map((reply, idx) => (
-                                  <div key={reply.id}>
-                                    <div 
-                                      className="text-sm leading-relaxed prose prose-sm max-w-none prose-p:my-1 prose-ul:my-1"
-                                      dangerouslySetInnerHTML={{ __html: reply.reply_text || '' }} 
-                                    />
-                                    {/* Images */}
-                                    {reply.image_urls && reply.image_urls.length > 0 && (
-                                      <div className="mt-3 flex flex-wrap gap-2">
-                                        {reply.image_urls.map((url, i) => (
-                                          <img key={i} src={url} alt="reply" className="h-32 w-auto rounded-lg object-cover shadow-sm border border-[#EFE7D8]" />
-                                        ))}
-                                      </div>
-                                    )}
-                                    {/* Videos */}
-                                    {reply.video_urls && reply.video_urls.length > 0 && (
-                                      <div className="mt-3 space-y-2">
-                                        {reply.video_urls.map((url, i) => (
-                                          <video key={i} src={url} controls className="h-48 w-auto rounded-lg shadow-sm border border-[#EFE7D8]" />
-                                        ))}
-                                      </div>
-                                    )}
-                                    {/* Audio */}
-                                    {reply.audio_urls && reply.audio_urls.length > 0 && (
-                                      <div className="mt-3 space-y-2">
-                                        {reply.audio_urls.map((url, i) => (
-                                          <audio key={i} src={url} controls className="w-full max-w-sm" />
-                                        ))}
-                                      </div>
-                                    )}
-                                    {/* Docs */}
-                                    {reply.attachment_urls && reply.attachment_urls.length > 0 && (
-                                      <div className="mt-3 flex flex-wrap gap-2">
-                                        {reply.attachment_urls.map((url, i) => (
-                                          <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 rounded-lg border border-[#EAE1D2] bg-white px-3 py-2 text-xs font-semibold text-[#8A6A16] hover:bg-[#FBF6EA]">
-                                            <Download size={14} /> Download Attachment {i + 1}
-                                          </a>
-                                        ))}
-                                      </div>
-                                    )}
-                                  </div>
-                                ))}
-                              </div>
-                            ) : (
-                              <p className="text-sm leading-relaxed">{doubt.answerText}</p>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
           </div>
         )}
 
-                {/* ================= ADDITIONAL RESOURCES ================= */}
+        {/* ================= ADDITIONAL RESOURCES ================= */}
         {selectedExam && activeCategory === 'resources' && (
-          <ResourcePageLayout
-            onBack={handleBackToCategories}
-            hero={
-              <ResourceHero
-                courseTitle={currentExamInfo?.title}
-                title="Additional Resources"
-                description="Syllabus blueprints, formula sheets, reference books and lab manuals."
-                totalCount={2}
-                totalLabel="Total Items"
-              />
-            }
-            toolbar={
-              <ResourceToolbar
-                subjects={['All']}
-                selectedSubject={'All'}
-                onSubjectChange={() => {}}
-                searchQuery={''}
-                onSearchChange={() => {}}
-                viewMode={resourceViewMode}
-                onViewModeChange={setResourceViewMode}
-              />
-            }
-          >
-            <ResourceGrid viewMode={resourceViewMode}>
-              <ResourceCard
-                icon={FileSpreadsheet}
-                title="Syllabus blueprints & topic weights"
-                description="A mapped matrix of chapter distribution, sub-topic weights and question-occurrence frequencies compiled from the past 10 years of entrance examinations."
-                chapter="General"
-                subject="All"
-                metadata={["820 KB"]}
-                actions={[
-                  {
-                    icon: Download,
-                    label: 'Download',
-                    onClick: () => triggerDownload('syllabus-blueprints.pdf'),
-                    variant: 'primary'
-                  }
-                ]}
-              />
-              <ResourceCard
-                icon={BookOpen}
-                title="Formula & fundamental constant sheets"
-                description="A rapid-revision pocket PDF covering electromagnetic vectors, rotational momenta, calculus limits and key physical constants."
-                chapter="Reference"
-                subject="All"
-                metadata={["1.4 MB"]}
-                actions={[
-                  {
-                    icon: Download,
-                    label: 'Download',
-                    onClick: () => triggerDownload('formula-pocket-sheets.pdf'),
-                    variant: 'primary'
-                  }
-                ]}
-              />
-            </ResourceGrid>
-          </ResourcePageLayout>
+          <div>
+            <button onClick={handleBackToCategories} className={BACK_BTN}><ArrowLeft size={14} /> Back to categories</button>
+            <div className="mt-4 mb-8">
+              <p className={MICRO}>{currentExamInfo?.title} · Additional resources</p>
+              <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F]">Additional resources</h2>
+            </div>
+
+            <div className="grid gap-6 sm:grid-cols-2">
+              <div className={`${CARD} flex flex-col p-6`}>
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F4E7E5] text-[#4A0E1B]"><FileSpreadsheet size={20} /></span>
+                <h3 className="dash-serif mt-4 text-lg font-semibold text-[#22201F]">Syllabus blueprints & topic weights</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-[#8A7E6F]">
+                  A mapped matrix of chapter distribution, sub-topic weights and question-occurrence frequencies compiled from the past 10 years of entrance examinations.
+                </p>
+                <div className="mt-5 flex justify-end">
+                  <button onClick={() => triggerDownload('syllabus-blueprints.pdf')} className={PILL_SOFT}><Download size={12} /> Download matrix (820 KB)</button>
+                </div>
+              </div>
+
+              <div className={`${CARD} flex flex-col p-6`}>
+                <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F7EFD9] text-[#8A6A16]"><BookOpen size={20} /></span>
+                <h3 className="dash-serif mt-4 text-lg font-semibold text-[#22201F]">Formula & fundamental constant sheets</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-[#8A7E6F]">
+                  A rapid-revision pocket PDF covering electromagnetic vectors, rotational momenta, calculus limits and key physical constants (Planck, Boltzmann, speed of light).
+                </p>
+                <div className="mt-5 flex justify-end">
+                  <button onClick={() => triggerDownload('formula-pocket-sheets.pdf')} className={PILL_SOFT}><Download size={12} /> Download sheets (1.4 MB)</button>
+                </div>
+              </div>
+            </div>
+          </div>
         )}
+
       </div>
 
       {/* ================= WATCH VIDEO MODAL (real, from main) ================= */}
