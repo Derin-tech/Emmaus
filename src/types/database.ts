@@ -312,6 +312,7 @@ export type Database = {
     }
     Enums: {
       announcement_category: "general" | "exam" | "resource" | "schedule"
+      chemistry_subject: "Physical Chemistry" | "Organic Chemistry" | "Inorganic Chemistry"
       difficulty_level: "Easy" | "Medium" | "Hard"
       exam_type: "jee-main" | "jee-advanced" | "neet" | "net" | "msc-entrance"
     }
@@ -445,8 +446,10 @@ export const Constants = {
   public: {
     Enums: {
       announcement_category: ["general", "exam", "resource", "schedule"],
+      chemistry_subject: ["Physical Chemistry", "Organic Chemistry", "Inorganic Chemistry"],
       difficulty_level: ["Easy", "Medium", "Hard"],
       exam_type: ["jee-main", "jee-advanced", "neet", "net", "msc-entrance"],
     },
   },
 } as const
+

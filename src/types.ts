@@ -5,6 +5,9 @@
 
 export type ExamType = 'jee-main' | 'jee-advanced' | 'neet' | 'net' | 'msc-entrance';
 
+// Re-export SubjectType as the canonical subject type for the whole app
+export type { SubjectType } from './constants/subjects';
+
 export interface ExamInfo {
   id: ExamType;
   title: string;
@@ -15,7 +18,7 @@ export interface ExamInfo {
 export interface Note {
   id: string;
   course: ExamType;
-  subject: string;
+  subject: string; // constrained to SubjectType at runtime via SUBJECTS constant
   chapter: string;
   title: string;
   description: string;

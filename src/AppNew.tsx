@@ -20,6 +20,7 @@ import ProfessorDashboard from './components/ProfessorDashboard';
 import type { Note, Video, PYQ, PracticeSheet, Doubt, Announcement } from './types';
 import { EXAMS, INITIAL_FAQS, INITIAL_NOTES, INITIAL_VIDEOS, INITIAL_PYQS, INITIAL_PRACTICE_SHEETS, INITIAL_DOUBTS, INITIAL_ANNOUNCEMENTS } from './data';
 import { hasSupabase } from './lib/supabase';
+import { normaliseSubject } from './constants/subjects';
 
 import {
   fetchNotes, createNote, updateNote, deleteNote, incrementNoteDownload,
@@ -113,7 +114,12 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
         fetchDoubts(),
         fetchAnnouncements(),
       ]);
-      setState({ notes, videos, pyqs, practiceSheets, doubts, announcements, loading: false, error: null });
+      // Normalise any legacy subjects that may exist in the database
+      const normNotes = notes.map(n => ({ ...n, subject: normaliseSubject(n.subject) }));
+      const normVideos = videos.map(v => ({ ...v, subject: normaliseSubject(v.subject) }));
+      const normPyqs = pyqs.map(p => ({ ...p, subject: normaliseSubject(p.subject) }));
+      const normSheets = practiceSheets.map(s => ({ ...s, subject: normaliseSubject(s.subject) }));
+      setState({ notes: normNotes, videos: normVideos, pyqs: normPyqs, practiceSheets: normSheets, doubts, announcements, loading: false, error: null });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Unknown error loading data.';
       console.error('[AppNew] loadAllData error:', message);

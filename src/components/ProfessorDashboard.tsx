@@ -53,6 +53,7 @@ import {
   AnnouncementCategory
 } from '../types';
 import { extractYouTubeId, getYoutubeThumbnail, isValidYouTubeUrl } from '../lib/youtube';
+import { SUBJECTS, SUBJECT_BADGE } from '../constants/subjects';
 
 /* ------------------------------------------------------------------ *
  * Design tokens — a warm, light "professor's study" system built on
@@ -85,6 +86,20 @@ const ANN_CAT: Record<AnnouncementCategory, { label: string; cls: string }> = {
   resource: { label: 'Resource', cls: 'bg-[#F7EFD9] text-[#8A6A16]' },
   schedule: { label: 'Schedule', cls: 'bg-[#F4E2E5] text-[#7C2532]' }
 };
+
+/* ------------------------------------------------------------------ *
+ * Subject badge — single source of truth styling from SUBJECT_BADGE
+ * ------------------------------------------------------------------ */
+function SubjectBadge({ subject }: { subject: string }) {
+  const s = SUBJECT_BADGE[subject as keyof typeof SUBJECT_BADGE];
+  if (!s) return <span className="text-xs text-[#8A7E6F]">{subject}</span>;
+  return (
+    <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold ${s.bg} ${s.text}`}>
+      <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+      {s.label}
+    </span>
+  );
+}
 
 /* ------------------------------------------------------------------ *
  * Small presentational helpers
@@ -447,10 +462,10 @@ export default function ProfessorDashboard({
   }, [profile]);
 
   // Forms
-  const [noteForm, setNoteForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
-  const [videoForm, setVideoForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', youtubeLink: '', description: '', duration: '' });
-  const [pyqForm, setPyqForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
-  const [sheetForm, setSheetForm] = useState({ course: 'jee-main' as ExamType, subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+  const [noteForm, setNoteForm] = useState({ course: 'jee-main' as ExamType, subject: 'Physical Chemistry', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+  const [videoForm, setVideoForm] = useState({ course: 'jee-main' as ExamType, subject: 'Physical Chemistry', chapter: '', title: '', youtubeLink: '', description: '', duration: '' });
+  const [pyqForm, setPyqForm] = useState({ course: 'jee-main' as ExamType, subject: 'Physical Chemistry', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium' as 'Easy' | 'Medium' | 'Hard', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
+  const [sheetForm, setSheetForm] = useState({ course: 'jee-main' as ExamType, subject: 'Physical Chemistry', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
   const [annForm, setAnnForm] = useState({ title: '', body: '', category: 'general' as AnnouncementCategory, pinned: false });
 
   /* ---------------- Derived data ---------------- */
@@ -571,7 +586,7 @@ export default function ProfessorDashboard({
 
   /* ---------------- Open helpers ---------------- */
   const openAddNote = () => {
-    setNoteForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+    setNoteForm({ course: 'jee-main', subject: 'Physical Chemistry', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
     setNoteFile(null);
     setActiveTab('notes');
     setActiveModal('add-note');
@@ -583,7 +598,7 @@ export default function ProfessorDashboard({
     setActiveModal('edit-note');
   };
   const openAddVideo = () => {
-    setVideoForm({ course: 'jee-main', subject: '', chapter: '', title: '', youtubeLink: '', description: '', duration: '' });
+    setVideoForm({ course: 'jee-main', subject: 'Physical Chemistry', chapter: '', title: '', youtubeLink: '', description: '', duration: '' });
     setActiveTab('videos');
     setActiveModal('add-video');
   };
@@ -593,7 +608,7 @@ export default function ProfessorDashboard({
     setActiveModal('edit-video');
   };
   const openAddPyq = () => {
-    setPyqForm({ course: 'jee-main', subject: '', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
+    setPyqForm({ course: 'jee-main', subject: 'Physical Chemistry', chapter: '', year: new Date().getFullYear() - 1, difficulty: 'Medium', questionUrl: '', solutionUrl: '', questionSize: '', solutionSize: '' });
     setPyqQuestionFile(null);
     setPyqSolutionFile(null);
     setActiveTab('pyqs');
@@ -607,7 +622,7 @@ export default function ProfessorDashboard({
     setActiveModal('edit-pyq');
   };
   const openAddSheet = () => {
-    setSheetForm({ course: 'jee-main', subject: '', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
+    setSheetForm({ course: 'jee-main', subject: 'Physical Chemistry', chapter: '', title: '', description: '', fileUrl: '', fileSize: '' });
     setSheetFile(null);
     setActiveTab('sheets');
     setActiveModal('add-sheet');
@@ -1107,7 +1122,7 @@ export default function ProfessorDashboard({
                       <tr key={n.id} className="transition-colors hover:bg-[#FBF7F0]">
                         <td className="px-5 py-3.5">
                           <ExamChip course={n.course} label={examTitle(n.course)} />
-                          <span className="mt-1 block text-xs text-[#8A7E6F]">{n.subject}</span>
+                          <span className="mt-1 block"><SubjectBadge subject={n.subject} /></span>
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="font-semibold text-[#22201F]">{n.title}</span>
@@ -1162,7 +1177,7 @@ export default function ProfessorDashboard({
                       <tr key={v.id} className="transition-colors hover:bg-[#FBF7F0]">
                         <td className="px-5 py-3.5">
                           <ExamChip course={v.course} label={examTitle(v.course)} />
-                          <span className="mt-1 block text-xs text-[#8A7E6F]">{v.subject}</span>
+                          <span className="mt-1 block"><SubjectBadge subject={v.subject} /></span>
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="font-semibold text-[#22201F]">{v.title}</span>
@@ -1218,7 +1233,7 @@ export default function ProfessorDashboard({
                       <tr key={p.id} className="transition-colors hover:bg-[#FBF7F0]">
                         <td className="px-5 py-3.5">
                           <ExamChip course={p.course} label={examTitle(p.course)} />
-                          <span className="mt-1 block text-xs text-[#8A7E6F]">{p.subject}</span>
+                          <span className="mt-1 block"><SubjectBadge subject={p.subject} /></span>
                         </td>
                         <td className="px-5 py-3.5">
                           <span className="font-semibold text-[#22201F]">{p.chapter}</span>
@@ -1270,7 +1285,7 @@ export default function ProfessorDashboard({
                       <tr key={s.id} className="transition-colors hover:bg-[#FBF7F0]">
                         <td className="px-5 py-3.5">
                           <ExamChip course={s.course} label={examTitle(s.course)} />
-                          <span className="mt-1 block text-xs text-[#8A7E6F]">{s.subject}</span>
+                          <span className="mt-1 block"><SubjectBadge subject={s.subject} /></span>
                         </td>
                         <td className="px-5 py-3.5 font-semibold text-[#22201F]">{s.title}</td>
                         <td className="px-5 py-3.5 text-sm text-[#8A7E6F]">{s.chapter}</td>
@@ -1563,7 +1578,9 @@ export default function ProfessorDashboard({
                 </select>
               </Field>
               <Field label="Subject">
-                <input className={INPUT} required value={noteForm.subject} onChange={(e) => setNoteForm({ ...noteForm, subject: e.target.value })} placeholder="Chemistry" />
+                <select className={INPUT} required value={noteForm.subject} onChange={(e) => setNoteForm({ ...noteForm, subject: e.target.value })}>
+                  {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
               </Field>
             </div>
             <Field label="Chapter">
@@ -1602,7 +1619,9 @@ export default function ProfessorDashboard({
                 </select>
               </Field>
               <Field label="Subject">
-                <input className={INPUT} required value={videoForm.subject} onChange={(e) => setVideoForm({ ...videoForm, subject: e.target.value })} placeholder="Chemistry" />
+                <select className={INPUT} required value={videoForm.subject} onChange={(e) => setVideoForm({ ...videoForm, subject: e.target.value })}>
+                  {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -1646,7 +1665,9 @@ export default function ProfessorDashboard({
                 </select>
               </Field>
               <Field label="Subject">
-                <input className={INPUT} required value={pyqForm.subject} onChange={(e) => setPyqForm({ ...pyqForm, subject: e.target.value })} placeholder="Chemistry" />
+                <select className={INPUT} required value={pyqForm.subject} onChange={(e) => setPyqForm({ ...pyqForm, subject: e.target.value })}>
+                  {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
               </Field>
             </div>
             <div className="grid grid-cols-2 gap-3">
@@ -1700,7 +1721,9 @@ export default function ProfessorDashboard({
                 </select>
               </Field>
               <Field label="Subject">
-                <input className={INPUT} required value={sheetForm.subject} onChange={(e) => setSheetForm({ ...sheetForm, subject: e.target.value })} placeholder="Chemistry" />
+                <select className={INPUT} required value={sheetForm.subject} onChange={(e) => setSheetForm({ ...sheetForm, subject: e.target.value })}>
+                  {SUBJECTS.map((s) => <option key={s} value={s}>{s}</option>)}
+                </select>
               </Field>
             </div>
             <Field label="Chapter">
