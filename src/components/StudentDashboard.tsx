@@ -694,10 +694,10 @@ function StudentDashboardContent({
                     onBlur={() => setIsSearchFocused(false)}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     placeholder="Search notes..."
-                    className="w-full h-[40px] rounded-[10px] border-[1.5px] border-transparent bg-[#FAF6F1] pl-[38px] pr-[14px] text-[13px] text-[#22201F] dark:text-[#F6F2EA] placeholder:text-[#B0A296] outline-none transition-all duration-[250ms] focus:border-[#D9A9A0] focus:bg-[#FFFFFF] focus:shadow-[0_0_0_4px_rgba(217,169,160,0.15)]"
+                    className="w-full h-[40px] rounded-[10px] border-[1.5px] border-transparent bg-[#F2ECDF] dark:bg-[#332E2C] pl-[38px] pr-[14px] text-[13px] text-[#22201F] dark:text-[#F6F2EA] placeholder:text-[#8A7E6F] dark:placeholder:text-[#A89F91] outline-none transition-all duration-[250ms] focus:border-[#D9A9A0] focus:bg-[#FFFFFF] dark:focus:bg-[#22201F] focus:shadow-[0_0_0_4px_rgba(217,169,160,0.15)]"
                   />
                   {!searchQuery && !isSearchFocused && (
-                    <div className="pointer-events-none absolute right-[12px] flex h-[20px] items-center justify-center rounded-[4px] bg-[#EBE3DC] px-[6px] text-[11px] font-bold text-[#C4B6AA]">
+                    <div className="pointer-events-none absolute right-[12px] flex h-[20px] items-center justify-center rounded-[4px] bg-[#E3D8C5] dark:bg-[#4A433E] px-[6px] text-[11px] font-bold text-[#8A7E6F] dark:text-[#A89F91]">
                       /
                     </div>
                   )}
