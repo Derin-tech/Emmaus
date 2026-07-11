@@ -5,10 +5,11 @@
 
 import React, { useState } from 'react';
 import { BookOpen, GraduationCap, Sun, Moon, Menu, X, UserCheck } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface NavbarProps {
-  currentView: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact';
-  onNavigate: (view: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact') => void;
+  currentView: string;
+  onNavigate: (view: string) => void;
   userRole: 'student' | 'professor' | null;
   onRoleChange: (role: 'student' | 'professor' | null) => void;
   theme: string;
@@ -66,7 +67,7 @@ export default function Navbar({
             </div>
             <div className="flex flex-col whitespace-nowrap">
               <span className="text-xl font-['Outfit'] font-bold tracking-tight text-[#22201F] dark:text-[#F6F2EA]">
-                Ajesh Joe Savio
+                Ajesh Joe
               </span>
               <span className="text-[11px] font-semibold tracking-wide text-[#C9A13B] transition-colors duration-300">
                 Academic Library
@@ -87,17 +88,21 @@ export default function Navbar({
                   <button
                     key={item.label}
                     onClick={() => handleNavClick(item.view)}
-                    className={`relative py-2 text-base font-['Outfit'] transition-colors duration-200 hover:text-[#4A0E1B] dark:hover:text-[#F4E7E5] dark:text-[#F4E7E5] ${
+                    className={`relative px-4 py-1.5 rounded-full text-base font-['Outfit'] transition-colors duration-200 ${
                       isActive 
-                        ? 'text-[#4A0E1B] dark:text-[#F4E7E5] font-bold' 
-                        : 'text-[#22201F] dark:text-[#F6F2EA]/60 font-medium'
+                        ? 'text-[#F7F3EC] font-semibold' 
+                        : 'text-[#22201F] dark:text-[#F6F2EA]/70 hover:bg-[#4A0E1B]/5 font-medium'
                     }`}
                     id={`nav-item-${item.label.toLowerCase().replace(' ', '-')}`}
                   >
-                    {item.label}
                     {isActive && (
-                      <span className="absolute bottom-[-22px] left-0 h-1 w-full bg-[#4A0E1B] transition-colors duration-300" />
+                      <motion.div
+                        layoutId="navbar-indicator"
+                        className="absolute inset-0 rounded-full bg-[#4A0E1B] shadow-sm z-0"
+                        transition={{ type: "spring", bounce: 0.25, duration: 0.6 }}
+                      />
                     )}
+                    <span className="relative z-10">{item.label}</span>
                   </button>
                 );
               })}

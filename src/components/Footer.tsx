@@ -6,7 +6,7 @@
 import React from 'react';
 
 interface FooterProps {
-  onNavigate: (view: 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact') => void;
+  onNavigate: (view: string) => void;
   userRole: 'student' | 'professor' | null;
 }
 
@@ -43,13 +43,13 @@ export default function Footer({ onNavigate }: FooterProps) {
           {/* Left: Identity */}
           <div className="flex flex-col space-y-1">
             <h4 className="text-[18px] font-semibold tracking-tight text-white font-display">
-              Ajesh Joe Savio
+              Ajesh Joe
             </h4>
             <p className="text-[14px] font-normal text-white/80">
               Chemistry Professor
             </p>
             <p className="text-[14px] font-normal text-white/60">
-              Brilliant Study Centre Pala
+              Independent Coaching, Pala
             </p>
           </div>
 
@@ -57,17 +57,17 @@ export default function Footer({ onNavigate }: FooterProps) {
           <div className="flex flex-col space-y-1 text-left md:text-right items-start md:items-end text-[14px] font-normal text-white/80">
             {/* Email mailto Link */}
             <a
-              href="mailto:ajesh.joe@university.edu"
+              href="mailto:contact@example.com"
               className="group relative inline-flex items-center text-[14px] font-normal text-white/80 hover:text-[#D9C2A2] transition-colors duration-200 ease-out focus:outline-none"
             >
               <span className="transform transition-transform duration-200 ease-out group-hover:translate-x-[2px] relative flex flex-col pb-0.5">
-                ajesh.joe@university.edu
+                contact@example.com
                 <span className="absolute bottom-0 left-0 h-[1px] w-full bg-[#D9C2A2] origin-left scale-x-0 transition-transform duration-200 ease-out group-hover:scale-x-100" />
               </span>
             </a>
-            <p>Room 402-B, Science Block II</p>
+            <p>Independent Coaching</p>
             <p className="text-[13px] text-white/60">
-              Office Hours: Mon & Wed: 2:00 PM – 4:00 PM
+              Pala, Kerala
             </p>
           </div>
 
@@ -82,13 +82,13 @@ export default function Footer({ onNavigate }: FooterProps) {
 
         {/* Row 2: Bottom Bar */}
         <div className="flex flex-col space-y-3 md:flex-row md:items-center md:justify-between md:space-y-0 text-[12px] md:text-[13px] text-white/50 font-normal">
-          <p>© {currentYear} Ajesh Joe Savio. All rights reserved.</p>
+          <p>© {currentYear} Ajesh Joe. All rights reserved.</p>
           <div className="flex items-center gap-x-3 select-none">
-            <BottomLink onClick={() => onNavigate('home')}>Privacy</BottomLink>
+            <BottomLink onClick={() => onNavigate('privacy')}>Privacy</BottomLink>
             <span className="text-white/30">•</span>
-            <BottomLink onClick={() => onNavigate('home')}>Terms</BottomLink>
+            <BottomLink onClick={() => onNavigate('terms')}>Terms</BottomLink>
             <span className="text-white/30">•</span>
-            <BottomLink onClick={() => onNavigate('home')}>Accessibility</BottomLink>
+            <BottomLink onClick={() => onNavigate('accessibility')}>Accessibility</BottomLink>
           </div>
         </div>
 

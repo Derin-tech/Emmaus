@@ -377,7 +377,7 @@ function StudentDashboardContent({
     { id: 'videos' as const, title: 'Video Lectures', desc: 'Conceptual recordings exploring complex chemical and numerical ideas.', icon: <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Clapper%20Board.png" alt="Videos" className="h-10 w-10" />, count: videos.filter(v => v.course === selectedExam).length, unit: 'lectures' },
     { id: 'pyqs' as const, title: 'Previous Year Questions', desc: 'Original exam questions with step-by-step analytical solutions.', icon: <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Page%20Facing%20Up.png" alt="PYQs" className="h-10 w-10" />, count: pyqs.filter(p => p.course === selectedExam).length, unit: 'sets' },
     { id: 'sheets' as const, title: 'Practice Sheets', desc: 'Chapter drills graded by complexity to build proficiency.', icon: <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Memo.png" alt="Practice Sheets" className="h-10 w-10" />, count: practiceSheets.filter(s => s.course === selectedExam).length, unit: 'sheets' },
-    { id: 'doubts' as const, title: 'Doubts & FAQ', desc: 'Ask the professor a direct question or browse common answers.', icon: <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Symbols/Question%20Mark.png" alt="Doubts" className="h-10 w-10" />, count: null, unit: '' },
+    { id: 'doubts' as const, title: 'Doubts & FAQ', desc: 'Ask the professor a direct question or browse common answers.', icon: <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Light%20Bulb.png" alt="Doubts" className="h-10 w-10 drop-shadow-sm" />, count: null, unit: '' },
     { id: 'resources' as const, title: 'Additional Resources', desc: 'Syllabus blueprints, formula sheets and reference constants.', icon: <img src="https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Objects/Card%20Index%20Dividers.png" alt="Resources" className="h-10 w-10" />, count: null, unit: '' }
   ];
 
@@ -454,7 +454,7 @@ function StudentDashboardContent({
                   <div className="flex items-start justify-between">
                     <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#F4E7E5] dark:bg-[#38151A] text-[#4A0E1B]">{cat.icon}</span>
                     {cat.count !== null && (
-                      <span className="dash-mono rounded-full border border-[#EFE7D8] dark:border-[#4A433E] bg-[#FBF7F0] dark:bg-[#2A2726] px-2.5 py-1 text-[11px] font-medium text-[#8A7E6F] dark:text-[#A89F91]">
+                      <span className="dash-mono rounded-full border border-[#7C2532] bg-[#4A0E1B] px-2.5 py-1 text-[11px] font-medium text-[#F7F3EC] shadow-sm">
                         {cat.count} {cat.unit}
                       </span>
                     )}

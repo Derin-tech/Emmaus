@@ -394,10 +394,10 @@ interface ConfirmState {
 }
 
 const DEFAULT_PROFILE = {
-  name: 'Ajesh Joe Savio',
+  name: 'Ajesh Joe',
   role: 'Repository Editor',
   designation: 'Professor of Chemistry',
-  office: 'Room 402-B, Science Block II'
+  office: 'Independent Coaching'
 };
 
 export default function ProfessorDashboard({

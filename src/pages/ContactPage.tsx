@@ -1,11 +1,5 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState } from 'react';
-import { Mail, Clock, Building, MapPin, CheckCircle } from 'lucide-react';
-import { PremiumCard } from '../components/PremiumCard';
+import { CheckCircle, Send, MessageSquare, GraduationCap, LifeBuoy, Sparkles } from 'lucide-react';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -20,200 +14,153 @@ export default function ContactPage() {
     e.preventDefault();
     if (!formData.name || !formData.email || !formData.message) return;
     
-    // Simulate API request
     setSubmitted(true);
     setFormData({ name: '', email: '', subject: '', message: '' });
     setTimeout(() => {
       setSubmitted(false);
     }, 5000);
   };
-
   return (
-    <section className="bg-[#F7F3EC] dark:bg-[#1A1817] py-16 md:py-20 text-[#22201F] dark:text-[#F6F2EA]">
-      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+    <section className="relative bg-transparent pt-12 pb-20 md:pt-16 md:pb-28 overflow-hidden transition-colors duration-300">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#4A0E1B]/5 dark:bg-[#4A0E1B]/20 blur-[120px] rounded-full pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-[#C9A13B]/5 blur-[150px] rounded-full pointer-events-none -translate-x-1/3 translate-y-1/3"></div>
+
+      <div className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 w-full">
         
-        {/* Header Title */}
-        <div className="text-center">
-          <h2 className="text-3xl font-serif font-extrabold tracking-tight text-[#22201F] dark:text-[#F6F2EA]">
-            Contact Office
-          </h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-[#22201F]/60">
-            Reach out to the department office for academic questions, curriculum queries, or technical issues with the PDF downloads.
-          </p>
-        </div>
 
-        <div className="mt-12 grid gap-10 md:grid-cols-12">
+
+        <div className="grid gap-8 lg:grid-cols-12 lg:gap-12 items-stretch">
           
-          {/* Information Block */}
-          <div className="space-y-6 md:col-span-5">
-            <h3 className="text-lg font-serif font-bold text-[#22201F] dark:text-[#F6F2EA]">
-              Faculty Directory
-            </h3>
+          {/* Left Column - Purpose (Maroon) */}
+          <div className="lg:col-span-5 h-full">
+            <div className="bg-[#4A0E1B] rounded-3xl p-8 md:p-10 shadow-[0_20px_40px_rgba(74,14,27,0.15)] dark:shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative overflow-hidden h-full border border-[#7C2532]/30 flex flex-col justify-between">
+              
+              {/* Internal Gradient/Decor */}
+              <div className="absolute top-0 right-0 w-32 h-32 bg-[#E8CD82]/10 blur-[40px] rounded-full pointer-events-none"></div>
+              <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#2D0710] blur-[40px] rounded-full pointer-events-none"></div>
 
-            <PremiumCard padding="large" accentLine>
-              <div className="space-y-5">
+              <div className="relative z-10">
+                <h2 className="text-4xl md:text-5xl font-sans font-bold tracking-tight text-[#F7F3EC] leading-tight mb-12">
+                  Have a question? <br/>
+                  <span className="text-[#E8CD82] italic font-serif">Let's get in touch.</span>
+                </h2>
                 
-                <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-[#4A0E1B] dark:text-[#F4E7E5]">
-                    <Building size={16} />
+                <div className="space-y-8">
+                  <div className="flex flex-col space-y-1.5 group">
+                    <span className="flex items-center space-x-2 text-[#E8CD82] mb-1">
+                      <span className="text-xl">🎓</span>
+                      <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#E8CD82]/80">Academic Guidance</span>
+                    </span>
+                    <p className="text-[13px] text-[#F7F3EC]/80 pl-[34px] leading-relaxed">For students stuck on complex chemistry concepts or numerical problems who need step-by-step clarity.</p>
                   </div>
-                  <div>
-                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Department</h4>
-                    <p className="text-xs font-bold text-[#22201F] dark:text-[#F6F2EA] mt-1">
-                      Department of Chemistry
-                    </p>
-                    <p className="text-[10px] text-[#22201F]/60 mt-0.5">
-                      Science Block II, Main Campus
-                    </p>
+
+                  <div className="flex flex-col space-y-1.5 group">
+                    <span className="flex items-center space-x-2 text-[#E8CD82] mb-1">
+                      <span className="text-xl">🛟</span>
+                      <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#E8CD82]/80">Technical Support</span>
+                    </span>
+                    <p className="text-[13px] text-[#F7F3EC]/80 pl-[34px] leading-relaxed">For issues related to downloading study materials or streaming video lectures.</p>
+                  </div>
+
+                  <div className="flex flex-col space-y-1.5 group">
+                    <span className="flex items-center space-x-2 text-[#E8CD82] mb-1">
+                      <span className="text-xl">✨</span>
+                      <span className="text-[11px] font-extrabold uppercase tracking-[0.2em] text-[#E8CD82]/80">General Inquiry</span>
+                    </span>
+                    <p className="text-[13px] text-[#F7F3EC]/80 pl-[34px] leading-relaxed">For platform feedback, curriculum requests, or non-academic questions.</p>
                   </div>
                 </div>
-
-                <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-[#4A0E1B] dark:text-[#F4E7E5]">
-                    <MapPin size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Office Location</h4>
-                    <p className="text-xs font-bold text-[#22201F] dark:text-[#F6F2EA] mt-1">
-                      Room 402-B, 4th Floor
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-[#4A0E1B] dark:text-[#F4E7E5]">
-                    <Mail size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Academic Email</h4>
-                    <p className="text-xs font-bold text-[#22201F] dark:text-[#F6F2EA] mt-1 select-all">
-                      ajesh.joe@university.edu
-                    </p>
-                    <p className="text-[10px] text-[#22201F]/60 mt-0.5">
-                      Replies are sent during standard academic days.
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex items-start space-x-3.5">
-                  <div className="mt-0.5 text-[#4A0E1B] dark:text-[#F4E7E5]">
-                    <Clock size={16} />
-                  </div>
-                  <div>
-                    <h4 className="font-sans text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Office Hours</h4>
-                    <p className="text-xs font-bold text-[#22201F] dark:text-[#F6F2EA] mt-1">
-                      Mondays & Wednesdays: 2:00 PM – 4:00 PM
-                    </p>
-                    <p className="text-xs text-[#22201F]/60 mt-0.5">
-                      Fridays: 10:00 AM – 12:00 PM (By appointment)
-                    </p>
-                  </div>
-                </div>
-
               </div>
-            </PremiumCard>
 
-            {/* Note about commercial correspondence */}
-            <div className="border-l-4 border-[#4A0E1B] bg-white dark:bg-[#22201F] p-4 rounded-r-xl border-y border-r border-[#D9C2A2]/30 shadow-soft-sm">
-              <p className="text-[11px] leading-relaxed text-[#22201F]/60">
-                <strong className="text-[#22201F] dark:text-[#F6F2EA]">Please Note:</strong> This office does not accept commercial marketing pitches, EdTech partnership proposals, or coaching institute sponsorships. All educational content here is strictly non-commercial.
-              </p>
+
             </div>
           </div>
 
-          {/* Contact Form Block */}
-          <div className="md:col-span-7">
-            <PremiumCard padding="large" accentLine>
+          {/* Right Column - Form (Light Cream/White in light mode, Charcoal in dark mode) */}
+          <div className="lg:col-span-7 h-full">
+            <div className="bg-white dark:bg-[#252321] rounded-3xl p-8 md:p-10 shadow-[0_8px_30px_rgba(0,0,0,0.04)] dark:shadow-2xl border border-[#D9C2A2]/40 dark:border-white/5 relative h-full flex flex-col justify-center transition-colors duration-300">
               
-              <h3 className="text-lg font-serif font-bold text-[#22201F] dark:text-[#F6F2EA] mb-6">
-                Send a Message
-              </h3>
+              <div className="mb-8">
+                <h3 className="text-xl font-sans font-bold text-[#22201F] dark:text-[#F7F3EC] mb-2">Send a Direct Message</h3>
+                <p className="text-sm text-[#8A7E6F] dark:text-[#A89F91]">Fill out the form below and we'll get back to you as soon as possible.</p>
+              </div>
 
               {submitted && (
-                <div className="mb-6 flex items-center space-x-2.5 bg-[#4A0E1B] px-4 py-3 text-xs text-white border border-[#4A0E1B]/20 rounded-xl animate-fade-in shadow-soft-sm">
-                  <CheckCircle size={16} className="text-[#C9A13B]" />
-                  <span>Your message has been sent successfully. We will respond within 48 business hours.</span>
+                <div className="mb-8 flex items-start space-x-3 bg-[#4A0E1B]/10 dark:bg-[#4A0E1B]/20 border border-[#4A0E1B]/30 dark:border-[#4A0E1B]/50 p-4 rounded-2xl animate-[fadeIn_0.3s_ease-out]">
+                  <CheckCircle size={20} className="text-[#4A0E1B] dark:text-[#E8CD82] shrink-0 mt-0.5" />
+                  <p className="text-sm text-[#22201F] dark:text-[#F7F3EC]">
+                    <strong className="block text-[#4A0E1B] dark:text-[#E8CD82] mb-0.5">Message Sent!</strong>
+                    Your inquiry has been successfully forwarded to the office.
+                  </p>
                 </div>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                
-                <div>
-                  <label htmlFor="name" className="block text-[9px] font-bold text-[#22201F]/80 uppercase tracking-[0.2em]">
-                    Full Name
-                  </label>
-                  <input
-                    type="text"
-                    id="name"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="mt-2 block w-full border border-[#D9C2A2]/40 bg-white dark:bg-[#22201F] px-3.5 py-3 text-sm text-[#22201F] dark:text-[#F6F2EA] rounded-input outline-none transition focus:border-[#4A0E1B]/50 focus:ring-4 focus:ring-[#C9A13B]/10 placeholder:text-[#22201F]/30"
-                    placeholder="e.g. Rahul Gupta"
-                  />
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2.5">
+                    <label htmlFor="name" className="block text-[11px] font-extrabold text-[#8A7E6F] dark:text-[#A89F91] uppercase tracking-[0.15em] ml-1">Full Name</label>
+                    <input
+                      type="text"
+                      id="name"
+                      required
+                      value={formData.name}
+                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                      className="w-full bg-[#FBF7F0] dark:bg-[#1A1817] border border-[#D9C2A2]/50 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-[#22201F] dark:text-[#F7F3EC] outline-none focus:border-[#4A0E1B] focus:ring-2 focus:ring-[#4A0E1B]/10 dark:focus:ring-[#4A0E1B]/50 transition-all placeholder:text-[#8A7E6F]/50 dark:placeholder:text-[#F7F3EC]/20 shadow-inner"
+                      placeholder="e.g. Rahul Gupta"
+                    />
+                  </div>
+
+                  <div className="space-y-2.5">
+                    <label htmlFor="email" className="block text-[11px] font-extrabold text-[#8A7E6F] dark:text-[#A89F91] uppercase tracking-[0.15em] ml-1">Academic Email</label>
+                    <input
+                      type="email"
+                      id="email"
+                      required
+                      value={formData.email}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      className="w-full bg-[#FBF7F0] dark:bg-[#1A1817] border border-[#D9C2A2]/50 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-[#22201F] dark:text-[#F7F3EC] outline-none focus:border-[#4A0E1B] focus:ring-2 focus:ring-[#4A0E1B]/10 dark:focus:ring-[#4A0E1B]/50 transition-all placeholder:text-[#8A7E6F]/50 dark:placeholder:text-[#F7F3EC]/20 shadow-inner"
+                      placeholder="e.g. rahul@student.in"
+                    />
+                  </div>
                 </div>
 
-                <div>
-                  <label htmlFor="email" className="block text-[9px] font-bold text-[#22201F]/80 uppercase tracking-[0.2em]">
-                    Academic Email Address
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="mt-2 block w-full border border-[#D9C2A2]/40 bg-white dark:bg-[#22201F] px-3.5 py-3 text-sm text-[#22201F] dark:text-[#F6F2EA] rounded-input outline-none transition focus:border-[#4A0E1B]/50 focus:ring-4 focus:ring-[#C9A13B]/10 placeholder:text-[#22201F]/30"
-                    placeholder="e.g. rahul@student.in"
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="subject" className="block text-[9px] font-bold text-[#22201F]/80 uppercase tracking-[0.2em]">
-                    Subject / Topic
-                  </label>
+                <div className="space-y-2.5">
+                  <label htmlFor="subject" className="block text-[11px] font-extrabold text-[#8A7E6F] dark:text-[#A89F91] uppercase tracking-[0.15em] ml-1">Subject</label>
                   <input
                     type="text"
                     id="subject"
                     value={formData.subject}
                     onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="mt-2 block w-full border border-[#D9C2A2]/40 bg-white dark:bg-[#22201F] px-3.5 py-3 text-sm text-[#22201F] dark:text-[#F6F2EA] rounded-input outline-none transition focus:border-[#4A0E1B]/50 focus:ring-4 focus:ring-[#C9A13B]/10 placeholder:text-[#22201F]/30"
-                    placeholder="e.g. Syllabus doubt in JEE Main"
+                    className="w-full bg-[#FBF7F0] dark:bg-[#1A1817] border border-[#D9C2A2]/50 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-[#22201F] dark:text-[#F7F3EC] outline-none focus:border-[#4A0E1B] focus:ring-2 focus:ring-[#4A0E1B]/10 dark:focus:ring-[#4A0E1B]/50 transition-all placeholder:text-[#8A7E6F]/50 dark:placeholder:text-[#F7F3EC]/20 shadow-inner"
+                    placeholder="e.g. Syllabus doubt in Organic Chemistry"
                   />
                 </div>
 
-                <div>
-                  <label htmlFor="message" className="block text-[9px] font-bold text-[#22201F]/80 uppercase tracking-[0.2em]">
-                    Message
-                  </label>
+                <div className="space-y-2.5">
+                  <label htmlFor="message" className="block text-[11px] font-extrabold text-[#8A7E6F] dark:text-[#A89F91] uppercase tracking-[0.15em] ml-1">Message</label>
                   <textarea
                     id="message"
                     required
-                    rows={4}
+                    rows={5}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="mt-2 block w-full border border-[#D9C2A2]/40 bg-white dark:bg-[#22201F] px-3.5 py-3 text-sm text-[#22201F] dark:text-[#F6F2EA] rounded-input outline-none transition focus:border-[#4A0E1B]/50 focus:ring-4 focus:ring-[#C9A13B]/10 placeholder:text-[#22201F]/30 resize-none"
-                    placeholder="Type your message here..."
+                    className="w-full bg-[#FBF7F0] dark:bg-[#1A1817] border border-[#D9C2A2]/50 dark:border-white/10 rounded-xl px-4 py-3.5 text-sm text-[#22201F] dark:text-[#F7F3EC] outline-none focus:border-[#4A0E1B] focus:ring-2 focus:ring-[#4A0E1B]/10 dark:focus:ring-[#4A0E1B]/50 transition-all placeholder:text-[#8A7E6F]/50 dark:placeholder:text-[#F7F3EC]/20 resize-none shadow-inner"
+                    placeholder="How can we help you today?"
                   />
                 </div>
 
-                <div className="pt-4">
-                  <button
-                    type="submit"
-                    className="w-full bg-[#4A0E1B] hover:bg-[#7C2532] text-white py-3.5 text-center text-xs font-bold uppercase tracking-wider rounded-full shadow-[0_4px_12px_rgba(74,14,27,0.1)] hover:shadow-[0_6px_16px_rgba(74,14,27,0.18)] hover:-translate-y-0.5 duration-200 transition-all border border-transparent"
-                    id="contact-submit-btn"
-                  >
-                    Send Message
-                  </button>
-                </div>
-
+                <button
+                  type="submit"
+                  className="group flex items-center justify-center space-x-2 w-full bg-[#4A0E1B] hover:bg-[#7C2532] dark:bg-[#E8CD82] dark:hover:bg-[#D9C2A2] text-white dark:text-[#2D0710] py-4 rounded-xl font-bold text-sm tracking-wide transition-all shadow-[0_4px_15px_rgba(74,14,27,0.15)] dark:shadow-[0_4px_20px_rgba(232,205,130,0.15)] hover:-translate-y-0.5 mt-2"
+                >
+                  <span>Send Message</span>
+                  <Send size={16} className="transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                </button>
               </form>
-
-            </PremiumCard>
+            </div>
           </div>
-
+          
         </div>
-
       </div>
     </section>
   );

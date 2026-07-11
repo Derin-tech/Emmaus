@@ -71,18 +71,18 @@ export function NotesSection({
             )}
           </div>
           <div className="flex shrink-0 items-center gap-4">
-            <div className="rounded-[12px] bg-[#C9A13B] p-4 text-center min-w-[160px]">
-              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#22201F] dark:text-[#F6F2EA]">Total Notes</p>
-              <p className="dash-mono text-[32px] font-bold text-[#22201F] dark:text-[#F6F2EA] mt-2 leading-none">{notes.filter(n => n.course === selectedExam).length}</p>
+            <div className="rounded-[12px] bg-[#4A0E1B] p-4 text-center min-w-[160px] shadow-[0_4px_12px_rgba(74,14,27,0.3)] border border-white/5">
+              <p className="text-[11px] font-bold uppercase tracking-[0.05em] text-[#D9C2A2]">Total Notes</p>
+              <p className="dash-mono text-[32px] font-bold text-white mt-2 leading-none">{notes.filter(n => n.course === selectedExam).length}</p>
               <div className="mt-[8px] text-left w-full">
-                <div className="text-[11px] font-medium text-[#5B5048] mb-1">Progress</div>
-                <div className="h-[6px] w-full bg-[rgba(34,32,31,0.15)] rounded-[3px] overflow-hidden">
+                <div className="text-[11px] font-medium text-white/60 mb-1">Progress</div>
+                <div className="h-[6px] w-full bg-white/10 rounded-[3px] overflow-hidden">
                   <div
-                    className="h-full bg-[#5A1D2C] transition-all duration-500 ease-out"
+                    className="h-full bg-[#C9A13B] transition-all duration-500 ease-out shadow-[0_0_8px_rgba(201,161,59,0.5)]"
                     style={{ width: `${Math.max(5, Math.round((notes.filter(n => n.course === selectedExam && studiedNotes.has(n.id)).length / Math.max(1, notes.filter(n => n.course === selectedExam).length)) * 100))}%`, borderRadius: '3px' }}
                   />
                 </div>
-                <div className="mt-1 text-[11px] font-medium text-[#5B5048]">
+                <div className="mt-1 text-[11px] font-medium text-white/60">
                   {notes.filter(n => n.course === selectedExam && studiedNotes.has(n.id)).length} / {notes.filter(n => n.course === selectedExam).length} reviewed
                 </div>
               </div>

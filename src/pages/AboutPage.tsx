@@ -16,13 +16,14 @@ import {
   Atom,
   Layers,
   Waves,
-  ArrowRight
+  ArrowRight,
+  CheckCircle
 } from 'lucide-react';
 
 /* Design tokens — shared "Professor's Study" system (see DESIGN_SYSTEM.md) */
 const CARD =
   'rounded-2xl border border-[#EAE1D2] dark:border-[#4A433E] dark:border-[#383330] bg-white dark:bg-[#22201F] shadow-[0_1px_2px_rgba(34,32,31,0.04),0_18px_36px_-26px_rgba(34,32,31,0.35)]';
-const MICRO = 'text-[10px] font-bold uppercase tracking-[0.14em] text-[#8A7E6F] dark:text-[#A89F91]';
+const MICRO = 'text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#8A7E6F] dark:text-[#A89F91]';
 
 type View = 'home' | 'selection' | 'student' | 'professor' | 'about' | 'contact';
 
@@ -38,14 +39,13 @@ const FACTS = [
 ];
 
 const INTERESTS = [
-  { icon: <FlaskConical size={16} />, label: 'Advanced Organic Synthesis & Reaction Mechanisms' },
-  { icon: <Atom size={16} />, label: 'Quantum Chemistry & Molecular Dynamics' },
-  { icon: <Layers size={16} />, label: 'Solid-State Chemistry & Materials Science' },
-  { icon: <Waves size={16} />, label: 'Spectroscopic Methods in Chemical Analysis' }
+  { icon: <FlaskConical size={16} />, label: 'Organic Chemistry: Reaction mechanisms & electron delocalization' },
+  { icon: <Atom size={16} />, label: 'Inorganic Chemistry: Systemic conceptual maps for p-Block elements' },
+  { icon: <Layers size={16} />, label: 'Physical Chemistry: Foundation logic for calculation-heavy chapters' }
 ];
 
 const EXPERIENCE = [
-  { year: '2014 — Present', title: 'Chemistry Professor', place: 'Brilliant Study Centre Pala' }
+  { year: '2014 — Present', title: 'Chemistry Professor', place: 'Premier Coaching Institute, Pala' }
 ];
 
 export default function AboutPage({ onNavigate }: AboutPageProps) {
@@ -61,8 +61,8 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           <div className="relative flex flex-col items-center gap-7 text-center md:flex-row md:items-center md:gap-9 md:text-left">
             {/* Monogram avatar */}
             <div className="relative shrink-0">
-              <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-gradient-to-br from-[#EAD3AE] to-[#D9C2A2] shadow-lg sm:h-32 sm:w-32">
-                <span className="dash-serif text-4xl font-semibold text-[#4A0E1B] dark:text-[#F4E7E5] sm:text-5xl">AJ</span>
+              <div className="flex h-28 w-28 items-center justify-center rounded-3xl bg-[#22201F] overflow-hidden shadow-lg sm:h-32 sm:w-32">
+                <img src="/ajesh-joe.png" alt="Professor Ajesh Joe" className="w-full h-full object-cover" />
               </div>
               <span className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl border-4 border-[#4A0E1B] bg-white dark:bg-[#22201F] text-[#4A0E1B] dark:text-[#F4E7E5]">
                 <GraduationCap size={18} />
@@ -71,8 +71,8 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 
             {/* Identity */}
             <div className="max-w-xl">
-              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-[#D9C2A2]">About the professor</p>
-              <h1 className="dash-serif mt-2 text-3xl font-semibold leading-tight sm:text-[2.5rem]">Ajesh Joe Savio</h1>
+              <p className="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#D9C2A2]">About the professor</p>
+              <h1 className="dash-serif mt-2 text-3xl font-semibold leading-tight sm:text-[2.5rem]">Ajesh Joe</h1>
               <p className="mt-1 text-sm font-semibold text-white/80">Chemistry Professor</p>
               <p className="mt-3 text-sm leading-relaxed text-white/70">
                 Devoted to quantum chemistry, molecular dynamics, and organic synthesis — building
@@ -82,7 +82,7 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
 
               <div className="mt-5 flex flex-wrap justify-center gap-2 md:justify-start">
                 {[
-                  { icon: <Building2 size={13} />, text: 'Brilliant Study Centre Pala' },
+                  { icon: <Building2 size={13} />, text: 'Premier Coaching Institute, Pala' },
                   { icon: <MapPin size={13} />, text: 'Kerala, India' },
                   { icon: <CalendarClock size={13} />, text: '12+ Years Teaching Experience' }
                 ].map((chip, i) => (
@@ -117,15 +117,12 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
           <p className={MICRO}>Biography</p>
           <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F] dark:text-[#F6F2EA]">A scholar devoted to teaching</h2>
           <div className={`${CARD} mt-4 p-6 sm:p-8`}>
-            <div className="space-y-4 text-sm leading-relaxed text-[#5A534B] dark:text-[#C7BCAD] dark:text-[#A89F91]">
+            <div className="space-y-4 text-[15px] font-medium leading-relaxed text-[#5A534B] dark:text-[#C7BCAD]">
               <p>
-                Ajesh Joe Savio studied at St. Thomas College, Palai. With over 12 years of teaching experience, he has lectured in organic chemistry, physical chemistry, and advanced materials science.
+                Prof. Ajesh (Ajeesh) is a popular Chemistry faculty member at a premier coaching institute in Pala, Kerala. He is well-known among medical and engineering aspirants for his expert strategies in preparing students for competitive exams like JEE Main, JEE Advanced, NEET, and KEAM.
               </p>
               <p>
-                Recognising how often students struggle to bridge foundational theory with high-difficulty
-                problem structures, he began writing unified note modules, previous-year guides, and concept
-                booklets — a complete, open-access repository for state and national-level scientific
-                entrance examinations.
+                Recognising how often students struggle to bridge foundational theory with high-difficulty problem structures, he began writing unified note modules, previous-year guides, and concept booklets. Aside from his classroom teaching, he has built a significant online presence, particularly among students in the Kerala entrance coaching community, creating a complete, open-access repository for scientific entrance examinations.
               </p>
             </div>
           </div>
@@ -144,17 +141,17 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
             </p>
             <div className="relative mt-6 flex items-center gap-3">
               <span className="h-px w-8 bg-[#4A0E1B]/40" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A6A16] dark:text-[#E8CD82]">Ajesh Joe Savio</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A6A16] dark:text-[#E8CD82]">Ajesh Joe</span>
             </div>
           </div>
         </section>
 
         {/* ================= INTERESTS + EXPERIENCE ================= */}
         <section className="mt-10 grid gap-6 md:grid-cols-2">
-          {/* Research interests */}
+          {/* Educational Approach */}
           <div className={`${CARD} p-6`}>
-            <p className={MICRO}>Research interests</p>
-            <h3 className="dash-serif mt-1 text-lg font-semibold text-[#22201F] dark:text-[#F6F2EA]">Fields of focus</h3>
+            <p className={MICRO}>Educational approach</p>
+            <h3 className="dash-serif mt-1 text-lg font-semibold text-[#22201F] dark:text-[#F6F2EA]">Core breakdown</h3>
             <ul className="mt-5 space-y-3.5">
               {INTERESTS.map((it, i) => (
                 <li key={i} className="flex items-start gap-3">
@@ -181,6 +178,43 @@ export default function AboutPage({ onNavigate }: AboutPageProps) {
                 </li>
               ))}
             </ul>
+          </div>
+        </section>
+
+        {/* ================= STUDY MATERIALS & SESSIONS ================= */}
+        <section className="mt-10">
+          <p className={MICRO}>Educational Programs</p>
+          <h2 className="dash-serif mt-1 text-2xl font-semibold text-[#22201F] dark:text-[#F6F2EA]">Study Materials & Live Sessions</h2>
+          <div className={`${CARD} mt-4 p-6 sm:p-8`}>
+            <div className="grid gap-6 md:grid-cols-3">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[#4A0E1B] dark:text-[#E8CD82]">
+                  <Waves size={18} />
+                  <h4 className="font-bold text-[#22201F] dark:text-[#F7F3EC]">Live Classes</h4>
+                </div>
+                <p className="text-sm leading-relaxed text-[#5A534B] dark:text-[#A89F91]">
+                  Regular interactive sessions broadcasted via the E-Learning Portal and official YouTube streams covering high-weightage test segments.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[#4A0E1B] dark:text-[#E8CD82]">
+                  <BookOpen size={18} />
+                  <h4 className="font-bold text-[#22201F] dark:text-[#F7F3EC]">Course Modules</h4>
+                </div>
+                <p className="text-sm leading-relaxed text-[#5A534B] dark:text-[#A89F91]">
+                  Complete theoretical modules paired with graded workbooks containing advanced JEE-level and NCERT-based question sets.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-[#4A0E1B] dark:text-[#E8CD82]">
+                  <CheckCircle size={18} />
+                  <h4 className="font-bold text-[#22201F] dark:text-[#F7F3EC]">Testing Routine</h4>
+                </div>
+                <p className="text-sm leading-relaxed text-[#5A534B] dark:text-[#A89F91]">
+                  Mandatory weekly objective assessments followed by post-evaluation doubt-clearing webinars to ensure concept mastery.
+                </p>
+              </div>
+            </div>
           </div>
         </section>
 

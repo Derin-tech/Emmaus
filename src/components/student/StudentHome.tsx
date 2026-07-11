@@ -92,7 +92,7 @@ export function StudentHome({
               <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#F4E7E5] dark:bg-[#38151A] text-[#4A0E1B] transition-colors duration-[220ms] ease-out group-hover:bg-[#F7EFD9] dark:bg-[#362A0D] group-hover:text-[#8A6A16]">
                 {renderExamIcon(exam.icon)}
               </span>
-              <span className="dash-mono rounded-full border border-[#EFE7D8] dark:border-[#4A433E] bg-[#FBF7F0] dark:bg-[#2A2726] px-2.5 py-1 text-[10px] font-medium text-[#8A7E6F] dark:text-[#A89F91]">
+              <span className="dash-mono rounded-full border border-[#7C2532] bg-[#4A0E1B] px-2.5 py-1 text-[10px] font-medium text-[#F7F3EC] shadow-sm">
                 {notes.filter(n => n.course === exam.id).length + videos.filter(v => v.course === exam.id).length + practiceSheets.filter(s => s.course === exam.id).length + pyqs.filter(p => p.course === exam.id).length} Resources
               </span>
             </div>

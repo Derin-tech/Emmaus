@@ -3,9 +3,80 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React from 'react';
-import { ArrowRight, BookOpen, Quote } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowRight, BookOpen, Quote, Lightbulb } from 'lucide-react';
 import { PremiumCard } from '../components/PremiumCard';
+import { AnimatePresence, motion } from 'framer-motion';
+
+const facts = [
+  "Francium is the rarest naturally occurring element; there is only about 20-30 grams of it in the entire Earth's crust at any time.",
+  "Gallium has a melting point of just 29.76°C, meaning a solid chunk of this metal will literally melt in the palm of your hand.",
+  "Bismuth is technically radioactive, but its half-life is 1.9 billion billion years—over a billion times longer than the age of the universe.",
+  "Osmium is the densest naturally occurring element; a block the size of a standard brick would weigh about 11.8 kilograms.",
+  "Helium is the only element that cannot be solidified by lowering the temperature at ordinary atmospheric pressure.",
+  "Astatine is so unstable that a visible piece has never been assembled; it would instantly vaporize itself from its own radioactive heat.",
+  "Fluorine is the most reactive of all elements—it is so aggressively reactive it can even burn glass and water.",
+  "A single bucket of water contains more individual atoms than there are buckets of water in the entire Atlantic Ocean.",
+  "The average human body contains enough elemental carbon to manufacture the 'lead' for approximately 9,000 pencils.",
+  "Every single hydrogen atom in your body is approximately 13.5 billion years old, created just moments after the Big Bang."
+];
+
+function DidYouKnowCard() {
+  const [factIndex, setFactIndex] = useState(0);
+
+  useEffect(() => {
+    const cycleFact = () => {
+      setFactIndex((prev) => (prev + 1) % facts.length);
+    };
+    const changeTimeout = setInterval(cycleFact, 7000);
+    return () => clearInterval(changeTimeout);
+  }, []);
+
+  return (
+    <PremiumCard padding="large" className="relative overflow-hidden !bg-[#4A0E1B] !border-[#7C2532] shadow-[0_24px_50px_rgba(74,14,27,0.4)] dark:shadow-[0_24px_50px_rgba(0,0,0,0.7)] h-full min-h-[300px] w-full flex flex-col justify-center text-[#F7F3EC]">
+      <div className="absolute inset-0 opacity-10 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
+      
+      <div className="relative z-10 w-full h-full flex flex-col">
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[#2D0710]/80 text-[#E8CD82] shadow-inner border border-[#7C2532]/50">
+            <Lightbulb size={22} className="text-[#E8CD82]" />
+          </div>
+          <div>
+            <h3 className="font-serif text-[19px] font-bold text-[#F7F3EC] leading-tight">Did You Know?</h3>
+            <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#D9C2A2] mt-0.5">Chemistry Facts</p>
+          </div>
+        </div>
+
+        <div className="flex-grow flex items-center justify-center relative rounded-xl border border-[#7C2532]/40 bg-[#2D0710]/40 p-6 shadow-[inset_0_2px_15px_rgba(0,0,0,0.2)] mb-2">
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={factIndex}
+              initial={{ opacity: 0, y: 8, filter: 'blur(4px)' }}
+              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="text-[16px] md:text-[18px] font-serif text-[#F7F3EC] leading-relaxed italic"
+            >
+              "{facts[factIndex]}"
+            </motion.p>
+          </AnimatePresence>
+        </div>
+        
+        {/* Dot Indicator */}
+        <div className="flex justify-center space-x-1.5 mt-2 mb-1">
+          {facts.map((_, idx) => (
+            <div
+              key={idx}
+              className={`h-1.5 rounded-full transition-all duration-300 ${
+                idx === factIndex ? 'w-4 bg-[#E8CD82]' : 'w-1.5 bg-[#7C2532]/80'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </PremiumCard>
+  );
+}
 
 interface HeroProps {
   onGetStarted: () => void;
@@ -15,20 +86,14 @@ interface HeroProps {
 export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
   return (
     <section className="relative overflow-hidden bg-[#F7F3EC] dark:bg-[#1A1817] py-16 md:py-24">
-      {/* Subtle Chemistry Hexagon Background Pattern */}
-      <div className="pointer-events-none absolute inset-0 z-0 opacity-[0.03] dark:opacity-[0.02]" style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='103.923' viewBox='0 0 60 103.923' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 17.32l15 8.66v17.32l-15 8.66l-15-8.66v-17.32l15-8.66zm0-2l-16.732 9.66v19.32l16.732 9.66l16.732-9.66v-19.32l-16.732-9.66zm0 51.961l15 8.66v17.32l-15 8.66l-15-8.66v-17.32l15-8.66zm0-2l-16.732 9.66v19.32l16.732 9.66l16.732-9.66v-19.32l-16.732-9.66zm30-23.98l15 8.66v17.32l-15 8.66l-15-8.66v-17.32l15-8.66zm0-2l-16.732 9.66v19.32l16.732 9.66l16.732-9.66v-19.32l-16.732-9.66zm-60 0l15 8.66v17.32l-15 8.66l-15-8.66v-17.32l15-8.66zm0-2l-16.732 9.66v19.32l16.732 9.66l16.732-9.66v-19.32l-16.732-9.66z' fill='%234A0E1B' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E")`, backgroundSize: '60px 103.923px' }}></div>
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
+        <div className="grid items-center lg:items-stretch gap-12 lg:grid-cols-12 lg:gap-8">
           
           {/* Text Content Block */}
           <div className="flex flex-col space-y-6 lg:col-span-7 animate-[fadeInUp_0.8s_ease-out_forwards]">
             
-            <div className="flex items-center space-x-2">
-              <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-bold text-[#C9A13B]">
-                AJESH JOE SAVIO · CHEMISTRY
-              </span>
-            </div>
+
 
             <h1 className="text-5xl font-sans font-bold tracking-tight text-[#22201F] dark:text-[#F6F2EA] sm:text-6xl md:text-7xl leading-[1.05]">
               <span className="italic font-semibold text-[#4A0E1B] dark:text-[#E8CD82] tracking-normal" style={{ fontFamily: '"Caveat", cursive', fontSize: '1.2em', lineHeight: '0.8' }}>Understand</span><br className="hidden sm:block"/>
@@ -40,7 +105,7 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
             </h1>
 
             <p className="max-w-2xl text-[17px] sm:text-[20px] leading-[1.6] text-[#5A534B] dark:text-[#C7BCAD]">
-              A free, rigorous chemistry library for JEE, NEET, CSIR-NET and M.Sc aspirants — concept-first notes, lectures and problem practice from Ajesh Joe Savio.
+              A free, rigorous chemistry library for JEE, NEET, CSIR-NET and M.Sc aspirants — concept-first notes, lectures and problem practice from Ajesh Joe.
             </p>
 
             <div className="pt-4 flex flex-wrap gap-4">
@@ -61,46 +126,16 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
 
           </div>
 
-          {/* Professional Library Card Block */}
+          {/* Did You Know Facts Block */}
           <div className="flex justify-center lg:col-span-5 relative">
-            <div className="relative w-full max-w-md">
-              <PremiumCard padding="large" className="relative overflow-hidden bg-white dark:bg-[#22201F] shadow-[0_20px_50px_rgba(74,14,27,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
-                
-                {/* Decorative blurs */}
-                <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#C9A13B]/20 blur-2xl dark:bg-[#C9A13B]/10"></div>
-                <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#4A0E1B]/20 blur-2xl dark:bg-[#4A0E1B]/10"></div>
-                
-                <div className="relative">
-                  <div className="flex items-center justify-between mb-8">
-                    <div className="flex items-center space-x-3">
-                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#4A0E1B] to-[#7C2532] text-[#F4E7E5] shadow-sm">
-                        <BookOpen size={20} />
-                      </div>
-                      <div>
-                        <h3 className="font-serif text-[19px] font-bold text-[#22201F] dark:text-[#F6F2EA] leading-tight">Digital Library</h3>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8A7E6F] mt-0.5">Verified Resources</p>
-                      </div>
-                    </div>
-                    <span className="rounded-full border border-[#C9A13B]/30 bg-[#C9A13B]/10 px-3 py-1 text-[10px] font-bold tracking-widest text-[#8A6A16] dark:text-[#E8CD82] uppercase">Free</span>
-                  </div>
-
-                  <div className="space-y-3.5">
-                    {[
-                      { title: 'Organic Chemistry', desc: 'Reaction Mechanisms & Synthesis', modules: '12 Modules' },
-                      { title: 'Physical Chemistry', desc: 'Quantum Mechanics & Thermodynamics', modules: '8 Modules' },
-                      { title: 'Inorganic Chemistry', desc: 'Coordination Compounds & Elements', modules: '10 Modules' }
-                    ].map((item, i) => (
-                      <div key={i} className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#D9C2A2]/30 dark:border-[#4A433E] bg-[#F7F3EC]/50 dark:bg-[#1A1817]/50 p-4 transition-all hover:bg-[#F7F3EC] dark:hover:bg-[#1A1817] hover:border-[#C9A13B]/40 hover:shadow-sm cursor-default">
-                        <div className="flex flex-col">
-                          <span className="text-[14px] font-bold text-[#22201F] dark:text-[#F6F2EA]">{item.title}</span>
-                          <span className="text-[12px] font-medium text-[#8A7E6F] dark:text-[#A89F91] mt-0.5">{item.desc}</span>
-                        </div>
-                        <span className="inline-flex w-fit items-center font-mono text-[10px] font-semibold text-[#4A0E1B] dark:text-[#F4E7E5] bg-[#4A0E1B]/5 dark:bg-[#4A0E1B]/40 px-2 py-1 rounded border border-[#4A0E1B]/10 dark:border-transparent">{item.modules}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </PremiumCard>
+            <div className="relative w-full max-w-md h-full animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+              {/* Decorative blurs */}
+              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#C9A13B]/20 blur-2xl dark:bg-[#C9A13B]/10"></div>
+              <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#4A0E1B]/20 blur-2xl dark:bg-[#4A0E1B]/10"></div>
+              
+              <div className="relative z-10 h-full">
+                <DidYouKnowCard />
+              </div>
             </div>
           </div>
 
@@ -115,7 +150,7 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
             </p>
             <div className="relative mt-6 flex items-center gap-3">
               <span className="h-px w-8 bg-[#4A0E1B]/40" />
-              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A6A16] dark:text-[#E8CD82]">Ajesh Joe Savio</span>
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A6A16] dark:text-[#E8CD82]">Ajesh Joe</span>
             </div>
           </div>
         </div>
