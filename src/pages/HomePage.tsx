@@ -59,78 +59,45 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
 
           </div>
 
-          {/* Illustration Block */}
-          <div className="flex justify-center lg:col-span-5">
+          {/* Professional Library Card Block */}
+          <div className="flex justify-center lg:col-span-5 relative">
             <div className="relative w-full max-w-md">
-              
-              {/* Outer soft shadow background box */}
-              <div className="absolute inset-0 translate-x-3 translate-y-3 bg-[#D9C2A2]/10 rounded-[22px]" />
-              
-              <PremiumCard padding="large" accentLine className="relative overflow-hidden shadow-[0_15px_40px_rgba(74,14,27,0.06)]">
+              <PremiumCard padding="large" className="relative overflow-hidden bg-white dark:bg-[#22201F] shadow-[0_20px_50px_rgba(74,14,27,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)]">
                 
-                {/* Header mimicking a digital terminal page */}
-                <div className="flex items-center justify-between border-b border-[#D9C2A2]/20 pb-4">
-                  <div className="flex space-x-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#4A0E1B]/30" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#C9A13B]/30" />
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#7C2532]/30" />
-                  </div>
-                  <span className="text-[9px] uppercase tracking-[0.2em] font-mono text-[#22201F]/60">
-                    quantum_wave_theory.ts
-                  </span>
-                </div>
-
-                {/* Animated vector coordinate graph illustrating a physics problem */}
-                <div className="my-8 flex h-48 items-center justify-center rounded-xl bg-[#F7F3EC] dark:bg-[#1A1817] p-4">
-                  <svg className="h-full w-full" viewBox="0 0 200 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    {/* Grid Lines */}
-                    <line x1="10" y1="60" x2="190" y2="60" stroke="#D9C2A2" strokeWidth="0.5" className="opacity-40" />
-                    <line x1="100" y1="10" x2="100" y2="110" stroke="#D9C2A2" strokeWidth="0.5" className="opacity-40" />
-                    
-                    {/* Sine/Cosine Waves to look like vector math / field lines */}
-                    <path
-                      d="M 10,60 C 40,10 70,110 100,60 C 130,10 160,110 190,60"
-                      stroke="#4A0E1B"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      className="opacity-80"
-                    />
-                    
-                    <path
-                      d="M 10,60 C 40,110 70,10 100,60 C 130,110 160,10 190,60"
-                      stroke="#C9A13B"
-                      strokeWidth="1"
-                      strokeDasharray="3 3"
-                      className="opacity-60"
-                    />
-
-                    {/* Mathematical points */}
-                    <circle cx="55" cy="35" r="4" fill="#4A0E1B" className="animate-pulse" />
-                    <circle cx="145" cy="85" r="4" fill="#C9A13B" />
-                    
-                    {/* Labels */}
-                    <text x="110" y="20" fill="#22201F" fontSize="6" fontFamily="monospace" className="opacity-50">Ψ(x,t)</text>
-                    <text x="10" y="55" fill="#22201F" fontSize="6" fontFamily="monospace" className="opacity-50">x = -L</text>
-                    <text x="170" y="55" fill="#22201F" fontSize="6" fontFamily="monospace" className="opacity-50">x = +L</text>
-                  </svg>
-                </div>
-
-                {/* Simulated file cards at the bottom */}
-                <div className="space-y-2.5">
-                  <div className="flex items-center justify-between rounded-xl border border-[#D9C2A2]/20 bg-[#F7F3EC]/50 p-2.5">
-                    <div className="flex items-center space-x-2.5">
-                      <div className="flex h-7 w-7 items-center justify-center rounded bg-[#4A0E1B]/8 text-[#4A0E1B] dark:text-[#F4E7E5]">
-                        <BookOpen size={14} />
+                {/* Decorative blurs */}
+                <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[#C9A13B]/20 blur-2xl dark:bg-[#C9A13B]/10"></div>
+                <div className="pointer-events-none absolute -bottom-10 -left-10 h-32 w-32 rounded-full bg-[#4A0E1B]/20 blur-2xl dark:bg-[#4A0E1B]/10"></div>
+                
+                <div className="relative">
+                  <div className="flex items-center justify-between mb-8">
+                    <div className="flex items-center space-x-3">
+                      <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-[#4A0E1B] to-[#7C2532] text-[#F4E7E5] shadow-sm">
+                        <BookOpen size={20} />
                       </div>
-                      <div className="flex flex-col">
-                        <span className="text-xs font-semibold text-[#22201F] dark:text-[#F6F2EA]">Quantum Wave Mechanics</span>
-                        <span className="font-mono text-[9px] text-[#22201F]/60">PDF Document • 3.2MB</span>
+                      <div>
+                        <h3 className="font-serif text-[19px] font-bold text-[#22201F] dark:text-[#F6F2EA] leading-tight">Digital Library</h3>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.15em] text-[#8A7E6F] mt-0.5">Verified Resources</p>
                       </div>
                     </div>
-                    <span className="rounded bg-[#C9A13B]/10 px-1.5 py-0.5 font-mono text-[9px] font-semibold text-[#C9A13B]">Lecture 04</span>
+                    <span className="rounded-full border border-[#C9A13B]/30 bg-[#C9A13B]/10 px-3 py-1 text-[10px] font-bold tracking-widest text-[#8A6A16] dark:text-[#E8CD82] uppercase">Free</span>
+                  </div>
+
+                  <div className="space-y-3.5">
+                    {[
+                      { title: 'Organic Chemistry', desc: 'Reaction Mechanisms & Synthesis', modules: '12 Modules' },
+                      { title: 'Physical Chemistry', desc: 'Quantum Mechanics & Thermodynamics', modules: '8 Modules' },
+                      { title: 'Inorganic Chemistry', desc: 'Coordination Compounds & Elements', modules: '10 Modules' }
+                    ].map((item, i) => (
+                      <div key={i} className="group flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-[#D9C2A2]/30 dark:border-[#4A433E] bg-[#F7F3EC]/50 dark:bg-[#1A1817]/50 p-4 transition-all hover:bg-[#F7F3EC] dark:hover:bg-[#1A1817] hover:border-[#C9A13B]/40 hover:shadow-sm cursor-default">
+                        <div className="flex flex-col">
+                          <span className="text-[14px] font-bold text-[#22201F] dark:text-[#F6F2EA]">{item.title}</span>
+                          <span className="text-[12px] font-medium text-[#8A7E6F] dark:text-[#A89F91] mt-0.5">{item.desc}</span>
+                        </div>
+                        <span className="inline-flex w-fit items-center font-mono text-[10px] font-semibold text-[#4A0E1B] dark:text-[#F4E7E5] bg-[#4A0E1B]/5 dark:bg-[#4A0E1B]/40 px-2 py-1 rounded border border-[#4A0E1B]/10 dark:border-transparent">{item.modules}</span>
+                      </div>
+                    ))}
                   </div>
                 </div>
-
               </PremiumCard>
             </div>
           </div>
