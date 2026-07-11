@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { ArrowRight, BookOpen } from 'lucide-react';
+import { ArrowRight, BookOpen, Quote } from 'lucide-react';
 import { PremiumCard } from '../components/PremiumCard';
 
 interface HeroProps {
@@ -20,49 +20,41 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
         <div className="grid items-center gap-12 lg:grid-cols-12 lg:gap-8">
           
           {/* Text Content Block */}
-          <div className="flex flex-col space-y-6 lg:col-span-7">
+          <div className="flex flex-col space-y-6 lg:col-span-7 animate-[fadeInUp_0.8s_ease-out_forwards]">
             
             <div className="flex items-center space-x-2">
-              <span className="flex items-center space-x-2 bg-white dark:bg-[#22201F] border border-[#D9C2A2]/40 px-3 py-1 font-sans text-[9px] uppercase tracking-[0.2em] font-bold text-[#C9A13B]">
-                <span className="h-1.5 w-1.5 bg-[#C9A13B] rounded-full animate-pulse" />
-                <span>NON-COMMERCIAL DIGITAL LIBRARY</span>
+              <span className="font-sans text-[11px] uppercase tracking-[0.2em] font-bold text-[#C9A13B]">
+                PROF. AJESH JOE · CHEMISTRY
               </span>
             </div>
 
-            <h1 className="text-4xl font-serif font-extrabold tracking-tight text-[#22201F] dark:text-[#F6F2EA] sm:text-5xl md:text-6xl leading-none">
-              Free Learning <br />
-              <span className="text-[#4A0E1B] dark:text-[#F4E7E5]">Resources</span>
+            <h1 className="text-5xl font-serif font-bold tracking-tight text-[#22201F] dark:text-[#F6F2EA] sm:text-6xl md:text-7xl leading-[1.05]">
+              Understand<br className="hidden sm:block"/>
+              chemistry. Don't<br className="hidden sm:block"/>
+              just <span className="relative inline-block text-[#8A7E6F] dark:text-[#A89F91]">
+                memorise
+                <span className="absolute left-[-5%] right-[-5%] top-[55%] h-[4px] md:h-[6px] bg-[#C9A13B] -translate-y-1/2 opacity-90 rounded-full"></span>
+              </span> it.
             </h1>
 
-            <p className="max-w-2xl text-base sm:text-lg leading-relaxed text-[#22201F]/60">
-              A collection of notes, lectures, practice material and educational resources prepared to help students learn. Curated by Professor Ajesh Joe, to foster true academic excellence.
+            <p className="max-w-2xl text-[17px] sm:text-[20px] leading-[1.6] text-[#5A534B] dark:text-[#C7BCAD]">
+              A free, rigorous chemistry library for JEE, NEET, CSIR-NET and M.Sc aspirants — concept-first notes, lectures and problem practice from Prof. Ajesh Joe.
             </p>
 
-            <div className="pt-4">
+            <div className="pt-4 flex flex-wrap gap-4">
               <button
                 onClick={onGetStarted}
-                className="group flex items-center space-x-2 bg-[#4A0E1B] hover:bg-[#7C2532] text-white px-6 py-3.5 text-xs font-bold uppercase tracking-wider rounded-btn shadow-soft-md hover:-translate-y-0.5 duration-200 transition-all border border-[#4A0E1B]"
+                className="group flex items-center justify-center bg-[#4A0E1B] hover:bg-[#7C2532] text-white px-8 py-4 text-[15px] font-bold rounded-xl shadow-[0_4px_14px_rgba(74,14,27,0.3)] hover:shadow-[0_6px_20px_rgba(74,14,27,0.4)] hover:-translate-y-0.5 transition-all"
                 id="hero-get-started-btn"
               >
-                <span>GET STARTED</span>
-                <ArrowRight size={16} className="transition-transform group-hover:translate-x-1" />
+                Enter the library
               </button>
-            </div>
-
-            {/* Quick stats panel, purely academic */}
-            <div className="grid grid-cols-3 gap-6 border-t border-[#D9C2A2]/30 pt-8 mt-8">
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Curriculums</p>
-                <p className="mt-1 text-lg font-semibold font-serif text-[#22201F] dark:text-[#F6F2EA]">5 Exam Focuses</p>
-              </div>
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Material</p>
-                <p className="mt-1 text-lg font-semibold font-serif text-[#22201F] dark:text-[#F6F2EA]">100% Free PDFs</p>
-              </div>
-              <div>
-                <p className="text-[9px] uppercase tracking-[0.2em] font-bold text-[#22201F]/60">Guidance</p>
-                <p className="mt-1 text-lg font-semibold font-serif text-[#22201F] dark:text-[#F6F2EA]">Doubt Clarification</p>
-              </div>
+              <button
+                onClick={() => onNavigate('about')}
+                className="group flex items-center justify-center border-2 border-[#D9C2A2]/40 bg-transparent text-[#22201F] dark:text-[#F6F2EA] px-8 py-4 text-[15px] font-bold rounded-xl hover:bg-[#D9C2A2]/10 hover:border-[#D9C2A2] transition-all"
+              >
+                About the professor
+              </button>
             </div>
 
           </div>
@@ -144,6 +136,20 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
           </div>
 
         </div>
+
+        {/* Blockquote Section */}
+        <div className="mt-20 md:mt-32 max-w-5xl mx-auto pl-6 md:pl-10 relative animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
+          <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-[#C9A13B] rounded-full opacity-80"></div>
+          <Quote className="mb-6 text-[#C9A13B] opacity-60 fill-[#C9A13B]" size={42} />
+          <p className="font-serif text-[24px] md:text-3xl lg:text-[40px] leading-[1.4] md:leading-[1.4] font-medium text-[#22201F] dark:text-[#F6F2EA]">
+            A chemistry problem is simply a mechanism waiting to be written in <span className="text-[#C9A13B]">the elegant language of electrons</span> — our role is to teach students its <span className="text-[#C9A13B]">grammar</span>, so they can write their own solutions.
+          </p>
+          <div className="mt-10 flex items-center gap-4">
+            <div className="h-[2px] w-8 bg-[#C9A13B]"></div>
+            <span className="text-sm font-bold uppercase tracking-[0.2em] text-[#5A534B] dark:text-[#C7BCAD]">PROF. AJESH JOE</span>
+          </div>
+        </div>
+
       </div>
     </section>
   );
