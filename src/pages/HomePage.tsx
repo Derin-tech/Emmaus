@@ -108,14 +108,14 @@ export default function Hero({ onGetStarted, onNavigate }: HeroProps) {
 
         {/* Blockquote Section */}
         <div className="mt-20 md:mt-32 max-w-5xl mx-auto animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
-          <div className="relative overflow-hidden rounded-2xl border border-[#EAD9C0] dark:border-[#4A433E] bg-gradient-to-br from-[#F6EBE6] to-[#F3EAD8] dark:from-[#2A2624] dark:to-[#221F1E] p-8 sm:p-12 md:p-16 shadow-[0_8px_30px_rgba(74,14,27,0.04)]">
-            <Quote className="pointer-events-none absolute -right-4 -top-2 text-[#4A0E1B]/10 dark:text-[#F4E7E5]/5" size={180} strokeWidth={1.5} />
-            <p className="font-serif relative max-w-4xl text-[22px] md:text-3xl lg:text-4xl leading-[1.6] md:leading-[1.6] font-medium text-[#3A2A22] dark:text-[#EAE1D2]">
+          <div className="relative overflow-hidden rounded-2xl border border-[#EAD9C0] bg-gradient-to-br from-[#F6EBE6] to-[#F3EAD8] p-7 sm:p-10">
+            <Quote className="pointer-events-none absolute -right-2 top-3 text-[#4A0E1B] dark:text-[#F4E7E5]/10" size={110} strokeWidth={1.5} />
+            <p className="dash-serif relative max-w-2xl text-xl leading-relaxed text-[#3A2A22] sm:text-2xl">
               “Academic excellence does not rely on memorising reactions, but on developing deep physical intuition and chemical logic. A chemistry problem is simply a mechanism waiting to be written in the elegant language of electrons — our role is to teach students its grammar, so they can write their own solutions.”
             </p>
-            <div className="relative mt-10 flex items-center gap-4">
-              <span className="h-[2px] w-10 bg-[#4A0E1B]/40 dark:bg-[#C9A13B]/40" />
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#8A6A16] dark:text-[#E8CD82]">AJESH JOE SAVIO</span>
+            <div className="relative mt-6 flex items-center gap-3">
+              <span className="h-px w-8 bg-[#4A0E1B]/40" />
+              <span className="text-[11px] font-bold uppercase tracking-[0.16em] text-[#8A6A16] dark:text-[#E8CD82]">Ajesh Joe Savio</span>
             </div>
           </div>
         </div>
