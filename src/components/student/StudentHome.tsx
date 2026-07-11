@@ -4,7 +4,7 @@
  */
 
 import React from 'react';
-import { Atom, Compass, FileText, VideoIcon, BookOpen, FileSpreadsheet, ArrowRight, Bell, Quote } from 'lucide-react';
+import { Atom, Compass, FileText, VideoIcon, BookOpen, FileSpreadsheet, ArrowRight, Bell } from 'lucide-react';
 import type { ExamType, Announcement } from '../../types';
 
 interface StudentHomeProps {
@@ -32,50 +32,8 @@ export function StudentHome({
 
   return (
     <div className="flex flex-col gap-6 pb-12">
-      {/* New Introduction Hero */}
-      <div className="pt-8 pb-8 md:pt-16 md:pb-16 animate-[fadeInUp_0.8s_ease-out_forwards]">
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#C9A13B] mb-6">
-          PROF. AJESH JOE · CHEMISTRY
-        </p>
-        <h1 className="dash-serif text-[44px] sm:text-6xl md:text-[80px] font-bold text-[#22201F] dark:text-[#F6F2EA] leading-[1.05] tracking-tight">
-          Understand<br className="hidden sm:block"/>
-          chemistry. Don't<br className="hidden sm:block"/>
-          just <span className="relative inline-block text-[#8A7E6F] dark:text-[#A89F91]">
-            memorise
-            <span className="absolute left-[-5%] right-[-5%] top-[55%] h-[4px] md:h-[6px] bg-[#C9A13B] -translate-y-1/2 opacity-90 rounded-full"></span>
-          </span> it.
-        </h1>
-        <p className="mt-8 max-w-2xl text-[17px] md:text-[20px] text-[#5A534B] dark:text-[#C7BCAD] leading-[1.6]">
-          A free, rigorous chemistry library for JEE, NEET, CSIR-NET and M.Sc aspirants — concept-first notes, lectures and problem practice from Prof. Ajesh Joe.
-        </p>
-        <div className="mt-10 flex flex-wrap gap-4">
-          <button 
-            onClick={() => document.getElementById('library-section')?.scrollIntoView({ behavior: 'smooth' })}
-            className="rounded-[14px] bg-[#4A0E1B] px-8 py-4 text-[15px] font-bold text-white transition-all hover:bg-[#7C2532] hover:shadow-[0_8px_20px_rgba(74,14,27,0.25)] hover:-translate-y-0.5"
-          >
-            Enter the library
-          </button>
-          <button className="rounded-[14px] border-2 border-[#D9C2A2]/40 bg-transparent px-8 py-4 text-[15px] font-bold text-[#22201F] dark:text-[#F6F2EA] transition-all hover:bg-[#D9C2A2]/10 hover:border-[#D9C2A2]">
-            About the professor
-          </button>
-        </div>
-      </div>
-
-      {/* Blockquote Section */}
-      <div className="mb-16 mt-4 pl-6 md:pl-10 relative animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
-        <div className="absolute left-0 top-0 bottom-0 w-[4px] bg-gradient-to-b from-[#C9A13B] to-[#7C2532] rounded-full opacity-60"></div>
-        <Quote className="mb-6 text-[#C9A13B] opacity-40 fill-[#C9A13B]" size={42} />
-        <p className="dash-serif text-[22px] md:text-3xl lg:text-[34px] leading-[1.5] md:leading-[1.5] font-medium text-[#22201F] dark:text-[#F6F2EA] max-w-4xl">
-          A chemistry problem is simply a mechanism waiting to be written in <span className="text-[#C9A13B]">the elegant language of electrons</span> — our role is to teach students its <span className="text-[#C9A13B]">grammar</span>, so they can write their own solutions.
-        </p>
-        <div className="mt-10 flex items-center gap-4">
-          <div className="h-[2px] w-8 bg-[#C9A13B]"></div>
-          <span className="text-xs font-bold uppercase tracking-[0.2em] text-[#5A534B] dark:text-[#C7BCAD]">PROF. AJESH JOE</span>
-        </div>
-      </div>
-
       {/* Hero Section */}
-      <div id="library-section" className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A0E1B] to-[#7C2532] p-7 text-white shadow-[0_22px_44px_-24px_rgba(74,14,27,0.75)] sm:p-10 animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.4s', animationFillMode: 'both' }}>
+      <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#4A0E1B] to-[#7C2532] p-7 text-white shadow-[0_22px_44px_-24px_rgba(74,14,27,0.75)] sm:p-10 animate-[fadeInUp_0.8s_ease-out_forwards]">
         <div className="pointer-events-none absolute -right-16 -top-20 h-60 w-60 rounded-full bg-[#D9C2A2]/20 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 left-20 h-52 w-52 rounded-full bg-[#D9C2A2]/10 blur-3xl" />
 
@@ -85,7 +43,7 @@ export function StudentHome({
             <div className="flex h-28 w-28 items-center justify-center rounded-[28px] bg-gradient-to-br from-[#EAD3AE] to-[#D9C2A2] shadow-lg sm:h-32 sm:w-32">
               <Atom className="text-[#4A0E1B]" size={48} strokeWidth={1.5} />
             </div>
-            <span className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl border-4 border-[#4A0E1B] bg-white dark:bg-[#22201F] dark:bg-[#22201F] text-[#4A0E1B]">
+            <span className="absolute -bottom-2 -right-2 flex h-10 w-10 items-center justify-center rounded-2xl border-4 border-[#4A0E1B] bg-white dark:bg-[#22201F] text-[#4A0E1B]">
               <BookOpen size={18} />
             </span>
           </div>
@@ -108,7 +66,7 @@ export function StudentHome({
               ].map((chip, i) => (
                 <span
                   key={i}
-                  className="inline-flex items-center gap-1.5 rounded-full border border-[#D9C2A2]/30 bg-white dark:bg-[#22201F]/10 px-3 py-1.5 text-[11px] font-semibold text-white/90 hover:border-[#D9C2A2] hover:shadow-[0_0_12px_rgba(217,194,162,0.3)] hover:-translate-y-0.5 transition-all duration-300 animate-[fadeInUp_0.8s_ease-out_forwards]"
+                  className="inline-flex items-center gap-1.5 rounded-full border border-[#D9C2A2]/30 bg-white/10 px-3 py-1.5 text-[11px] font-semibold text-white/90 hover:border-[#D9C2A2] hover:shadow-[0_0_12px_rgba(217,194,162,0.3)] hover:-translate-y-0.5 transition-all duration-300 animate-[fadeInUp_0.8s_ease-out_forwards]"
                   style={{ animationDelay: `${0.5 + i * 0.1}s`, animationFillMode: 'both' }}
                 >
                   <span className="text-[#D9C2A2]">{chip.icon}</span>
@@ -126,21 +84,21 @@ export function StudentHome({
           <button
             key={exam.id}
             onClick={() => setSelectedExam(exam.id)}
-            className="group relative flex w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#EAE1D2] dark:border-[#4A433E] dark:border-[#4A433E] bg-white dark:bg-[#22201F] dark:bg-[#22201F] p-6 text-left shadow-[0_4px_12px_rgba(34,32,31,0.04)] transition-all duration-[220ms] ease-out hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(74,14,27,0.12)] sm:w-[calc(50%-12px)] lg:w-[340px] h-[230px]"
+            className="group relative flex w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#EAE1D2] dark:border-[#4A433E] bg-white dark:bg-[#22201F] p-6 text-left shadow-[0_4px_12px_rgba(34,32,31,0.04)] transition-all duration-[220ms] ease-out hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(74,14,27,0.12)] sm:w-[calc(50%-12px)] lg:w-[340px] h-[230px]"
           >
             <div className="absolute bottom-0 left-0 h-1 w-full scale-x-0 bg-[#C9A13B] transition-transform duration-[220ms] ease-out group-hover:scale-x-100 origin-left"></div>
             
             <div className="flex items-start justify-between w-full">
-              <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#F4E7E5] dark:bg-[#38151A] dark:bg-[#38151A] text-[#4A0E1B] transition-colors duration-[220ms] ease-out group-hover:bg-[#F7EFD9] dark:bg-[#362A0D] dark:bg-[#362A0D] group-hover:text-[#8A6A16]">
+              <span className="flex h-12 w-12 items-center justify-center rounded-[14px] bg-[#F4E7E5] dark:bg-[#38151A] text-[#4A0E1B] transition-colors duration-[220ms] ease-out group-hover:bg-[#F7EFD9] dark:bg-[#362A0D] group-hover:text-[#8A6A16]">
                 {renderExamIcon(exam.icon)}
               </span>
-              <span className="dash-mono rounded-full border border-[#EFE7D8] dark:border-[#4A433E] dark:border-[#4A433E] bg-[#FBF7F0] dark:bg-[#2A2726] dark:bg-[#2A2726] px-2.5 py-1 text-[10px] font-medium text-[#8A7E6F] dark:text-[#A89F91] dark:text-[#A89F91]">
+              <span className="dash-mono rounded-full border border-[#EFE7D8] dark:border-[#4A433E] bg-[#FBF7F0] dark:bg-[#2A2726] px-2.5 py-1 text-[10px] font-medium text-[#8A7E6F] dark:text-[#A89F91]">
                 {notes.filter(n => n.course === exam.id).length + videos.filter(v => v.course === exam.id).length + practiceSheets.filter(s => s.course === exam.id).length + pyqs.filter(p => p.course === exam.id).length} Resources
               </span>
             </div>
             
-            <h3 className="dash-serif mt-5 text-xl font-bold text-[#22201F] dark:text-[#F6F2EA] dark:text-[#F6F2EA]">{exam.title}</h3>
-            <p className="mt-2 text-sm text-[#8A7E6F] dark:text-[#A89F91] dark:text-[#A89F91] line-clamp-1">{exam.description}</p>
+            <h3 className="dash-serif mt-5 text-xl font-bold text-[#22201F] dark:text-[#F6F2EA]">{exam.title}</h3>
+            <p className="mt-2 text-sm text-[#8A7E6F] dark:text-[#A89F91] line-clamp-1">{exam.description}</p>
             
             <div className="mt-auto pt-4 flex items-center text-[#4A0E1B] font-bold text-xs uppercase tracking-widest">
               Explore <ArrowRight size={14} className="ml-1.5 transition-transform duration-[220ms] ease-out group-hover:translate-x-2" />
@@ -152,22 +110,22 @@ export function StudentHome({
       {/* Global Announcements Section */}
       {sortedAnnouncements && sortedAnnouncements.length > 0 && (
         <div className="mt-12 animate-[fadeInUp_0.8s_ease-out_forwards]" style={{ animationDelay: '0.6s', animationFillMode: 'both' }}>
-          <div className="flex items-center gap-2 mb-6 border-b border-[#EAE1D2] dark:border-[#4A433E] dark:border-[#4A433E] pb-3">
+          <div className="flex items-center gap-2 mb-6 border-b border-[#EAE1D2] dark:border-[#4A433E] pb-3">
             <Bell size={20} className="text-[#8A6A16]" />
-            <h2 className="dash-serif text-2xl font-semibold text-[#22201F] dark:text-[#F6F2EA] dark:text-[#F6F2EA]">Recent Announcements</h2>
+            <h2 className="dash-serif text-2xl font-semibold text-[#22201F] dark:text-[#F6F2EA]">Recent Announcements</h2>
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             {sortedAnnouncements.slice(0, 4).map((a) => (
-              <div key={a.id} className="rounded-2xl border border-[#EAE1D2] dark:border-[#4A433E] dark:border-[#4A433E] bg-white dark:bg-[#22201F] dark:bg-[#22201F] p-5 shadow-sm transition-transform hover:-translate-y-1">
+              <div key={a.id} className="rounded-2xl border border-[#EAE1D2] dark:border-[#4A433E] bg-white dark:bg-[#22201F] p-5 shadow-sm transition-transform hover:-translate-y-1">
                 <div className="flex items-start justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="rounded-full bg-[#FBF7F0] dark:bg-[#2A2726] dark:bg-[#2A2726] px-2.5 py-1 text-[10px] font-bold text-[#6E645A] uppercase tracking-wider">{a.category}</span>
+                    <span className="rounded-full bg-[#FBF7F0] dark:bg-[#2A2726] px-2.5 py-1 text-[10px] font-bold text-[#6E645A] uppercase tracking-wider">{a.category}</span>
                     {a.pinned && <span className="text-[10px] font-bold text-[#B23B2E] uppercase tracking-wider">Pinned</span>}
                   </div>
                   <span className="dash-mono text-[11px] text-[#8A7E6F] dark:text-[#A89F91]">{fmtDate(a.createdAt)}</span>
                 </div>
-                <h4 className="dash-serif mt-3 text-lg font-semibold text-[#22201F] dark:text-[#F6F2EA] dark:text-[#F6F2EA]">{a.title}</h4>
-                <p className="mt-1.5 text-sm leading-relaxed text-[#5A534B] dark:text-[#C7BCAD] dark:text-[#C7BCAD] line-clamp-2">{a.body}</p>
+                <h4 className="dash-serif mt-3 text-lg font-semibold text-[#22201F] dark:text-[#F6F2EA]">{a.title}</h4>
+                <p className="mt-1.5 text-sm leading-relaxed text-[#5A534B] dark:text-[#C7BCAD] line-clamp-2">{a.body}</p>
               </div>
             ))}
           </div>
