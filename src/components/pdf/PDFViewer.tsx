@@ -66,7 +66,7 @@ export function PDFViewer({ docInfo, onClose }: PDFViewerProps) {
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3m0 3h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z" />
             </svg>
           </div>
-          <h4 className="dash-serif text-base font-bold text-[#22201F] dark:text-[#F6F2EA] dark:text-[#F6F2EA]">Cannot load document</h4>
+          <h4 className="dash-serif text-base font-bold text-[#22201F] dark:text-[#F6F2EA]">Cannot load document</h4>
           <p className="max-w-xs text-sm text-[#22201F] dark:text-[#F6F2EA]/60">{urlError}</p>
           <button
             onClick={onClose}
@@ -105,7 +105,7 @@ function ModalShell({ children, onClose }: { children: React.ReactNode; onClose:
         onClick={onClose}
         tabIndex={-1}
       />
-      <div className="relative z-10 flex h-full flex-col overflow-hidden rounded-none bg-white dark:bg-[#22201F] dark:bg-[#22201F] sm:m-4 sm:rounded-card border border-[#D9C2A2]/30 shadow-soft-xl">
+      <div className="relative z-10 flex h-full flex-col overflow-hidden rounded-none bg-white dark:bg-[#22201F] sm:m-4 sm:rounded-card border border-[#D9C2A2]/30 shadow-soft-xl">
         {children}
       </div>
     </div>
@@ -137,7 +137,7 @@ function ViewerLayout({ resolvedUrl, onClose }: { resolvedUrl: string | null; on
     return (
       <>
         <PDFToolbar onClose={onClose} />
-        <div className="flex flex-1 items-center justify-center gap-3 bg-[#F7F3EC] dark:bg-[#1A1817] dark:bg-[#1A1817]">
+        <div className="flex flex-1 items-center justify-center gap-3 bg-[#F7F3EC] dark:bg-[#1A1817]">
           <div className="h-6 w-6 animate-spin rounded-full border-2 border-[#4A0E1B] border-t-transparent" />
           <p className="dash-root text-sm text-[#22201F] dark:text-[#F6F2EA]/60">Resolving document…</p>
         </div>

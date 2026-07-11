@@ -49,7 +49,7 @@ export function AnnouncementsSection({
   return (
     <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <p className="text-sm text-[#8A7E6F] dark:text-[#A89F91] dark:text-[#A89F91]">
+        <p className="text-sm text-[#8A7E6F] dark:text-[#A89F91]">
           {announcements.length} notice{announcements.length === 1 ? '' : 's'} · pinned ones show first for students
         </p>
         <button className={PRIMARY_BTN} onClick={openAddAnnouncement}>
@@ -72,11 +72,11 @@ export function AnnouncementsSection({
                     </span>
                   )}
                 </div>
-                <span className="dash-mono shrink-0 text-[11px] text-[#8A7E6F] dark:text-[#A89F91] dark:text-[#A89F91]">{fmtDate(a.createdAt)}</span>
+                <span className="dash-mono shrink-0 text-[11px] text-[#8A7E6F] dark:text-[#A89F91]">{fmtDate(a.createdAt)}</span>
               </div>
-              <h4 className="dash-serif mt-3 text-lg font-semibold text-[#22201F] dark:text-[#F6F2EA] dark:text-[#F6F2EA]">{a.title}</h4>
-              <p className="mt-1.5 text-sm leading-relaxed text-[#5A534B] dark:text-[#C7BCAD] dark:text-[#C7BCAD]">{a.body}</p>
-              <div className="mt-4 flex items-center gap-1 border-t border-[#F2ECDF] dark:border-[#383330] dark:border-[#383330] pt-3">
+              <h4 className="dash-serif mt-3 text-lg font-semibold text-[#22201F] dark:text-[#F6F2EA]">{a.title}</h4>
+              <p className="mt-1.5 text-sm leading-relaxed text-[#5A534B] dark:text-[#C7BCAD]">{a.body}</p>
+              <div className="mt-4 flex items-center gap-1 border-t border-[#F2ECDF] dark:border-[#383330] pt-3">
                 <button className={ROW_BTN} onClick={() => onTogglePinAnnouncement(a.id)}>
                   {a.pinned ? <PinOff size={13} /> : <Pin size={13} />} {a.pinned ? 'Unpin' : 'Pin'}
                 </button>

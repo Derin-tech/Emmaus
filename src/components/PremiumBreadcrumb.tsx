@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ChevronRight, ArrowLeft } from 'lucide-react';
 
 export interface BreadcrumbItem {
