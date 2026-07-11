@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { AppNew } from './AppNew';
-import { AppOriginal } from './AppOriginal';
+import { PortalDataProvider } from './context/PortalDataContext';
 
 export default function App() {
   const [theme, setTheme] = useState<'current' | 'dark'>('current');
@@ -20,7 +20,10 @@ export default function App() {
 
   return (
     <BrowserRouter>
-      <AppNew theme={theme} toggleTheme={toggleTheme} />
+      <PortalDataProvider>
+        <AppNew theme={theme} toggleTheme={toggleTheme} />
+      </PortalDataProvider>
     </BrowserRouter>
   );
 }
+

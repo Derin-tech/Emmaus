@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { ArrowRight, BookOpen } from 'lucide-react';
-import { PremiumCard } from './PremiumCard';
+import { PremiumCard } from '../components/PremiumCard';
 
 interface HeroProps {
   onGetStarted: () => void;

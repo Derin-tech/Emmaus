@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight } from 'lucide-react';
-import { PremiumCard } from './PremiumCard';
+import { PremiumCard } from '../components/PremiumCard';
 
 interface SelectionPageProps {
   onSelectRole: (role: 'student' | 'professor') => void;
