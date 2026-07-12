@@ -17,6 +17,7 @@ import ContactPage from './pages/ContactPage';
 import ResourcesPage from './pages/ResourcesPage';
 import LegalPage from './pages/LegalPage';
 import DotGrid from './components/backgrounds/DotGrid';
+import CookieBanner from './components/CookieBanner';
 
 export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () => void }) {
   const navigate = useNavigate();
@@ -116,6 +117,8 @@ export function AppNew({ theme, toggleTheme }: { theme: string; toggleTheme: () 
       </main>
 
       <Footer onNavigate={handleNavigate} userRole={userRole} />
+      
+      <CookieBanner />
       </div>
     </div>
   );
