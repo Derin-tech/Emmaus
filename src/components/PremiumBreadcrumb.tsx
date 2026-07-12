@@ -55,7 +55,7 @@ export function PremiumBreadcrumb({
                     <button
                       onClick={item.onClick}
                       disabled={isLast || !item.onClick}
-                      className={`group relative flex items-center gap-2 h-[36px] px-[14px] rounded-full text-[13px] font-medium transition-all duration-250 ease-out shadow-sm
+                      className={`group relative flex items-center gap-2 min-h-[44px] py-1 px-[14px] rounded-full text-[13px] font-medium transition-all duration-250 ease-out shadow-sm
                         ${
                           isLast
                             ? 'bg-[#701023] border border-[#701023] text-white cursor-default shadow-[0_0_10px_rgba(112,16,35,0.25)]'

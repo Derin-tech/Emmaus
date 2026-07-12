@@ -40,7 +40,7 @@ export function StatisticsSection() {
       </div>
 
       {/* Key Metrics Grid */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-4">
         {metrics.map((m, i) => (
           <PremiumCard key={i} padding="medium" className="group">
             <div className="flex items-start justify-between">
@@ -58,7 +58,7 @@ export function StatisticsSection() {
         ))}
       </div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
+      <div className="grid gap-6 md:grid-cols-2">
         {/* Weekly Engagement Chart */}
         <PremiumCard padding="large">
           <PremiumCard.Category>Weekly Engagement</PremiumCard.Category>

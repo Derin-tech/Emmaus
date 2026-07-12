@@ -81,7 +81,7 @@ export function StudentHome({
           <button
             key={exam.id}
             onClick={() => setSelectedExam(exam.id)}
-            className="group relative flex w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#22201F]/15 dark:border-[#F6F2EA]/10 bg-white dark:bg-[#22201F] p-6 text-left shadow-[0_4px_12px_rgba(34,32,31,0.04)] transition-all duration-[220ms] ease-out hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(34,32,31,0.12)] sm:w-[calc(50%-12px)] lg:w-[340px] h-[230px]"
+            className="group relative flex w-full max-w-[340px] flex-col overflow-hidden rounded-[24px] border border-[#22201F]/15 dark:border-[#F6F2EA]/10 bg-white dark:bg-[#22201F] p-6 text-left shadow-[0_4px_12px_rgba(34,32,31,0.04)] transition-all duration-[220ms] ease-out hover:-translate-y-[6px] hover:shadow-[0_20px_40px_rgba(34,32,31,0.12)] sm:w-[calc(50%-12px)] md:w-[340px] h-[230px]"
           >
             <div className="absolute bottom-0 left-0 h-1 w-full scale-x-0 bg-[#C9A13B] transition-transform duration-[220ms] ease-out group-hover:scale-x-100 origin-left"></div>
             
