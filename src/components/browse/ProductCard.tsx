@@ -6,6 +6,7 @@ import { Heart, BadgeCheck, Clock, MapPin, ArrowRight, Share2, BookmarkPlus } fr
 import { Listing } from "@/types";
 import { formatDistanceToNow } from "date-fns";
 import Image from "next/image";
+import Link from "next/link";
 
 export default function ProductCard({ listing }: { listing: Listing }) {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -178,12 +179,12 @@ export default function ProductCard({ listing }: { listing: Listing }) {
               <Share2 size={14} />
             </button>
           </div>
-          <button className="flex-1 ml-2 h-8 rounded-full bg-gray-900 text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-gray-800 transition-colors shadow-sm">
+          <Link href={`/listing/${listing.id}`} className="flex-1 ml-2 h-8 rounded-full bg-gray-900 text-white text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-gray-800 transition-colors shadow-sm">
             View Details
             <motion.span animate={{ x: isHovered ? 2 : 0 }}>
               <ArrowRight size={12} />
             </motion.span>
-          </button>
+          </Link>
         </div>
       </div>
     </motion.div>
