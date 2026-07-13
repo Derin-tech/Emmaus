@@ -19,4 +19,11 @@ export interface Listing {
   postedDate: string;
   contactInfo: string;
   condition?: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
+  originalPrice?: number;
+  discountPercentage?: number;
+  collegeName?: string;
+  sellerRating?: number;
+  location?: string;
+  verifiedSeller?: boolean;
+  sellerAvatar?: string;
 }

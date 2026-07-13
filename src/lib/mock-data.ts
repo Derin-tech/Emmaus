@@ -14,7 +14,14 @@ export const mockListings: Listing[] = [
     description: 'Barely used textbook for 2nd year engineering. No highlights or pen marks.',
     postedDate: subDays(today, 1).toISOString(),
     contactInfo: '+919876543210',
-    condition: 'Like New'
+    condition: 'Like New',
+    originalPrice: 800,
+    discountPercentage: 43,
+    collegeName: 'College of Engineering',
+    sellerRating: 4.8,
+    location: 'North Campus Library',
+    verifiedSeller: true,
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
   },
   {
     id: '2',
@@ -25,7 +32,11 @@ export const mockListings: Listing[] = [
     title: 'Assignment & Project Help',
     description: 'I can help with coding assignments in React, Python, and Java. Price varies by complexity.',
     postedDate: subDays(today, 0).toISOString(),
-    contactInfo: 'whatsapp: 9876543211'
+    contactInfo: 'whatsapp: 9876543211',
+    sellerRating: 5.0,
+    collegeName: 'College of Engineering',
+    verifiedSeller: true,
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Alex'
   },
   {
     id: '3',
@@ -37,6 +48,10 @@ export const mockListings: Listing[] = [
     description: 'Selling my alt account. Contains a few premium skins including Prime Vandal.',
     postedDate: subDays(today, 3).toISOString(),
     contactInfo: 'student@college.edu',
+    collegeName: 'Arts & Science College',
+    sellerRating: 4.2,
+    location: 'Hostel Block C',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Jack'
   },
   {
     id: '4',
@@ -48,7 +63,14 @@ export const mockListings: Listing[] = [
     description: 'Good condition, battery lasts about 12 hours. Upgraded to airpods so selling these.',
     postedDate: subDays(today, 0).toISOString(),
     contactInfo: '9988776655',
-    condition: 'Good'
+    condition: 'Good',
+    originalPrice: 1500,
+    discountPercentage: 46,
+    collegeName: 'Medical College',
+    sellerRating: 4.5,
+    location: 'South Gate Cafe',
+    verifiedSeller: true,
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
   },
   {
     id: '5',
@@ -59,7 +81,9 @@ export const mockListings: Listing[] = [
     title: 'Looking for Lab Coat (Size M)',
     description: 'Need a medium sized lab coat for chemistry practicals. Willing to pay up to ₹200.',
     postedDate: subDays(today, 2).toISOString(),
-    contactInfo: '+919876543210'
+    contactInfo: '+919876543210',
+    collegeName: 'Medical College',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Max'
   },
   {
     id: '6',
@@ -70,7 +94,11 @@ export const mockListings: Listing[] = [
     title: 'Presentation Design (PPT)',
     description: 'I will design professional, aesthetic PowerPoint presentations for your assignments and seminars.',
     postedDate: subDays(today, 1).toISOString(),
-    contactInfo: 'whatsapp: 9876543212'
+    contactInfo: 'whatsapp: 9876543212',
+    sellerRating: 4.9,
+    verifiedSeller: true,
+    collegeName: 'Design Institute',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma'
   },
   {
     id: '7',
@@ -82,7 +110,14 @@ export const mockListings: Listing[] = [
     description: 'Third edition. Some highlights in the first two chapters, otherwise excellent condition.',
     postedDate: subDays(today, 4).toISOString(),
     contactInfo: '9988771122',
-    condition: 'Good'
+    condition: 'Good',
+    originalPrice: 1200,
+    discountPercentage: 50,
+    collegeName: 'Medical College',
+    sellerRating: 4.7,
+    verifiedSeller: true,
+    location: 'Main Library',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam'
   },
   {
     id: '8',
@@ -94,7 +129,14 @@ export const mockListings: Listing[] = [
     description: 'Original classwiz scientific calculator. Essential for engineering exams. Used for 1 semester.',
     postedDate: subDays(today, 1).toISOString(),
     contactInfo: '+919876543215',
-    condition: 'Like New'
+    condition: 'Like New',
+    originalPrice: 2900,
+    discountPercentage: 13,
+    collegeName: 'College of Engineering',
+    sellerRating: 5.0,
+    verifiedSeller: true,
+    location: 'CS Department',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Noah'
   },
   {
     id: '9',
@@ -106,7 +148,13 @@ export const mockListings: Listing[] = [
     description: 'Finished the game, looking to sell. Disc and case are in perfect condition without scratches.',
     postedDate: subDays(today, 0).toISOString(),
     contactInfo: 'whatsapp: 9876543218',
-    condition: 'Like New'
+    condition: 'Like New',
+    originalPrice: 5000,
+    discountPercentage: 20,
+    collegeName: 'Arts & Science College',
+    sellerRating: 4.6,
+    location: 'Hostel Block A',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver'
   },
   {
     id: '10',
@@ -117,6 +165,10 @@ export const mockListings: Listing[] = [
     title: 'Math Tutoring (Calculus)',
     description: 'Scored 9.8 CGPA. Offering tutoring for 1st-year engineering mathematics.',
     postedDate: subDays(today, 5).toISOString(),
-    contactInfo: 'whatsapp: 9876543219'
+    contactInfo: 'whatsapp: 9876543219',
+    sellerRating: 4.9,
+    verifiedSeller: true,
+    collegeName: 'College of Engineering',
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Mia'
   }
 ];
