@@ -50,8 +50,8 @@ export default function AnimatedBackground() {
   useEffect(() => {
     setMounted(true);
     
-    // Generate 90 background items across 3 core layers (Bg, Mid, Fg)
-    const newItems = Array.from({ length: 90 }).map((_, i) => {
+    // Generate 45 background items to maintain visual density but double performance
+    const newItems = Array.from({ length: 45 }).map((_, i) => {
       // 1: Fg, 2: Mid, 3: Bg
       const layer = i < 25 ? 1 : i < 55 ? 2 : 3;
       
@@ -81,14 +81,18 @@ export default function AnimatedBackground() {
     });
     setItems(newItems);
 
+    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
-      mouseX.set(x);
-      mouseY.set(y);
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        const y = (e.clientY / window.innerHeight) * 2 - 1;
+        mouseX.set(x);
+        mouseY.set(y);
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
     // Ambient Activity Spawner (Accent Layer)
     const interval = setInterval(() => {
@@ -171,7 +175,7 @@ export default function AnimatedBackground() {
         return (
           <motion.div
             key={item.id}
-            className="absolute"
+            className="absolute top-0 will-change-transform"
             style={{ 
               x: pX, 
               y: pY,
@@ -180,23 +184,28 @@ export default function AnimatedBackground() {
               scale: item.scale,
               opacity: item.opacity
             }}
-            initial={{
-              top: "110%",
-              rotate: item.rotationStart,
-            }}
-            animate={{
-              top: "-20%",
-              left: `${item.x + item.driftX}%`,
-              rotate: item.rotationEnd,
-            }}
-            transition={{
-              duration: item.duration,
-              delay: item.delay,
-              repeat: Infinity,
-              ease: "linear",
-            }}
           >
-            {item.element}
+            <motion.div
+              className="will-change-transform"
+              initial={{
+                y: "110vh",
+                x: 0,
+                rotate: item.rotationStart,
+              }}
+              animate={{
+                y: "-20vh",
+                x: `${item.driftX}vw`,
+                rotate: item.rotationEnd,
+              }}
+              transition={{
+                duration: item.duration,
+                delay: item.delay,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              {item.element}
+            </motion.div>
           </motion.div>
         );
       })}
