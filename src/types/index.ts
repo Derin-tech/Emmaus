@@ -1,5 +1,5 @@
-export type Category = 'Movies' | 'Train' | 'Bus' | 'Events' | 'Others';
-export type Status = 'Available' | 'Sold' | 'Expired';
+export type Category = 'Textbooks' | 'Accessories' | 'Gaming' | 'Services' | 'Requests' | 'Others';
+export type Status = 'Available' | 'Pending' | 'Sold';
 
 export interface User {
   id: string;
@@ -7,64 +7,16 @@ export interface User {
   name: string;
 }
 
-export interface BaseListing {
+export interface Listing {
   id: string;
   userId: string;
   category: Category;
   status: Status;
   price: number;
-  numberOfTickets: number;
-  postedDate: string;
-  contactInfo: string;
-}
-
-export interface MovieListing extends BaseListing {
-  category: 'Movies';
-  movieName: string;
-  theatreName: string;
-  location: string;
-  date: string;
-  showTiming: string;
-  seatNumbers: string;
-  screen?: string;
-}
-
-export interface TrainListing extends BaseListing {
-  category: 'Train';
-  trainNameOrNumber: string;
-  fromStation: string;
-  toStation: string;
-  dateOfJourney: string;
-  departureTime: string;
-  arrivalTime: string;
-  travelClass: string;
-  pnrStatus?: string;
-}
-
-export interface BusListing extends BaseListing {
-  category: 'Bus';
-  busOperator: string;
-  fromLocation: string;
-  toLocation: string;
-  dateOfJourney: string;
-  departureTime: string;
-  arrivalTime: string;
-  seatType: string;
-}
-
-export interface EventListing extends BaseListing {
-  category: 'Events';
-  eventName: string;
-  venue: string;
-  date: string;
-  time: string;
-}
-
-export interface OtherListing extends BaseListing {
-  category: 'Others';
   title: string;
   description: string;
-  date?: string;
+  images?: string[];
+  postedDate: string;
+  contactInfo: string;
+  condition?: 'New' | 'Like New' | 'Good' | 'Fair' | 'Poor';
 }
-
-export type Listing = MovieListing | TrainListing | BusListing | EventListing | OtherListing;

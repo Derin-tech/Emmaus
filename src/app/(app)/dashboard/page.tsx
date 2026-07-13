@@ -14,7 +14,7 @@ export default function Dashboard() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">My Dashboard</h1>
-          <p className="mt-2 text-gray-500">Manage your active and past ticket listings.</p>
+          <p className="mt-2 text-gray-500">Manage your active and past listings.</p>
         </div>
         <Link 
           href="/post" 
@@ -36,17 +36,16 @@ export default function Dashboard() {
                       {listing.category}
                     </span>
                     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      listing.status === 'Available' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
+                      listing.status === 'Available' ? 'bg-green-50 text-green-700' : 
+                      listing.status === 'Pending' ? 'bg-yellow-50 text-yellow-700' :
+                      'bg-gray-100 text-gray-700'
                     }`}>
                       {listing.status}
                     </span>
                   </div>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mt-2">
-                    {listing.category === 'Train' && `${listing.fromStation} to ${listing.toStation}`}
-                    {listing.category === 'Movies' && listing.movieName}
-                    {listing.category === 'Bus' && `${listing.fromLocation} to ${listing.toLocation}`}
-                    {listing.category === 'Events' && listing.eventName}
+                    {listing.title}
                   </h3>
                   
                   <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
@@ -56,12 +55,9 @@ export default function Dashboard() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  {listing.status === 'Available' && (
-                    <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50">
-                      <CheckCircle2 size={16} className="text-green-600" />
-                      <span className="hidden sm:inline">Mark Sold</span>
-                    </button>
-                  )}
+                  <Link href={`/listing/${listing.id}`} className="flex h-9 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <span className="hidden sm:inline">Manage</span>
+                  </Link>
                   <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-blue-600">
                     <Edit2 size={16} />
                   </button>
@@ -73,7 +69,7 @@ export default function Dashboard() {
             </li>
           )) : (
             <li className="p-8 text-center text-gray-500">
-              You haven't posted any tickets yet.
+              You haven't posted any items yet.
             </li>
           )}
         </ul>

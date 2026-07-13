@@ -1,15 +1,18 @@
+"use client";
+
 import { PenLine, Search, UserPlus } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function HowItWorks() {
   const steps = [
     {
-      name: 'Post your ticket',
-      description: 'Select a category, fill in the details like date and price, and list your ticket in seconds.',
+      name: 'Post your item or service',
+      description: 'Select a category, fill in the details like condition and price, and list your item in seconds.',
       icon: PenLine,
     },
     {
       name: 'Browse & Search',
-      description: 'Looking for a ticket? Filter by category, location, or date to find exactly what you need.',
+      description: 'Looking for something? Filter by category, price, or keyword to find exactly what you need.',
       icon: Search,
     },
     {
@@ -20,22 +23,36 @@ export default function HowItWorks() {
   ];
 
   return (
-    <div id="how-it-works" className="bg-white py-24 sm:py-32">
+    <div id="how-it-works" className="bg-white py-24 sm:py-32 overflow-hidden">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-2xl text-center">
+        <motion.div 
+          className="mx-auto max-w-2xl text-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: false, amount: 0.2 }}
+          transition={{ duration: 0.6 }}
+        >
           <h2 className="text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">How it works</h2>
           <p className="mt-6 text-lg leading-8 text-gray-600">
-            Three simple steps to buy or sell your tickets. No middleman, no fees.
+            Three simple steps to buy, sell, or trade on campus. No middleman, no fees.
           </p>
-        </div>
+        </motion.div>
 
         <div className="mx-auto mt-16 max-w-5xl sm:mt-20">
           <div className="grid grid-cols-1 gap-12 md:grid-cols-3">
             {steps.map((step, index) => {
               const Icon = step.icon;
               return (
-                <div key={step.name} className="relative flex flex-col items-center text-center">
-                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100">
+                <motion.div 
+                  key={step.name} 
+                  className="relative flex flex-col items-center text-center group"
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: false, amount: 0.2 }}
+                  transition={{ duration: 0.5, delay: index * 0.2 }}
+                  whileHover={{ y: -5 }}
+                >
+                  <div className="mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-50 text-blue-600 shadow-sm ring-1 ring-blue-100 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                     <Icon size={28} />
                   </div>
                   <h3 className="text-xl font-semibold leading-7 text-gray-900">
@@ -50,7 +67,7 @@ export default function HowItWorks() {
                   {index < steps.length - 1 && (
                     <div className="hidden md:block absolute top-8 left-[60%] w-[80%] border-t-2 border-dashed border-gray-200" />
                   )}
-                </div>
+                </motion.div>
               );
             })}
           </div>

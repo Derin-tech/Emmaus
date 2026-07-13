@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Ticket, Search, PlusCircle, User } from 'lucide-react';
 
 export default function Navbar() {
@@ -8,11 +9,9 @@ export default function Navbar() {
         
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 transition-opacity hover:opacity-80">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-sm">
-            <Ticket size={24} />
-          </div>
+          <Image src="/logo2.png" alt="Campus Deals Logo" width={40} height={40} className="rounded-xl" />
           <span className="hidden text-xl font-bold tracking-tight text-gray-900 sm:block">
-            UniTickets
+            Campus Deals
           </span>
         </Link>
 
