@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { mockListings } from "@/lib/mock-data";
+import { useListings } from "@/lib/mock-data";
 import { Category, Listing } from "@/types";
 import { format } from "date-fns";
 import { Train, Film, Bus, Calendar, Tag, Search, MapPin, Clock } from "lucide-react";
@@ -17,10 +17,11 @@ const categories: { name: Category | 'All'; icon: any }[] = [
 ];
 
 export default function Home() {
+  const { listings } = useListings();
   const [activeCategory, setActiveCategory] = useState<Category | 'All'>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const filteredListings = mockListings.filter((listing) => {
+  const filteredListings = listings.filter((listing) => {
     const matchesCategory = activeCategory === 'All' || listing.category === activeCategory;
     const matchesStatus = listing.status === 'Available';
     
@@ -28,10 +29,11 @@ export default function Home() {
     const searchLower = searchQuery.toLowerCase();
     const matchesSearch = 
       listing.category.toLowerCase().includes(searchLower) ||
-      (listing.category === 'Train' && listing.toStation.toLowerCase().includes(searchLower)) ||
-      (listing.category === 'Movies' && listing.movieName.toLowerCase().includes(searchLower)) ||
-      (listing.category === 'Bus' && listing.toLocation.toLowerCase().includes(searchLower)) ||
-      (listing.category === 'Events' && listing.eventName.toLowerCase().includes(searchLower));
+      (listing.category === 'Train' && (listing as any).toStation?.toLowerCase().includes(searchLower)) ||
+      (listing.category === 'Movies' && (listing as any).movieName?.toLowerCase().includes(searchLower)) ||
+      (listing.category === 'Bus' && (listing as any).toLocation?.toLowerCase().includes(searchLower)) ||
+      (listing.category === 'Events' && (listing as any).eventName?.toLowerCase().includes(searchLower)) ||
+      (listing.category === 'Others' && (listing as any).title?.toLowerCase().includes(searchLower));
 
     return matchesCategory && matchesStatus && matchesSearch;
   });

@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Category } from "@/types";
+import { Category, Listing } from "@/types";
 import { Train, Film, Bus, Calendar, Tag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { addListingToStorage } from "@/lib/mock-data";
 
 export default function PostListingPage() {
   const router = useRouter();
@@ -19,14 +20,86 @@ export default function PostListingPage() {
     { name: 'Others', icon: Tag, desc: 'Anything else' },
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!category) return;
     setIsSubmitting(true);
-    // Simulate API call
+
+    const formData = new FormData(e.currentTarget);
+    const baseListing = {
+      id: Date.now().toString(),
+      userId: 'u1',
+      category: category,
+      status: 'Available' as const,
+      price: Number(formData.get('price') || 0),
+      numberOfTickets: Number(formData.get('numberOfTickets') || 1),
+      postedDate: new Date().toISOString(),
+      contactInfo: String(formData.get('contactInfo') || ''),
+    };
+
+    let newListing: Listing;
+
+    if (category === 'Movies') {
+      newListing = {
+        ...baseListing,
+        category: 'Movies',
+        movieName: String(formData.get('movieName') || ''),
+        theatreName: String(formData.get('theatreName') || ''),
+        location: String(formData.get('theatreName') || '').split(',')[1]?.trim() || 'Mumbai',
+        date: String(formData.get('date') || new Date().toISOString()),
+        showTiming: new Date(String(formData.get('date') || new Date())).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        seatNumbers: String(formData.get('seatNumbers') || ''),
+        screen: String(formData.get('screen') || ''),
+      };
+    } else if (category === 'Train') {
+      newListing = {
+        ...baseListing,
+        category: 'Train',
+        trainNameOrNumber: String(formData.get('trainNameOrNumber') || ''),
+        fromStation: String(formData.get('fromStation') || ''),
+        toStation: String(formData.get('toStation') || ''),
+        dateOfJourney: String(formData.get('dateOfJourney') || new Date().toISOString()),
+        departureTime: '10:00',
+        arrivalTime: '14:00',
+        travelClass: String(formData.get('travelClass') || 'CC'),
+        pnrStatus: 'Confirmed',
+      };
+    } else if (category === 'Bus') {
+      newListing = {
+        ...baseListing,
+        category: 'Bus',
+        busOperator: String(formData.get('busOperator') || ''),
+        fromLocation: String(formData.get('fromLocation') || ''),
+        toLocation: String(formData.get('toLocation') || ''),
+        dateOfJourney: String(formData.get('departureTime') || new Date().toISOString()),
+        departureTime: new Date(String(formData.get('departureTime') || new Date())).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        arrivalTime: '08:00',
+        seatType: String(formData.get('seatType') || 'AC'),
+      };
+    } else if (category === 'Events') {
+      newListing = {
+        ...baseListing,
+        category: 'Events',
+        eventName: String(formData.get('eventName') || ''),
+        venue: String(formData.get('venue') || ''),
+        date: String(formData.get('date') || new Date().toISOString()),
+        time: String(formData.get('time') || '18:00'),
+      };
+    } else {
+      newListing = {
+        ...baseListing,
+        category: 'Others',
+        title: String(formData.get('title') || ''),
+        description: String(formData.get('description') || ''),
+      };
+    }
+
+    addListingToStorage(newListing);
+
     setTimeout(() => {
       setIsSubmitting(false);
       router.push('/dashboard');
-    }, 1000);
+    }, 500);
   };
 
   return (
@@ -80,23 +153,23 @@ export default function PostListingPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">Movie Name</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. Oppenheimer" />
+                  <input name="movieName" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. Oppenheimer" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Theatre & Location</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="PVR Palladium, Mumbai" />
+                  <input name="theatreName" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="PVR Palladium, Mumbai" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Date & Time</label>
-                  <input required type="datetime-local" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
+                  <input name="date" required type="datetime-local" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Seat Numbers</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. H12, H13" />
+                  <input name="seatNumbers" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. H12, H13" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Screen/Hall (Optional)</label>
-                  <input type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Screen 4" />
+                  <input name="screen" type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Screen 4" />
                 </div>
               </div>
             )}
@@ -105,23 +178,23 @@ export default function PostListingPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">Train Name / Number</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. Vande Bharat Express (22221)" />
+                  <input name="trainNameOrNumber" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. Vande Bharat Express (22221)" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">From Station</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Mumbai CSMT" />
+                  <input name="fromStation" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Mumbai CSMT" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">To Station</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Pune JN" />
+                  <input name="toStation" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Pune JN" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Date of Journey</label>
-                  <input required type="date" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
+                  <input name="dateOfJourney" required type="date" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Class & PNR Status</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="3AC - Confirmed" />
+                  <input name="travelClass" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="3AC - Confirmed" />
                 </div>
               </div>
             )}
@@ -130,23 +203,23 @@ export default function PostListingPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">Bus Operator Name</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. Neeta Travels" />
+                  <input name="busOperator" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. Neeta Travels" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">From</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Pune" />
+                  <input name="fromLocation" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Pune" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">To</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Goa" />
+                  <input name="toLocation" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Goa" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Departure Time</label>
-                  <input required type="datetime-local" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
+                  <input name="departureTime" required type="datetime-local" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Seat Type</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="AC Sleeper" />
+                  <input name="seatType" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="AC Sleeper" />
                 </div>
               </div>
             )}
@@ -155,19 +228,19 @@ export default function PostListingPage() {
               <div className="grid gap-6 sm:grid-cols-2">
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">Event Name</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. College Fest 2024" />
+                  <input name="eventName" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. College Fest 2024" />
                 </div>
                 <div className="sm:col-span-2">
                   <label className="block text-sm font-medium text-gray-700">Venue</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Main Auditorium" />
+                  <input name="venue" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Main Auditorium" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Date</label>
-                  <input required type="date" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
+                  <input name="date" required type="date" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Time</label>
-                  <input required type="time" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
+                  <input name="time" required type="time" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" />
                 </div>
               </div>
             )}
@@ -176,11 +249,11 @@ export default function PostListingPage() {
               <div className="grid gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Title</label>
-                  <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="What are you selling?" />
+                  <input name="title" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="What are you selling?" />
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea required rows={4} className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Provide details about the ticket..."></textarea>
+                  <textarea name="description" required rows={4} className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="Provide details about the ticket..."></textarea>
                 </div>
               </div>
             )}
@@ -191,15 +264,16 @@ export default function PostListingPage() {
             <div className="grid gap-6 sm:grid-cols-2">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Number of Tickets</label>
-                <input required type="number" min="1" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" defaultValue={1} />
+                <input name="numberOfTickets" required type="number" min="1" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" defaultValue={1} />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Price (Total) ₹</label>
-                <input required type="number" min="0" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. 500" />
+                <input name="price" required type="number" min="0" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. 500" />
               </div>
               <div className="sm:col-span-2">
-                <label className="block text-sm font-medium text-gray-700">Contact Info (WhatsApp/Phone)</label>
-                <input required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. +91 9876543210" />
+                <label className="block text-sm font-medium text-gray-700">Seller Phone / WhatsApp Number</label>
+                <input name="contactInfo" required type="text" className="mt-2 block w-full rounded-xl border-0 py-2.5 px-3 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-blue-600 sm:text-sm" placeholder="e.g. 9876543210 or +91 9876543210" />
+                <p className="mt-1 text-xs text-gray-500">Buyers will click "Claim Ticket" to chat directly with this WhatsApp number.</p>
               </div>
             </div>
 

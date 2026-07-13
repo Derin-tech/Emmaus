@@ -1,13 +1,14 @@
 "use client";
 
-import { mockListings } from "@/lib/mock-data";
+import { useListings } from "@/lib/mock-data";
 import { format } from "date-fns";
 import { Tag, Edit2, Trash2, CheckCircle2 } from "lucide-react";
 import Link from "next/link";
 
 export default function Dashboard() {
+  const { listings, updateListing, deleteListing } = useListings();
   // Simulating user "u1" logged in
-  const myListings = mockListings.filter(l => l.userId === 'u1');
+  const myListings = listings.filter(l => l.userId === 'u1');
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -43,10 +44,11 @@ export default function Dashboard() {
                   </div>
                   
                   <h3 className="text-lg font-semibold text-gray-900 mt-2">
-                    {listing.category === 'Train' && `${listing.fromStation} to ${listing.toStation}`}
-                    {listing.category === 'Movies' && listing.movieName}
-                    {listing.category === 'Bus' && `${listing.fromLocation} to ${listing.toLocation}`}
-                    {listing.category === 'Events' && listing.eventName}
+                    {listing.category === 'Train' && `${(listing as any).fromStation} to ${(listing as any).toStation}`}
+                    {listing.category === 'Movies' && (listing as any).movieName}
+                    {listing.category === 'Bus' && `${(listing as any).fromLocation} to ${(listing as any).toLocation}`}
+                    {listing.category === 'Events' && (listing as any).eventName}
+                    {listing.category === 'Others' && (listing as any).title}
                   </h3>
                   
                   <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
@@ -57,15 +59,18 @@ export default function Dashboard() {
 
                 <div className="flex items-center gap-2">
                   {listing.status === 'Available' && (
-                    <button className="flex h-9 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    <button 
+                      onClick={() => updateListing(listing.id, { status: 'Sold' })}
+                      className="flex h-9 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                    >
                       <CheckCircle2 size={16} className="text-green-600" />
                       <span className="hidden sm:inline">Mark Sold</span>
                     </button>
                   )}
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-blue-600">
-                    <Edit2 size={16} />
-                  </button>
-                  <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 bg-red-50 text-red-500 hover:bg-red-100">
+                  <button 
+                    onClick={() => deleteListing(listing.id)}
+                    className="flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 bg-red-50 text-red-500 hover:bg-red-100"
+                  >
                     <Trash2 size={16} />
                   </button>
                 </div>
