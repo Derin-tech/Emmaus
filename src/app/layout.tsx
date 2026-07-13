@@ -12,8 +12,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-import CustomCursor from "@/components/ui/CustomCursor";
-
 export const metadata: Metadata = {
   title: "Campus Deals - Student Marketplace",
   description: "Buy, sell, and exchange items exclusively for college students.",
@@ -29,8 +27,7 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900 cursor-none">
-        <CustomCursor />
+      <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
         {children}
       </body>
     </html>

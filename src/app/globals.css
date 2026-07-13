@@ -44,3 +44,21 @@ body {
 input, textarea, [contenteditable="true"] {
   cursor: text !important;
 }
+
+@keyframes mesh-slow {
+  0% { transform: translate(0, 0) scale(1); }
+  100% { transform: translate(10%, -10%) scale(1.1); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { opacity: 0.15; transform: scale(0.98); }
+  50% { opacity: 0.4; transform: scale(1.02); }
+}
+
+.animate-mesh-slow {
+  animation: mesh-slow 20s ease-in-out infinite alternate;
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 4s ease-in-out infinite;
+}

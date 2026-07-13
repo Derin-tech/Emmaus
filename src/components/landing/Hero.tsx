@@ -6,53 +6,7 @@ import { ArrowRight, Book, Gamepad2, Briefcase, Sparkles } from 'lucide-react';
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { useEffect, useState } from 'react';
 import Magnetic from '@/components/ui/Magnetic';
-
-// Particle component
-const Particles = () => {
-  const [mounted, setMounted] = useState(false);
-  const [particles, setParticles] = useState<{id: number, x: number, y: number, size: number, duration: number}[]>([]);
-  
-  useEffect(() => {
-    setMounted(true);
-    const newParticles = [...Array(30)].map((_, i) => ({
-      id: i,
-      x: Math.random() * window.innerWidth,
-      y: Math.random() * window.innerHeight,
-      size: Math.random() * 2 + 0.5,
-      duration: Math.random() * 3 + 2,
-    }));
-    setParticles(newParticles);
-  }, []);
-
-  if (!mounted) return null;
-
-  return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {particles.map((p) => (
-        <motion.div
-          key={p.id}
-          className="absolute bg-blue-500 rounded-full"
-          style={{ width: p.size * 4, height: p.size * 4 }}
-          initial={{
-            x: p.x,
-            y: p.y,
-            opacity: 0,
-          }}
-          animate={{
-            y: [p.y, p.y - 150],
-            opacity: [0, 0.6, 0],
-          }}
-          transition={{
-            duration: p.duration,
-            repeat: Infinity,
-            ease: 'linear',
-            delay: Math.random() * 2
-          }}
-        />
-      ))}
-    </div>
-  );
-};
+import AnimatedBackground from '@/components/landing/AnimatedBackground';
 
 export default function Hero() {
   // 3D Mouse tracking for cards container
@@ -77,7 +31,7 @@ export default function Hero() {
 
   return (
     <div className="relative overflow-hidden bg-white pt-24 sm:pt-32 pb-24 sm:pb-32">
-      <Particles />
+      <AnimatedBackground />
       {/* Background gradients */}
       <div className="absolute inset-x-0 -top-40 z-0 transform-gpu overflow-hidden blur-3xl sm:-top-80" aria-hidden="true">
         <div className="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-[#80b5ff] to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
@@ -95,7 +49,10 @@ export default function Hero() {
           </div>
           <h1 className="mx-auto max-w-4xl text-5xl font-bold tracking-tight text-gray-900 sm:text-7xl">
             Trade locally with <br className="hidden sm:block" />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">your college peers.</span>
+            <span className="relative inline-block">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 relative z-10">your college peers.</span>
+              <span className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 blur-xl opacity-30 animate-pulse-glow z-0" aria-hidden="true"></span>
+            </span>
           </h1>
           <p className="mx-auto mt-6 max-w-2xl text-lg leading-8 text-gray-600">
             Buy, sell, and exchange textbooks, gaming accounts, and services exclusively with verified students. Say goodbye to scattered WhatsApp groups.
@@ -123,19 +80,7 @@ export default function Hero() {
         
         {/* 3D Floating Cards & Background Image */}
         <div className="relative mt-20 sm:mt-24 w-full">
-          {/* Background Image with Fade Overlays */}
-          <div className="absolute inset-0 z-0 flex justify-center items-center pointer-events-none opacity-50 overflow-hidden rounded-3xl">
-            <div className="absolute inset-0 w-full max-w-5xl mx-auto h-[400px] top-1/2 -translate-y-1/2">
-              <Image 
-                src="/hero.png" 
-                alt="Marketplace Background" 
-                fill 
-                className="object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-b from-white via-transparent to-white" />
-              <div className="absolute inset-0 bg-gradient-to-r from-white via-transparent to-white" />
-            </div>
-          </div>
+
 
           <div 
             className="relative h-[300px] sm:h-[400px] w-full max-w-4xl mx-auto flex justify-center items-center perspective-1000 hidden md:flex z-10"
