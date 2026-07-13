@@ -1,0 +1,11 @@
+{
+  "provider": "dev",
+  "fast2smsApiKey": "",
+  "twilioAccountSid": "",
+  "twilioAuthToken": "",
+  "twilioPhoneNumber": "",
+  "telegramBotToken": "",
+  "telegramChatId": "",
+  "webhookUrl": "",
+  "devModeEnabled": true
+}

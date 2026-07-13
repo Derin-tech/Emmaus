@@ -230,9 +230,20 @@ export default function VerifyOtpPage() {
               </div>
             </div>
 
-            <div className="mt-3 rounded-xl bg-blue-900/40 p-2.5 text-[11px] leading-relaxed text-blue-100 border border-blue-400/20">
-              <span className="font-semibold text-yellow-300">Why is the OTP on this screen instead of my mobile? </span>
-              Because web servers running locally (`localhost:3000`) require a third-party SMS Gateway (like Fast2SMS or Twilio) to dispatch cellular texts. To make real SMS arrive on your mobile phone, add <code className="bg-black/30 px-1 py-0.5 rounded text-yellow-200">FAST2SMS_API_KEY="your_key"</code> inside your <code className="bg-black/30 px-1 py-0.5 rounded text-yellow-200">.env</code> file.
+            <div className="mt-3 rounded-xl bg-blue-900/40 p-3 text-[11px] leading-relaxed text-blue-100 border border-blue-400/20">
+              <div className="flex items-center justify-between gap-2">
+                <div>
+                  <span className="font-semibold text-yellow-300">Why is the OTP on this screen instead of my mobile? </span>
+                  Because web servers running locally (`localhost:3000`) require a third-party SMS Gateway (like Fast2SMS or Telegram Bot) to dispatch cellular texts.
+                </div>
+                <button
+                  type="button"
+                  onClick={() => router.push("/otp-platform")}
+                  className="flex-shrink-0 rounded-lg bg-yellow-400 px-3 py-1.5 font-bold text-gray-950 shadow hover:bg-yellow-300 transition-colors text-xs"
+                >
+                  ⚙️ Setup Real SMS
+                </button>
+              </div>
             </div>
           </div>
         )}
