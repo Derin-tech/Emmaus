@@ -6,6 +6,7 @@ import {
   Ticket, Tag, Book, MessageSquare, MapPin, Package, Heart, Sparkles, 
   Smartphone, Laptop, Gamepad2, Bus, TrainFront, Banknote, Coins, GraduationCap, Headphones, Calculator, Camera
 } from "lucide-react";
+import FloatingMockCards from "./FloatingMockCards";
 
 // Helper for premium rich icons
 function PremiumIcon({ icon: Icon, color, bgGradient }: { icon: any, color: string, bgGradient: string }) {
@@ -33,13 +34,6 @@ const RICH_ITEMS = [
   { id: 'gradcap', el: <PremiumIcon icon={GraduationCap} color="#FFFFFF" bgGradient="bg-gradient-to-br from-slate-700 to-black" /> },
   { id: 'package', el: <PremiumIcon icon={Package} color="#FFFFFF" bgGradient="bg-gradient-to-br from-amber-600 to-amber-800" /> },
   { id: 'tag', el: <PremiumIcon icon={Tag} color="#FFFFFF" bgGradient="bg-gradient-to-br from-red-400 to-rose-600" /> },
-];
-
-const PREVIEW_CARDS = [
-  { id: 1, title: "Engineering Mathematics", price: "₹450", condition: "Like New", top: "15%", left: "10%", delay: 0 },
-  { id: 2, title: "PS5 Controller", price: "₹900", condition: "Excellent", top: "25%", left: "75%", delay: 2 },
-  { id: 3, title: "Hero Sprint Cycle", price: "₹3200", condition: "Good", top: "65%", left: "8%", delay: 4 },
-  { id: 4, title: "Sony Headphones", price: "₹1800", condition: "Almost New", top: "70%", left: "80%", delay: 1 },
 ];
 
 export default function AnimatedBackground() {
@@ -166,26 +160,8 @@ export default function AnimatedBackground() {
         />
       </div>
 
-      {/* Floating Decorative Mock Cards */}
-      {PREVIEW_CARDS.map((card) => (
-        <motion.div
-          key={card.id}
-          className="absolute z-10 w-48 rounded-2xl bg-white/70 backdrop-blur-xl border border-white p-3 shadow-[0_8px_30px_rgb(0,0,0,0.04)]"
-          style={{ top: card.top, left: card.left }}
-          animate={{ 
-            y: [0, -15, 0], 
-            rotate: [Math.random() * 5 - 2.5, Math.random() * -5 + 2.5, Math.random() * 5 - 2.5] 
-          }}
-          transition={{ duration: 6, delay: card.delay, repeat: Infinity, ease: "easeInOut" }}
-        >
-          <div className="h-24 w-full rounded-xl bg-gradient-to-br from-gray-100 to-gray-50 mb-2 border border-gray-200/50" />
-          <h4 className="text-[10px] font-bold text-gray-900 leading-tight mb-0.5 truncate">{card.title}</h4>
-          <div className="flex justify-between items-center">
-            <span className="text-[11px] font-black text-gray-900">{card.price}</span>
-            <span className="text-[8px] font-semibold text-gray-500 uppercase">{card.condition}</span>
-          </div>
-        </motion.div>
-      ))}
+      {/* Handcrafted Premium Floating Cards */}
+      <FloatingMockCards />
 
       {/* 3 Core Animation Layers */}
       {items.map((item) => {
