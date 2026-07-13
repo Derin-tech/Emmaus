@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     const now = new Date();
     const expiry = new Date(user.otp_expiry);
     if (now > expiry) {
-      return NextResponse.json({ error: 'OTP has expired. Please request a new code.' }, { status: 400 });
+      return NextResponse.json({ error: 'OTP has expired (5 minutes limit reached). Please click "Resend OTP" below to get a new code.', expired: true }, { status: 400 });
     }
 
     const body = await request.json();

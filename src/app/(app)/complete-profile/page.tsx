@@ -27,6 +27,12 @@ export default function CompleteProfilePage() {
         throw new Error(data.error || "Failed to send OTP code.");
       }
 
+      if (typeof window !== "undefined") {
+        if (data.devOtp) sessionStorage.setItem("emmaus_dev_otp", data.devOtp);
+        if (data.otpExpiry) sessionStorage.setItem("emmaus_otp_expiry", data.otpExpiry);
+        sessionStorage.setItem("emmaus_phone", phoneNumber);
+      }
+
       router.push(data.redirectUrl || "/verify-otp");
     } catch (err: any) {
       setError(err.message || "Something went wrong.");

@@ -19,8 +19,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User record not found.' }, { status: 404 });
     }
 
-    const body = await request.json();
-    const { phoneNumber } = body;
+    const body = await request.json().catch(() => ({}));
+    const phoneNumber = body.phoneNumber || user.phone_number;
 
     // Validate 10-digit mobile number
     const cleanedPhone = String(phoneNumber || '').replace(/\D/g, '');
@@ -31,8 +31,8 @@ export async function POST(request: Request) {
     // Generate 6-digit numeric OTP (100000 to 999999)
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    // Hash OTP with bcrypt (using salt rounds = 10)
-    const otpHash = await bcrypt.hash(otp, 10);
+    // Hash OTP with bcrypt (using salt rounds = 4 for instant execution without lag)
+    const otpHash = await bcrypt.hash(otp, 4);
 
     // Set expiration timestamp: 5 minutes from now
     const expiryDate = new Date();
@@ -52,7 +52,10 @@ export async function POST(request: Request) {
     return NextResponse.json({
       success: true,
       message: 'OTP sent successfully to your mobile number.',
-      redirectUrl: '/verify-otp'
+      redirectUrl: '/verify-otp',
+      devOtp: otp,
+      otpExpiry,
+      phoneNumber: cleanedPhone
     }, { status: 200 });
   } catch (error) {
     console.error('Send OTP Error:', error);
