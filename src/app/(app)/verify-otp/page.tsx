@@ -17,6 +17,8 @@ export default function VerifyOtpPage() {
   const [devOtp, setDevOtp] = useState<string | null>(null);
   const [otpExpiry, setOtpExpiry] = useState<string | null>(null);
   const [phoneNumber, setPhoneNumber] = useState<string>("");
+  const [realSmsSent, setRealSmsSent] = useState<boolean>(false);
+  const [smsProvider, setSmsProvider] = useState<string>("Simulated");
   const [secondsLeft, setSecondsLeft] = useState<number>(300); // 5 minutes default
   const [isExpired, setIsExpired] = useState<boolean>(false);
 
@@ -25,9 +27,14 @@ export default function VerifyOtpPage() {
       const storedOtp = sessionStorage.getItem("emmaus_dev_otp");
       const storedExpiry = sessionStorage.getItem("emmaus_otp_expiry");
       const storedPhone = sessionStorage.getItem("emmaus_phone") || "";
+      const storedRealSms = sessionStorage.getItem("emmaus_real_sms");
+      const storedProvider = sessionStorage.getItem("emmaus_sms_provider");
+
       if (storedOtp) setDevOtp(storedOtp);
       if (storedExpiry) setOtpExpiry(storedExpiry);
       if (storedPhone) setPhoneNumber(storedPhone);
+      if (storedRealSms === "true") setRealSmsSent(true);
+      if (storedProvider) setSmsProvider(storedProvider);
     }
   }, []);
 
@@ -158,13 +165,37 @@ export default function VerifyOtpPage() {
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        {/* Simulated SMS Delivery Banner - Guarantees User Immediately Sees OTP */}
-        {devOtp && (
+        {/* Real Cellular SMS Delivery Banner */}
+        {realSmsSent && (
+          <div className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-green-600 to-emerald-600 p-4 text-white shadow-md">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2 font-semibold text-xs tracking-wider uppercase text-green-100">
+                <Sparkles size={16} className="text-yellow-300 animate-pulse" />
+                <span>Live Cellular SMS Dispatched</span>
+              </div>
+              <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-mono font-medium">
+                <Clock size={12} />
+                <span>{isExpired ? "EXPIRED" : formatTime(secondsLeft)}</span>
+              </div>
+            </div>
+            <div className="mt-3 bg-black/20 rounded-xl p-3.5 backdrop-blur-sm border border-white/10 text-sm">
+              <p className="font-medium text-white">
+                Verification code delivered directly to your mobile phone <span className="font-mono font-bold text-yellow-300">(+91-{phoneNumber || "----------"})</span> via <span className="underline decoration-yellow-300">{smsProvider}</span>.
+              </p>
+              <p className="mt-1 text-xs text-green-200">
+                Please check your phone's SMS inbox and type the 6-digit code below.
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Simulated SMS Delivery Banner - Guarantees User Immediately Sees OTP when no SMS API key is in .env */}
+        {!realSmsSent && devOtp && (
           <div className="mb-6 overflow-hidden rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 p-4 text-white shadow-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 font-semibold text-xs tracking-wider uppercase text-blue-100">
                 <Sparkles size={16} className="text-yellow-300 animate-pulse" />
-                <span>Simulated SMS Delivery</span>
+                <span>Simulated SMS Delivery (Dev Mode)</span>
               </div>
               <div className="flex items-center gap-1.5 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-mono font-medium">
                 <Clock size={12} />
@@ -197,6 +228,11 @@ export default function VerifyOtpPage() {
                   Auto-Fill
                 </button>
               </div>
+            </div>
+
+            <div className="mt-3 rounded-xl bg-blue-900/40 p-2.5 text-[11px] leading-relaxed text-blue-100 border border-blue-400/20">
+              <span className="font-semibold text-yellow-300">Why is the OTP on this screen instead of my mobile? </span>
+              Because web servers running locally (`localhost:3000`) require a third-party SMS Gateway (like Fast2SMS or Twilio) to dispatch cellular texts. To make real SMS arrive on your mobile phone, add <code className="bg-black/30 px-1 py-0.5 rounded text-yellow-200">FAST2SMS_API_KEY="your_key"</code> inside your <code className="bg-black/30 px-1 py-0.5 rounded text-yellow-200">.env</code> file.
             </div>
           </div>
         )}

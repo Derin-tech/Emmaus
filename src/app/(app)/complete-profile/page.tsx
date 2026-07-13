@@ -29,8 +29,11 @@ export default function CompleteProfilePage() {
 
       if (typeof window !== "undefined") {
         if (data.devOtp) sessionStorage.setItem("emmaus_dev_otp", data.devOtp);
+        else sessionStorage.removeItem("emmaus_dev_otp");
         if (data.otpExpiry) sessionStorage.setItem("emmaus_otp_expiry", data.otpExpiry);
         sessionStorage.setItem("emmaus_phone", phoneNumber);
+        sessionStorage.setItem("emmaus_real_sms", data.realSmsSent ? "true" : "false");
+        sessionStorage.setItem("emmaus_sms_provider", data.smsProvider || "Simulated");
       }
 
       router.push(data.redirectUrl || "/verify-otp");
