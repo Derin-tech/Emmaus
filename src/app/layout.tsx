@@ -12,10 +12,9 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-
 export const metadata: Metadata = {
-  title: "UniTickets - Student Ticket Exchange",
-  description: "Buy, sell, and exchange tickets exclusively for college students.",
+  title: "Campus Deals - Student Marketplace",
+  description: "Buy, sell, and exchange items exclusively for college students.",
 };
 
 export default function RootLayout({

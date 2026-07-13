@@ -26,6 +26,26 @@ export default function PostListingPage() {
     setIsSubmitting(true);
 
     const formData = new FormData(e.currentTarget);
+
+    let title = '';
+    let description = '';
+    if (category === 'Movies') {
+      title = String(formData.get('movieName') || 'Movie Ticket');
+      description = `Theatre: ${formData.get('theatreName') || ''}\nSeats: ${formData.get('seatNumbers') || ''}`;
+    } else if (category === 'Train') {
+      title = `${formData.get('fromStation') || ''} to ${formData.get('toStation') || ''}`;
+      description = `Train: ${formData.get('trainNameOrNumber') || ''}\nClass: ${formData.get('travelClass') || ''}`;
+    } else if (category === 'Bus') {
+      title = `${formData.get('fromLocation') || ''} to ${formData.get('toLocation') || ''}`;
+      description = `Operator: ${formData.get('busOperator') || ''}\nSeat: ${formData.get('seatType') || ''}`;
+    } else if (category === 'Events') {
+      title = String(formData.get('eventName') || 'Event Ticket');
+      description = `Venue: ${formData.get('venue') || ''}\nDate: ${formData.get('date') || ''}`;
+    } else {
+      title = String(formData.get('title') || 'Ticket Listing');
+      description = String(formData.get('description') || '');
+    }
+
     const baseListing = {
       id: Date.now().toString(),
       userId: 'u1',
@@ -35,6 +55,8 @@ export default function PostListingPage() {
       numberOfTickets: Number(formData.get('numberOfTickets') || 1),
       postedDate: new Date().toISOString(),
       contactInfo: String(formData.get('contactInfo') || ''),
+      title,
+      description,
     };
 
     let newListing: Listing;

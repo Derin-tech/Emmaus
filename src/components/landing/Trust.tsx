@@ -10,7 +10,7 @@ export default function Trust() {
             A safer marketplace for students.
           </h2>
           <p className="mx-auto mt-6 max-w-xl text-lg leading-8 text-gray-300">
-            UniTickets requires a verified college email address to sign up. You're always dealing with real peers, not random strangers on the internet.
+            Campus Deals requires a verified college email address to sign up. You're always dealing with real peers, not random strangers on the internet.
           </p>
           
           <div className="mx-auto mt-12 flex max-w-md flex-col gap-4 sm:flex-row sm:justify-center">

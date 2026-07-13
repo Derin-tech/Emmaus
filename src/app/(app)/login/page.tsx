@@ -1,15 +1,14 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Ticket } from "lucide-react";
 
 export default function LoginPage() {
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-sm mb-6">
-          <Ticket size={32} />
-        </div>
+        <Image src="/logo2.png" alt="Campus Deals Logo" width={64} height={64} className="mx-auto rounded-2xl mb-6 shadow-sm" />
         <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-          Sign in to UniTickets
+          Sign in to Campus Deals
         </h2>
         <p className="mt-2 text-sm text-gray-600">
           Exclusive for verified college students

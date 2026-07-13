@@ -15,10 +15,10 @@ export default function Dashboard() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight text-gray-900">My Dashboard</h1>
-          <p className="mt-2 text-gray-500">Manage your active and past ticket listings.</p>
+          <p className="mt-2 text-gray-500">Manage your active and past listings.</p>
         </div>
-        <Link 
-          href="/post" 
+        <Link
+          href="/post"
           className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-500"
         >
           Post New
@@ -36,21 +36,18 @@ export default function Dashboard() {
                       <Tag size={12} />
                       {listing.category}
                     </span>
-                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                      listing.status === 'Available' ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700'
-                    }`}>
+                    <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${listing.status === 'Available' ? 'bg-green-50 text-green-700' :
+                        listing.status === 'Pending' ? 'bg-yellow-50 text-yellow-700' :
+                          'bg-gray-100 text-gray-700'
+                      }`}>
                       {listing.status}
                     </span>
                   </div>
-                  
+
                   <h3 className="text-lg font-semibold text-gray-900 mt-2">
-                    {listing.category === 'Train' && `${(listing as any).fromStation} to ${(listing as any).toStation}`}
-                    {listing.category === 'Movies' && (listing as any).movieName}
-                    {listing.category === 'Bus' && `${(listing as any).fromLocation} to ${(listing as any).toLocation}`}
-                    {listing.category === 'Events' && (listing as any).eventName}
-                    {listing.category === 'Others' && (listing as any).title}
+                    {listing.title}
                   </h3>
-                  
+
                   <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
                     <span>Posted on {format(new Date(listing.postedDate), 'MMM d, yyyy')}</span>
                     <span>₹{listing.price}</span>
@@ -67,6 +64,9 @@ export default function Dashboard() {
                       <span className="hidden sm:inline">Mark Sold</span>
                     </button>
                   )}
+                  <button className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 hover:bg-gray-50 hover:text-blue-600">
+                    <Edit2 size={16} />
+                  </button>
                   <button 
                     onClick={() => deleteListing(listing.id)}
                     className="flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 bg-red-50 text-red-500 hover:bg-red-100"
@@ -78,7 +78,7 @@ export default function Dashboard() {
             </li>
           )) : (
             <li className="p-8 text-center text-gray-500">
-              You haven't posted any tickets yet.
+              You haven't posted any items yet.
             </li>
           )}
         </ul>

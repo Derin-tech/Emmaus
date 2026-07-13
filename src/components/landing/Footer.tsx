@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import { Ticket, MessageCircle, Globe, Mail } from 'lucide-react';
 
 export default function Footer() {
@@ -7,11 +8,9 @@ export default function Footer() {
       <div className="mx-auto max-w-7xl overflow-hidden px-6 py-20 sm:py-24 lg:px-8">
         <div className="flex justify-center mb-8">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white">
-              <Ticket size={20} />
-            </div>
+            <Image src="/logo2.png" alt="Campus Deals Logo" width={32} height={32} className="rounded-lg" />
             <span className="text-lg font-bold tracking-tight text-gray-900">
-              UniTickets
+              Campus Deals
             </span>
           </Link>
         </div>
@@ -50,7 +49,7 @@ export default function Footer() {
         </div>
         
         <p className="mt-10 text-center text-xs leading-5 text-gray-500">
-          &copy; {new Date().getFullYear()} UniTickets, Inc. All rights reserved.
+          &copy; {new Date().getFullYear()} Campus Deals, Inc. All rights reserved.
         </p>
       </div>
     </footer>
