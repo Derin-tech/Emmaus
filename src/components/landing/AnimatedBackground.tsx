@@ -3,12 +3,11 @@
 import { useEffect, useState, useRef } from "react";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 import { 
-  Ticket, Tag, ShoppingBag, Book, GraduationCap, 
-  MessageSquare, MapPin, Package, Heart, Star, 
-  CreditCard, Percent
+  Ticket, Tag, Book, MessageSquare, MapPin, Package, Heart, Sparkles, 
+  Smartphone, Laptop, Gamepad2, Bus, TrainFront, Banknote, Coins
 } from "lucide-react";
 
-const ICONS = [Ticket, Tag, ShoppingBag, Book, GraduationCap, MessageSquare, MapPin, Package, Heart, Star, CreditCard, Percent];
+const ICONS = [Ticket, Tag, Bus, TrainFront, Banknote, Coins, Book, MessageSquare, MapPin, Package, Heart, Sparkles, Smartphone, Laptop, Gamepad2];
 const NOTIFICATIONS = ["Book Sold", "New Deal", "Roommate Found", "Item Exchanged", "Price Dropped"];
 
 export default function AnimatedBackground() {
@@ -20,8 +19,8 @@ export default function AnimatedBackground() {
   // Parallax tracking
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  const springX = useSpring(mouseX, { stiffness: 40, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 40, damping: 30 });
 
   useEffect(() => {
     setMounted(true);
@@ -55,7 +54,9 @@ export default function AnimatedBackground() {
       // Normalize mouse values between -1 and 1
       const x = (e.clientX / window.innerWidth) * 2 - 1;
       const y = (e.clientY / window.innerHeight) * 2 - 1;
+      // Slower, smoother parallax tracking
       mouseX.set(x);
+      mouseY.set(y);
       mouseY.set(y);
     };
 
@@ -97,14 +98,14 @@ export default function AnimatedBackground() {
   }, []);
 
   // Parallax transform functions based on layer depth
-  const fgX = useTransform(springX, [-1, 1], [-30, 30]);
-  const fgY = useTransform(springY, [-1, 1], [-30, 30]);
+  const fgX = useTransform(springX, [-1, 1], [-40, 40]);
+  const fgY = useTransform(springY, [-1, 1], [-40, 40]);
   
-  const midX = useTransform(springX, [-1, 1], [-15, 15]);
-  const midY = useTransform(springY, [-1, 1], [-15, 15]);
+  const midX = useTransform(springX, [-1, 1], [-20, 20]);
+  const midY = useTransform(springY, [-1, 1], [-20, 20]);
   
-  const bgX = useTransform(springX, [-1, 1], [-5, 5]);
-  const bgY = useTransform(springY, [-1, 1], [-5, 5]);
+  const bgX = useTransform(springX, [-1, 1], [-10, 10]);
+  const bgY = useTransform(springY, [-1, 1], [-10, 10]);
 
   if (!mounted) return null;
 
@@ -131,7 +132,8 @@ export default function AnimatedBackground() {
               x: pX, 
               y: pY,
               left: `${item.x}%`,
-              filter: item.layer === 3 ? "blur(2px)" : item.layer === 2 ? "blur(0.5px)" : "none"
+              filter: item.layer === 3 ? "blur(3px)" : item.layer === 2 ? "blur(1px)" : "none",
+              color: item.layer === 1 ? "#93C5FD" : item.layer === 2 ? "#DDF3FF" : "#F3F4F6"
             }}
             initial={{
               top: "110%",
