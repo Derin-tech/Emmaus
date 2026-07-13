@@ -12,7 +12,6 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-import Navbar from "@/components/Navbar";
 
 export const metadata: Metadata = {
   title: "UniTickets - Student Ticket Exchange",
@@ -30,10 +29,7 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-gray-50 text-gray-900">
-        <Navbar />
-        <main className="flex-1 w-full max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {children}
-        </main>
+        {children}
       </body>
     </html>
   );

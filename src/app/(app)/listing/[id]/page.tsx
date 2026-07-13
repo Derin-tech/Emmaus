@@ -126,13 +126,13 @@ export default async function ListingDetail({ params }: { params: Promise<{ id: 
 
             {listing.status === 'Available' ? (
               <a 
-                href={listing.contactInfo.startsWith('whatsapp') ? `https://wa.me/${listing.contactInfo.split(':')[1].trim()}` : `tel:${listing.contactInfo}`}
+                href={`https://wa.me/${listing.contactInfo.replace(/[^\d+]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-900 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-green-600 px-4 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-green-700 hover:shadow-md"
               >
                 <MessageCircle size={18} />
-                Contact Seller
+                Claim Ticket
               </a>
             ) : (
               <div className="rounded-xl bg-gray-50 p-4 text-center border border-gray-200 text-sm text-gray-500">
