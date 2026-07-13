@@ -81,6 +81,15 @@ export default function ExpiringSoonPage() {
   const [tickets, setTickets] = useState<ExpiringTicket[]>([]);
   const [activeFilter, setActiveFilter] = useState("all");
   const [isRealtime, setIsRealtime] = useState(hasFirebaseConfig);
+  const [showDemoControls, setShowDemoControls] = useState(false);
+
+  // Check URL query parameters on client load
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      setShowDemoControls(params.get("demo") === "true");
+    }
+  }, []);
 
   // Firestore Sync / Local Initialization
   useEffect(() => {
@@ -225,7 +234,7 @@ export default function ExpiringSoonPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Expiring Soon</h1>
-            {!isRealtime && (
+            {!isRealtime && showDemoControls && (
               <span className="rounded-full bg-amber-100 dark:bg-amber-950/40 px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:text-amber-400 flex items-center gap-1">
                 <AlertCircle size={12} />
                 Demo Mode
@@ -238,8 +247,8 @@ export default function ExpiringSoonPage() {
         </div>
       </div>
 
-      {/* Demo Controls (Only visible in Demo/Mock Mode) */}
-      {!isRealtime && (
+      {/* Demo Controls (Only visible in Demo/Mock Mode AND with ?demo=true) */}
+      {!isRealtime && showDemoControls && (
         <div className="rounded-2xl border border-gray-200 dark:border-gray-800 bg-gray-50 dark:bg-gray-950/40 p-4 flex flex-wrap items-center justify-between gap-4">
           <div className="text-xs text-gray-600 dark:text-gray-400 font-medium">
             💡 <strong>Demo Controls:</strong> Test live countdowns, visual border updates, sorting, and automatic removal.
