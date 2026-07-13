@@ -13,6 +13,7 @@ import {
 
 import AnimatedGradientBackground from "@/components/browse/AnimatedGradientBackground";
 import ProductCard from "@/components/browse/ProductCard";
+import TodaysHighlights from "@/components/browse/TodaysHighlights";
 
 // Helper components for Discovery View
 function CategoryDiscovery({ onSelectCategory }: { onSelectCategory: (cat: string) => void }) {
@@ -103,12 +104,20 @@ function BrowseContent() {
   const [budgetRange, setBudgetRange] = useState<[number, number]>([0, 100000]);
   const [activeSort, setActiveSort] = useState("Lowest Price");
   
-  const isDiscoveryView = !activeCategory && !searchQuery;
+  const [activeSpecialFilter, setActiveSpecialFilter] = useState<string>('');
+  
+  const isDiscoveryView = !activeCategory && !searchQuery && !activeSpecialFilter;
 
   // Handle URL updates gracefully
   const updateCategory = (cat: string) => {
     setActiveCategory(cat);
+    setActiveSpecialFilter('');
     router.push(cat ? `/browse?category=${encodeURIComponent(cat)}` : '/browse');
+  };
+
+  const updateSpecialFilter = (filter: string) => {
+    setActiveSpecialFilter(filter === activeSpecialFilter ? '' : filter);
+    setActiveCategory(''); // clear standard category when viewing special highlights
   };
 
   useEffect(() => {
@@ -129,7 +138,17 @@ function BrowseContent() {
 
     const matchesBudget = listing.price >= budgetRange[0] && listing.price <= budgetRange[1];
 
-    return matchesCategory && matchesStatus && matchesSearch && matchesBudget;
+    // Special Highlights Logic
+    let matchesSpecialFilter = true;
+    if (activeSpecialFilter === "Offers Today" || activeSpecialFilter === "Best Deals") {
+      matchesSpecialFilter = !!listing.discountPercentage && listing.discountPercentage > 0;
+    } else if (activeSpecialFilter === "Expiring Soon") {
+      matchesSpecialFilter = !!listing.expiresAt && (new Date(listing.expiresAt).getTime() - new Date().getTime() < 24 * 60 * 60 * 1000);
+    } else if (activeSpecialFilter === "Under 500") {
+      matchesSpecialFilter = listing.price < 500;
+    }
+
+    return matchesCategory && matchesStatus && matchesSearch && matchesBudget && matchesSpecialFilter;
   }).sort((a, b) => {
     if (activeSort === "Lowest Price") return a.price - b.price;
     if (activeSort === "Highest Price") return b.price - a.price;
@@ -149,12 +168,15 @@ function BrowseContent() {
               {/* Header Title */}
               <div 
                 className="cursor-pointer"
-                onClick={() => updateCategory('')}
+                onClick={() => { updateCategory(''); setActiveSpecialFilter(''); }}
               >
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 flex items-center gap-2">
                   Marketplace 
                   {!isDiscoveryView && activeCategory && (
                     <span className="text-gray-400 font-medium text-lg">/ {activeCategory}</span>
+                  )}
+                  {!isDiscoveryView && activeSpecialFilter && (
+                    <span className="text-orange-500 font-bold text-lg">/ {activeSpecialFilter}</span>
                   )}
                 </h1>
               </div>
@@ -195,12 +217,41 @@ function BrowseContent() {
               </motion.div>
             </div>
             
-            {/* Quick Filter Chips (Only shown in Product View) */}
+            {/* Quick Access Filter Chips */}
+            <div className="flex gap-2 overflow-x-auto hide-scrollbar pt-3 pb-1 mt-2 border-t border-gray-100/50">
+              {["Offers Today", "Expiring Soon", "Trending", "Best Deals", "Under 500"].map(filter => {
+                const isActive = activeSpecialFilter === filter;
+                return (
+                  <motion.button
+                    key={filter}
+                    onClick={() => updateSpecialFilter(filter)}
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    animate={{
+                      backgroundColor: isActive ? "#111827" : "#FFFFFF",
+                      color: isActive ? "#FFFFFF" : "#4B5563",
+                      borderColor: isActive ? "#111827" : "#E5E7EB",
+                    }}
+                    transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                    className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border shadow-sm whitespace-nowrap`}
+                  >
+                    {filter === "Offers Today" && <span className="text-[10px]">🔥</span>}
+                    {filter === "Expiring Soon" && <span className="text-[10px]">⏳</span>}
+                    {filter === "Trending" && <span className="text-[10px]">⭐</span>}
+                    {filter === "Best Deals" && <span className="text-[10px]">💰</span>}
+                    {filter === "Under 500" && <span className="text-[10px]">🎁</span>}
+                    {filter}
+                  </motion.button>
+                )
+              })}
+            </div>
+
+            {/* Active Standard Filters (Only shown in Product View) */}
             <AnimatePresence>
               {!isDiscoveryView && (
                 <motion.div 
                   initial={{ height: 0, opacity: 0, marginTop: 0 }}
-                  animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+                  animate={{ height: "auto", opacity: 1, marginTop: 12 }}
                   exit={{ height: 0, opacity: 0, marginTop: 0 }}
                   className="flex gap-2 overflow-x-auto hide-scrollbar pb-1"
                 >
@@ -232,7 +283,10 @@ function BrowseContent() {
         <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8 pb-32">
           
           {isDiscoveryView ? (
-            <CategoryDiscovery onSelectCategory={updateCategory} />
+            <>
+              <TodaysHighlights onFilterSelect={updateSpecialFilter} />
+              <CategoryDiscovery onSelectCategory={updateCategory} />
+            </>
           ) : (
             <div className="flex flex-col lg:flex-row gap-8">
               

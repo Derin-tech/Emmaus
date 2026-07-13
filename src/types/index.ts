@@ -26,4 +26,5 @@ export interface Listing {
   location?: string;
   verifiedSeller?: boolean;
   sellerAvatar?: string;
+  expiresAt?: string;
 }

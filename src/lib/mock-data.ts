@@ -1,5 +1,5 @@
 import { Listing } from '@/types';
-import { addDays, subDays } from 'date-fns';
+import { addDays, subDays, addHours, addMinutes } from 'date-fns';
 
 const today = new Date();
 
@@ -21,7 +21,8 @@ export const mockListings: Listing[] = [
     sellerRating: 4.8,
     location: 'North Campus Library',
     verifiedSeller: true,
-    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix'
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix',
+    expiresAt: addHours(today, 12).toISOString()
   },
   {
     id: '2',
@@ -70,7 +71,8 @@ export const mockListings: Listing[] = [
     sellerRating: 4.5,
     location: 'South Gate Cafe',
     verifiedSeller: true,
-    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah'
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sarah',
+    expiresAt: addMinutes(today, 45).toISOString()
   },
   {
     id: '5',
@@ -117,7 +119,8 @@ export const mockListings: Listing[] = [
     sellerRating: 4.7,
     verifiedSeller: true,
     location: 'Main Library',
-    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam'
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam',
+    expiresAt: addHours(today, 2).toISOString()
   },
   {
     id: '8',
@@ -154,7 +157,8 @@ export const mockListings: Listing[] = [
     collegeName: 'Arts & Science College',
     sellerRating: 4.6,
     location: 'Hostel Block A',
-    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver'
+    sellerAvatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Oliver',
+    expiresAt: addHours(today, 22).toISOString()
   },
   {
     id: '10',
