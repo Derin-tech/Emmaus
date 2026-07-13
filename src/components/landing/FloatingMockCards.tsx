@@ -76,7 +76,7 @@ export default function FloatingMockCards() {
           onMouseLeave={handleMouseLeave}
           style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
           whileHover={{ scale: 1.05, y: -12 }}
-          className="relative w-56 rounded-[24px] bg-white/80 backdrop-blur-xl border-2 border-gray-900 p-4 shadow-[0_20px_40px_rgba(0,0,0,0.08)] cursor-pointer overflow-hidden group"
+          className="relative w-56 rounded-[24px] bg-white/80 backdrop-blur-xl border border-gray-200/50 p-4 shadow-[0_20px_40px_rgba(0,0,0,0.08)] cursor-pointer overflow-hidden group"
         >
           <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay pointer-events-none bg-repeat" style={{ backgroundImage: NOISE_BG }} />
           <div className="absolute inset-0 rounded-[24px] shadow-[inset_0_2px_4px_rgba(255,255,255,0.8)] pointer-events-none" />
@@ -155,80 +155,7 @@ export default function FloatingMockCards() {
     );
   };
 
-  // Card 3: Gaming (Square, Left Edge)
-  const CardGaming = () => {
-    const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = useTilt();
-    return (
-      <motion.div
-        className="absolute top-[35%] left-[2%] z-10 hidden xl:block opacity-90"
-        animate={{ y: [0, 20, 0], rotateZ: [3, -1, 3] }}
-        transition={{ duration: 9, delay: 2, repeat: Infinity, ease: "easeInOut" }}
-        style={{ perspective: 1000 }}
-      >
-        <motion.div
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          whileHover={{ scale: 1.05, opacity: 1, zIndex: 50 }}
-          className="relative w-44 rounded-[24px] bg-white/80 backdrop-blur-md border border-purple-100 p-4 shadow-xl cursor-pointer group"
-        >
-          <div className="relative h-28 w-full rounded-[16px] bg-gradient-to-tr from-purple-500 to-indigo-600 mb-3 flex items-center justify-center overflow-hidden">
-             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_120%,rgba(255,255,255,0.4),transparent)]" />
-             <Gamepad2 size={48} color="#fff" strokeWidth={1} className="drop-shadow-[0_0_15px_rgba(255,255,255,0.5)] group-hover:scale-110 transition-transform duration-500" />
-          </div>
-          <h4 className="text-[12px] font-bold text-gray-900 mb-2 text-center">PS5 DualSense</h4>
-          <div className="flex justify-between items-center px-1">
-            <span className="text-[15px] font-black text-purple-600">₹4,200</span>
-            <div className="flex items-center gap-1">
-              <Heart size={10} className="text-gray-400" />
-              <span className="text-[10px] font-bold text-gray-500">24</span>
-            </div>
-          </div>
-        </motion.div>
-      </motion.div>
-    );
-  };
 
-  // Card 4: Headphones (Small, Right Edge)
-  const CardHeadphones = () => {
-    const { rotateX, rotateY, handleMouseMove, handleMouseLeave } = useTilt();
-    return (
-      <motion.div
-        className="absolute top-[20%] right-[3%] z-10 hidden xl:block opacity-80"
-        animate={{ y: [0, -25, 0], x: [0, -10, 0] }}
-        transition={{ duration: 11, delay: 0.5, repeat: Infinity, ease: "easeInOut" }}
-        style={{ perspective: 1000 }}
-      >
-        <motion.div
-          onMouseMove={handleMouseMove}
-          onMouseLeave={handleMouseLeave}
-          style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}
-          whileHover={{ scale: 1.1, opacity: 1, zIndex: 50 }}
-          className="relative w-40 rounded-[20px] bg-white/70 backdrop-blur-lg border border-pink-100 p-3 shadow-lg cursor-pointer group"
-        >
-          <AnimatePresence>
-            {magicNotif && (
-              <motion.div 
-                initial={{ opacity: 0, scale: 0.8, y: 10 }}
-                animate={{ opacity: 1, scale: 1, y: -15 }}
-                exit={{ opacity: 0, scale: 0.8, y: -20 }}
-                className="absolute -top-6 -right-4 bg-gray-900 text-white text-[10px] font-bold px-3 py-1.5 rounded-full shadow-xl flex items-center gap-1 z-50"
-              >
-                <Bell size={10} className="text-pink-400" /> Price Dropped!
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          <div className="relative h-20 w-full rounded-[14px] bg-gradient-to-br from-pink-400 to-rose-600 mb-2 flex items-center justify-center">
-             <Headphones size={32} color="#fff" strokeWidth={1.5} />
-             <div className="absolute -top-2 -right-2 w-4 h-4 rounded-full bg-red-500 border-2 border-white animate-pulse" />
-          </div>
-          <h4 className="text-[11px] font-bold text-gray-800 leading-tight mb-1">Sony WH-1000XM4</h4>
-          <span className="text-[14px] font-black text-gray-900">₹14,000</span>
-        </motion.div>
-      </motion.div>
-    );
-  };
 
   // Card 5: Cycle (Medium, Far Bottom Right)
   const CardCycle = () => {
@@ -292,8 +219,6 @@ export default function FloatingMockCards() {
       <div className="absolute inset-0 [&>*]:pointer-events-auto">
         <CardBooks />
         <CardElectronics />
-        <CardGaming />
-        <CardHeadphones />
         <CardCycle />
         <CardCamera />
       </div>
