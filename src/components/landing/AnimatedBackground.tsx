@@ -130,7 +130,7 @@ export default function AnimatedBackground() {
             style={{ 
               x: pX, 
               y: pY,
-              left: \`\${item.x}%\`,
+              left: `${item.x}%`,
               filter: item.layer === 3 ? "blur(2px)" : item.layer === 2 ? "blur(0.5px)" : "none"
             }}
             initial={{
@@ -140,7 +140,7 @@ export default function AnimatedBackground() {
             }}
             animate={{
               top: "-10%",
-              left: \`\${item.x + item.driftX}%\`,
+              left: `${item.x + item.driftX}%`,
               opacity: [0, item.opacity, item.opacity, 0],
               rotate: item.rotationEnd,
             }}
@@ -161,10 +161,10 @@ export default function AnimatedBackground() {
         <motion.div
           key={c.id}
           className="absolute text-gray-400"
-          initial={{ left: "-5%", top: \`\${c.y}%\`, opacity: 0, rotate: 0, scale: 0.8 }}
+          initial={{ left: "-5%", top: `${c.y}%`, opacity: 0, rotate: 0, scale: 0.8 }}
           animate={{
             left: "105%",
-            top: \`\${c.y - 20}%\`,
+            top: `${c.y - 20}%`,
             opacity: [0, 0.1, 0.1, 0],
             rotate: 360,
           }}
@@ -180,7 +180,7 @@ export default function AnimatedBackground() {
         <motion.div
           key={n.id}
           className="absolute bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100/50 text-[10px] font-semibold text-gray-500"
-          style={{ left: \`\${n.x}%\`, top: \`\${n.y}%\` }}
+          style={{ left: `${n.x}%`, top: `${n.y}%` }}
           initial={{ opacity: 0, y: 10, scale: 0.9 }}
           animate={{ opacity: [0, 0.15, 0.15, 0], y: -20, scale: 1 }}
           transition={{ duration: 4, ease: "easeInOut" }}

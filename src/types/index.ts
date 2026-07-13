@@ -1,4 +1,4 @@
-export type Category = 'Textbooks' | 'Accessories' | 'Gaming' | 'Services' | 'Requests' | 'Others';
+export type Category = 'Textbooks' | 'Accessories' | 'Gaming' | 'Services' | 'Requests' | 'Others' | 'Movies' | 'Train' | 'Bus' | 'Events';
 export type Status = 'Available' | 'Pending' | 'Sold';
 
 export interface User {
