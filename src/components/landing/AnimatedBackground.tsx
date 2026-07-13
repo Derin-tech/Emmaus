@@ -1,125 +1,173 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
-import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
+import { useEffect, useState } from "react";
+import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from "framer-motion";
 import { 
   Ticket, Tag, Book, MessageSquare, MapPin, Package, Heart, Sparkles, 
-  Smartphone, Laptop, Gamepad2, Bus, TrainFront, Banknote, Coins
+  Smartphone, Laptop, Gamepad2, Bus, TrainFront, Banknote, Coins, GraduationCap, Headphones, Calculator, Camera
 } from "lucide-react";
+import FloatingMockCards from "./FloatingMockCards";
 
-const ICONS = [Ticket, Tag, Bus, TrainFront, Banknote, Coins, Book, MessageSquare, MapPin, Package, Heart, Sparkles, Smartphone, Laptop, Gamepad2];
-const NOTIFICATIONS = ["Book Sold", "New Deal", "Roommate Found", "Item Exchanged", "Price Dropped"];
+// Helper for premium rich icons
+function PremiumIcon({ icon: Icon, color, bgGradient }: { icon: any, color: string, bgGradient: string }) {
+  return (
+    <div className={`relative flex items-center justify-center p-2 rounded-xl shadow-lg ${bgGradient}`}>
+      <Icon size={24} color={color} strokeWidth={2} className="relative z-10" />
+      <div className="absolute inset-0 bg-white/20 rounded-xl" />
+      <div className="absolute inset-0 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] rounded-xl" />
+    </div>
+  );
+}
+
+// Map for rich items
+const RICH_ITEMS = [
+  { id: 'book', el: <PremiumIcon icon={Book} color="#FFFFFF" bgGradient="bg-gradient-to-br from-blue-400 to-blue-600" /> },
+  { id: 'laptop', el: <PremiumIcon icon={Laptop} color="#FFFFFF" bgGradient="bg-gradient-to-br from-gray-700 to-gray-900" /> },
+  { id: 'gamepad', el: <PremiumIcon icon={Gamepad2} color="#FFFFFF" bgGradient="bg-gradient-to-br from-purple-500 to-indigo-600" /> },
+  { id: 'headphones', el: <PremiumIcon icon={Headphones} color="#FFFFFF" bgGradient="bg-gradient-to-br from-pink-500 to-rose-600" /> },
+  { id: 'smartphone', el: <PremiumIcon icon={Smartphone} color="#FFFFFF" bgGradient="bg-gradient-to-br from-teal-400 to-emerald-600" /> },
+  { id: 'calculator', el: <PremiumIcon icon={Calculator} color="#FFFFFF" bgGradient="bg-gradient-to-br from-orange-400 to-red-500" /> },
+  { id: 'camera', el: <PremiumIcon icon={Camera} color="#FFFFFF" bgGradient="bg-gradient-to-br from-amber-400 to-orange-500" /> },
+  { id: 'ticket', el: <PremiumIcon icon={Ticket} color="#FFFFFF" bgGradient="bg-gradient-to-br from-yellow-400 to-amber-600" /> },
+  { id: 'banknote', el: <PremiumIcon icon={Banknote} color="#FFFFFF" bgGradient="bg-gradient-to-br from-green-400 to-emerald-600" /> },
+  { id: 'coins', el: <PremiumIcon icon={Coins} color="#FFFFFF" bgGradient="bg-gradient-to-br from-yellow-300 to-yellow-500" /> },
+  { id: 'gradcap', el: <PremiumIcon icon={GraduationCap} color="#FFFFFF" bgGradient="bg-gradient-to-br from-slate-700 to-black" /> },
+  { id: 'package', el: <PremiumIcon icon={Package} color="#FFFFFF" bgGradient="bg-gradient-to-br from-amber-600 to-amber-800" /> },
+  { id: 'tag', el: <PremiumIcon icon={Tag} color="#FFFFFF" bgGradient="bg-gradient-to-br from-red-400 to-rose-600" /> },
+];
 
 export default function AnimatedBackground() {
   const [mounted, setMounted] = useState(false);
   const [items, setItems] = useState<any[]>([]);
-  const [notifications, setNotifications] = useState<any[]>([]);
-  const [confetti, setConfetti] = useState<any[]>([]);
-  
+  const [accentEvents, setAccentEvents] = useState<any[]>([]);
+
   // Parallax tracking
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
-  const springX = useSpring(mouseX, { stiffness: 40, damping: 30 });
-  const springY = useSpring(mouseY, { stiffness: 40, damping: 30 });
+  const springX = useSpring(mouseX, { stiffness: 30, damping: 30 });
+  const springY = useSpring(mouseY, { stiffness: 30, damping: 30 });
 
   useEffect(() => {
     setMounted(true);
     
-    // Generate 70 background items across 3 layers
-    const newItems = Array.from({ length: 70 }).map((_, i) => {
-      const layer = i < 20 ? 1 : i < 50 ? 2 : 3; // 1: Foreground, 2: Middle, 3: Background
+    // Generate 45 background items to maintain visual density but double performance
+    const newItems = Array.from({ length: 45 }).map((_, i) => {
+      // 1: Fg, 2: Mid, 3: Bg
+      const layer = i < 25 ? 1 : i < 55 ? 2 : 3;
       
       const sizeMultiplier = layer === 1 ? 1.5 : layer === 2 ? 1 : 0.6;
-      const opacityMultiplier = layer === 1 ? 0.12 : layer === 2 ? 0.08 : 0.05;
-      const baseDuration = layer === 1 ? 20 : layer === 2 ? 35 : 55;
+      // requested: Bg 3-5%, Mid 5-8%, Fg 8-12%
+      const opacityMultiplier = layer === 1 ? (Math.random() * 0.04 + 0.08) : layer === 2 ? (Math.random() * 0.03 + 0.05) : (Math.random() * 0.02 + 0.03);
+      const baseDuration = layer === 1 ? 25 : layer === 2 ? 45 : 70;
       
+      const richItem = RICH_ITEMS[Math.floor(Math.random() * RICH_ITEMS.length)];
+
       return {
         id: i,
-        Icon: ICONS[Math.floor(Math.random() * ICONS.length)],
+        element: richItem.el,
         layer,
-        x: Math.random() * 100, // percentage
-        y: Math.random() * 100, // percentage
-        size: (Math.random() * 12 + 12) * sizeMultiplier,
+        x: Math.random() * 100, 
+        y: Math.random() * 100, 
+        scale: sizeMultiplier * (Math.random() * 0.4 + 0.8),
         opacity: opacityMultiplier,
-        duration: baseDuration + Math.random() * 20,
-        delay: Math.random() * -30, // Start at different points in animation
+        duration: baseDuration + Math.random() * 30,
+        delay: Math.random() * -50,
         rotationStart: Math.random() * 360,
         rotationEnd: Math.random() * 360 + (Math.random() > 0.5 ? 360 : -360),
-        driftX: (Math.random() - 0.5) * 20, // drift up to 20vw
+        driftX: (Math.random() - 0.5) * 30,
+        driftY: (Math.random() - 0.5) * 30,
+        blur: layer === 3 ? "blur(4px)" : layer === 2 ? "blur(2px)" : "blur(0px)",
       };
     });
     setItems(newItems);
 
+    let rafId: number;
     const handleMouseMove = (e: MouseEvent) => {
-      // Normalize mouse values between -1 and 1
-      const x = (e.clientX / window.innerWidth) * 2 - 1;
-      const y = (e.clientY / window.innerHeight) * 2 - 1;
-      // Slower, smoother parallax tracking
-      mouseX.set(x);
-      mouseY.set(y);
-      mouseY.set(y);
+      cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        const x = (e.clientX / window.innerWidth) * 2 - 1;
+        const y = (e.clientY / window.innerHeight) * 2 - 1;
+        mouseX.set(x);
+        mouseY.set(y);
+      });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove, { passive: true });
 
-    // Occasional notifications
-    const notifInterval = setInterval(() => {
-      if (Math.random() > 0.5) {
-        setNotifications((prev) => [
-          ...prev,
-          {
-            id: Date.now(),
-            text: NOTIFICATIONS[Math.floor(Math.random() * NOTIFICATIONS.length)],
-            x: Math.random() * 80 + 10,
-            y: Math.random() * 60 + 20,
-          }
-        ]);
+    // Ambient Activity Spawner (Accent Layer)
+    const interval = setInterval(() => {
+      const eventType = Math.random();
+      const id = Date.now();
+      
+      if (eventType < 0.2) {
+        // Bus
+        setAccentEvents(prev => [...prev, { id, type: 'bus', duration: 15 }]);
+      } else if (eventType < 0.4) {
+        // Train
+        setAccentEvents(prev => [...prev, { id, type: 'train', duration: 25 }]);
+      } else if (eventType < 0.7) {
+        // Floating Ticket
+        setAccentEvents(prev => [...prev, { id, type: 'ticket', duration: 10 }]);
+      } else if (eventType < 0.85) {
+        // Sparkling Coin
+        setAccentEvents(prev => [...prev, { id, type: 'coin', duration: 5 }]);
+      } else {
+        // Parcel
+        setAccentEvents(prev => [...prev, { id, type: 'parcel', duration: 12 }]);
       }
     }, 8000);
 
-    // Occasional confetti
-    const confettiInterval = setInterval(() => {
-      if (Math.random() > 0.3) {
-        const newConfetti = Array.from({ length: 5 }).map((_, i) => ({
-          id: Date.now() + i,
-          x: Math.random() * 20 - 10, // Start slightly offscreen left
-          y: Math.random() * 100,
-          duration: Math.random() * 10 + 10,
-        }));
-        setConfetti((prev) => [...prev, ...newConfetti]);
-      }
-    }, 18000);
-
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
-      clearInterval(notifInterval);
-      clearInterval(confettiInterval);
+      clearInterval(interval);
     };
   }, []);
 
-  // Parallax transform functions based on layer depth
-  const fgX = useTransform(springX, [-1, 1], [-40, 40]);
-  const fgY = useTransform(springY, [-1, 1], [-40, 40]);
-  
-  const midX = useTransform(springX, [-1, 1], [-20, 20]);
-  const midY = useTransform(springY, [-1, 1], [-20, 20]);
-  
+  const removeAccent = (id: number) => {
+    setAccentEvents(prev => prev.filter(e => e.id !== id));
+  };
+
+  const fgX = useTransform(springX, [-1, 1], [-50, 50]);
+  const fgY = useTransform(springY, [-1, 1], [-50, 50]);
+  const midX = useTransform(springX, [-1, 1], [-25, 25]);
+  const midY = useTransform(springY, [-1, 1], [-25, 25]);
   const bgX = useTransform(springX, [-1, 1], [-10, 10]);
   const bgY = useTransform(springY, [-1, 1], [-10, 10]);
 
   if (!mounted) return null;
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      {/* Animated Mesh Gradient */}
-      <div className="absolute inset-0 opacity-40">
-        <div className="absolute -top-1/4 -left-1/4 w-[150%] h-[150%] bg-gradient-to-br from-white via-indigo-50/40 to-blue-50/50 mix-blend-multiply blur-3xl animate-mesh-slow" />
+    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0 bg-[#FAFAFA]">
+      
+      {/* Soft Colorful Gradient Blobs */}
+      <div className="absolute inset-0 opacity-10 blur-[100px]">
+        <motion.div 
+          animate={{ x: [0, 100, 0], y: [0, 50, 0] }} 
+          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] rounded-full bg-blue-400" 
+        />
+        <motion.div 
+          animate={{ x: [0, -100, 0], y: [0, -50, 0] }} 
+          transition={{ duration: 25, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute top-1/3 right-1/4 w-[35vw] h-[35vw] rounded-full bg-purple-400" 
+        />
+        <motion.div 
+          animate={{ x: [0, 50, 0], y: [0, -100, 0] }} 
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/4 left-1/3 w-[30vw] h-[30vw] rounded-full bg-mint-400" 
+          style={{ backgroundColor: '#6EE7B7' }}
+        />
+        <motion.div 
+          animate={{ x: [0, -50, 0], y: [0, 100, 0] }} 
+          transition={{ duration: 28, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute bottom-1/3 right-1/3 w-[25vw] h-[25vw] rounded-full bg-orange-400" 
+        />
       </div>
 
-      {/* Faint Grid Pattern */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,0,0,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(0,0,0,0.02)_1px,transparent_1px)] bg-[size:40px_40px] opacity-60" />
+      {/* Handcrafted Premium Floating Cards */}
+      <FloatingMockCards />
 
-      {/* Floating Icons */}
+      {/* 3 Core Animation Layers */}
       {items.map((item) => {
         const pX = item.layer === 1 ? fgX : item.layer === 2 ? midX : bgX;
         const pY = item.layer === 1 ? fgY : item.layer === 2 ? midY : bgY;
@@ -127,74 +175,121 @@ export default function AnimatedBackground() {
         return (
           <motion.div
             key={item.id}
-            className="absolute text-gray-500"
+            className="absolute top-0 will-change-transform"
             style={{ 
               x: pX, 
               y: pY,
               left: `${item.x}%`,
-              filter: item.layer === 3 ? "blur(3px)" : item.layer === 2 ? "blur(1px)" : "none",
-              color: item.layer === 1 ? "#93C5FD" : item.layer === 2 ? "#DDF3FF" : "#F3F4F6"
-            }}
-            initial={{
-              top: "110%",
-              opacity: 0,
-              rotate: item.rotationStart,
-            }}
-            animate={{
-              top: "-10%",
-              left: `${item.x + item.driftX}%`,
-              opacity: [0, item.opacity, item.opacity, 0],
-              rotate: item.rotationEnd,
-            }}
-            transition={{
-              duration: item.duration,
-              delay: item.delay,
-              repeat: Infinity,
-              ease: "linear",
+              filter: item.blur,
+              scale: item.scale,
+              opacity: item.opacity
             }}
           >
-            <item.Icon size={item.size} strokeWidth={1.5} />
+            <motion.div
+              className="will-change-transform"
+              initial={{
+                y: "110vh",
+                x: 0,
+                rotate: item.rotationStart,
+              }}
+              animate={{
+                y: "-20vh",
+                x: `${item.driftX}vw`,
+                rotate: item.rotationEnd,
+              }}
+              transition={{
+                duration: item.duration,
+                delay: item.delay,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            >
+              {item.element}
+            </motion.div>
           </motion.div>
         );
       })}
 
-      {/* Occasional Confetti (Tickets drifting diagonally) */}
-      {confetti.map((c) => (
-        <motion.div
-          key={c.id}
-          className="absolute text-gray-400"
-          initial={{ left: "-5%", top: `${c.y}%`, opacity: 0, rotate: 0, scale: 0.8 }}
-          animate={{
-            left: "105%",
-            top: `${c.y - 20}%`,
-            opacity: [0, 0.1, 0.1, 0],
-            rotate: 360,
-          }}
-          transition={{ duration: c.duration, ease: "linear" }}
-          onAnimationComplete={() => setConfetti((prev) => prev.filter(item => item.id !== c.id))}
-        >
-          <Ticket size={16} strokeWidth={1} />
-        </motion.div>
-      ))}
+      {/* Accent Layer Events */}
+      <AnimatePresence>
+        {accentEvents.map((ev) => {
+          if (ev.type === 'bus') {
+            return (
+              <motion.div
+                key={ev.id}
+                initial={{ left: "-10%", bottom: "5%" }}
+                animate={{ left: "110%" }}
+                transition={{ duration: ev.duration, ease: "linear" }}
+                onAnimationComplete={() => removeAccent(ev.id)}
+                className="absolute z-20 opacity-20"
+              >
+                <PremiumIcon icon={Bus} color="#fff" bgGradient="bg-gradient-to-r from-yellow-400 to-orange-500" />
+              </motion.div>
+            );
+          }
+          if (ev.type === 'train') {
+            return (
+              <motion.div
+                key={ev.id}
+                initial={{ right: "-10%", bottom: "25%", scale: 0.7 }}
+                animate={{ right: "110%" }}
+                transition={{ duration: ev.duration, ease: "linear" }}
+                onAnimationComplete={() => removeAccent(ev.id)}
+                className="absolute z-0 opacity-10 blur-[2px]"
+              >
+                <PremiumIcon icon={TrainFront} color="#fff" bgGradient="bg-gradient-to-r from-blue-400 to-cyan-500" />
+              </motion.div>
+            );
+          }
+          if (ev.type === 'ticket') {
+            return (
+              <motion.div
+                key={ev.id}
+                initial={{ left: `${Math.random() * 80 + 10}%`, bottom: "-10%" }}
+                animate={{ bottom: "110%", rotate: 360, x: [0, 50, -50, 0] }}
+                transition={{ duration: ev.duration, ease: "easeOut" }}
+                onAnimationComplete={() => removeAccent(ev.id)}
+                className="absolute z-10 opacity-15"
+              >
+                <PremiumIcon icon={Ticket} color="#fff" bgGradient="bg-gradient-to-r from-rose-400 to-pink-500" />
+              </motion.div>
+            );
+          }
+          if (ev.type === 'coin') {
+            return (
+              <motion.div
+                key={ev.id}
+                initial={{ left: `${Math.random() * 80 + 10}%`, top: `${Math.random() * 80 + 10}%`, scale: 0, opacity: 0 }}
+                animate={{ scale: [0, 1.2, 1], opacity: [0, 0.4, 0], rotateY: 720 }}
+                transition={{ duration: ev.duration }}
+                onAnimationComplete={() => removeAccent(ev.id)}
+                className="absolute z-10"
+              >
+                <PremiumIcon icon={Coins} color="#fff" bgGradient="bg-gradient-to-r from-yellow-300 to-amber-400" />
+              </motion.div>
+            );
+          }
+          if (ev.type === 'parcel') {
+            return (
+              <motion.div
+                key={ev.id}
+                initial={{ left: "-10%", top: `${Math.random() * 60 + 20}%` }}
+                animate={{ left: "110%", y: [0, 20, -20, 0] }}
+                transition={{ duration: ev.duration, ease: "linear" }}
+                onAnimationComplete={() => removeAccent(ev.id)}
+                className="absolute z-10 opacity-10"
+              >
+                <PremiumIcon icon={Package} color="#fff" bgGradient="bg-gradient-to-r from-amber-600 to-orange-700" />
+              </motion.div>
+            );
+          }
+          return null;
+        })}
+      </AnimatePresence>
 
-      {/* Notifications */}
-      {notifications.map((n) => (
-        <motion.div
-          key={n.id}
-          className="absolute bg-white px-3 py-1.5 rounded-lg shadow-sm border border-gray-100/50 text-[10px] font-semibold text-gray-500"
-          style={{ left: `${n.x}%`, top: `${n.y}%` }}
-          initial={{ opacity: 0, y: 10, scale: 0.9 }}
-          animate={{ opacity: [0, 0.15, 0.15, 0], y: -20, scale: 1 }}
-          transition={{ duration: 4, ease: "easeInOut" }}
-          onAnimationComplete={() => setNotifications((prev) => prev.filter(item => item.id !== n.id))}
-        >
-          {n.text}
-        </motion.div>
-      ))}
-
-      {/* Static Campus Skyline */}
-      <div className="absolute bottom-0 left-0 right-0 h-48 opacity-5">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" preserveAspectRatio="none" className="w-full h-full fill-none stroke-gray-900" strokeWidth="1">
+      {/* Elegant Line-Art Campus Skyline (White, 5% opacity) */}
+      <div className="absolute bottom-0 left-0 right-0 h-64 opacity-5 pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 200" preserveAspectRatio="none" className="w-full h-full fill-none stroke-white" strokeWidth="2">
           {/* Base ground line */}
           <path d="M0,195 L1440,195" />
           
@@ -239,6 +334,7 @@ export default function AnimatedBackground() {
           <path d="M1020,185 L1030,170 L1045,170 L1050,185 M1030,170 L1040,185 M1025,165 L1035,165 M1040,165 L1045,170" />
         </svg>
       </div>
+
     </div>
   );
 }

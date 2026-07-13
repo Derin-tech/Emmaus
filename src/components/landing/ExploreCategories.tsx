@@ -1,22 +1,75 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { motion, useAnimationControls } from "framer-motion";
+import { useRef, useState } from "react";
+import { motion } from "framer-motion";
 import Link from "next/link";
-import { ArrowRight, BookOpen, Laptop, Gamepad2, Bike, Ticket, Briefcase, FileText, Headphones } from "lucide-react";
+import { 
+  BookOpen, Laptop, Smartphone, Headphones, 
+  Gamepad2, Bike, Ticket, Briefcase, ChevronRight, ArrowRight
+} from "lucide-react";
+
+// Premium Icon Composites
+function CategoryIcon({ icon: Icon, bgFrom, bgTo, iconColor, shadowColor }: any) {
+  return (
+    <div className={`relative flex items-center justify-center w-14 h-14 rounded-[18px] bg-gradient-to-br ${bgFrom} ${bgTo} shadow-lg ${shadowColor}`}>
+      <div className="absolute inset-0 bg-white/20 rounded-[18px] border border-white/40" />
+      <Icon size={26} color={iconColor} strokeWidth={2} className="relative z-10" />
+    </div>
+  );
+}
 
 const FEATURED_CATEGORIES = [
-  { name: "Books", icon: BookOpen, desc: "Textbooks and study guides" },
-  { name: "Electronics", icon: Laptop, desc: "Laptops, tablets, and more" },
-  { name: "Gaming", icon: Gamepad2, desc: "Consoles and game keys" },
-  { name: "Cycles", icon: Bike, desc: "Bicycles and riding gear" },
-  { name: "Event Tickets", icon: Ticket, desc: "College fests and concerts" },
-  { name: "Services", icon: Briefcase, desc: "Freelance and part-time" },
-  { name: "Notes", icon: FileText, desc: "Handwritten class notes" },
-  { name: "Audio", icon: Headphones, desc: "Earbuds and headphones" },
+  { 
+    name: "Books", 
+    desc: "Textbooks & novels", 
+    icon: <CategoryIcon icon={BookOpen} bgFrom="from-blue-400" bgTo="to-blue-600" iconColor="#fff" shadowColor="shadow-blue-500/30" />,
+    color: "bg-blue-50" 
+  },
+  { 
+    name: "Electronics", 
+    desc: "Laptops & gadgets", 
+    icon: <CategoryIcon icon={Laptop} bgFrom="from-gray-700" bgTo="to-gray-900" iconColor="#fff" shadowColor="shadow-gray-900/30" />,
+    color: "bg-gray-50" 
+  },
+  { 
+    name: "Gaming", 
+    desc: "Consoles & games", 
+    icon: <CategoryIcon icon={Gamepad2} bgFrom="from-purple-500" bgTo="to-indigo-600" iconColor="#fff" shadowColor="shadow-purple-500/30" />,
+    color: "bg-purple-50" 
+  },
+  { 
+    name: "Cycles", 
+    desc: "Bicycles & gear", 
+    icon: <CategoryIcon icon={Bike} bgFrom="from-emerald-400" bgTo="to-emerald-600" iconColor="#fff" shadowColor="shadow-emerald-500/30" />,
+    color: "bg-emerald-50" 
+  },
+  { 
+    name: "Event Tickets", 
+    desc: "Concerts & fests", 
+    icon: <CategoryIcon icon={Ticket} bgFrom="from-rose-400" bgTo="to-rose-600" iconColor="#fff" shadowColor="shadow-rose-500/30" />,
+    color: "bg-rose-50" 
+  },
+  { 
+    name: "Services", 
+    desc: "Tutoring & tasks", 
+    icon: <CategoryIcon icon={Briefcase} bgFrom="from-amber-400" bgTo="to-amber-600" iconColor="#fff" shadowColor="shadow-amber-500/30" />,
+    color: "bg-amber-50" 
+  },
+  { 
+    name: "Headphones", 
+    desc: "Audio & pods", 
+    icon: <CategoryIcon icon={Headphones} bgFrom="from-cyan-400" bgTo="to-cyan-600" iconColor="#fff" shadowColor="shadow-cyan-500/30" />,
+    color: "bg-cyan-50" 
+  },
+  { 
+    name: "Mobile Phones", 
+    desc: "Smartphones", 
+    icon: <CategoryIcon icon={Smartphone} bgFrom="from-fuchsia-400" bgTo="to-fuchsia-600" iconColor="#fff" shadowColor="shadow-fuchsia-500/30" />,
+    color: "bg-fuchsia-50" 
+  },
 ];
 
-function CarouselCard({ category }: { category: typeof FEATURED_CATEGORIES[0] }) {
+function CategoryCard({ category, index }: { category: any, index: number }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -30,8 +83,6 @@ function CarouselCard({ category }: { category: typeof FEATURED_CATEGORIES[0] })
     });
   };
 
-  const Icon = category.icon;
-
   return (
     <Link href="/browse" className="block outline-none" tabIndex={-1}>
       <motion.div
@@ -39,69 +90,46 @@ function CarouselCard({ category }: { category: typeof FEATURED_CATEGORIES[0] })
         onMouseMove={handleMouseMove}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        className="group relative flex flex-col justify-between w-[280px] h-[320px] rounded-[22px] bg-white p-6 overflow-hidden cursor-pointer shrink-0 transition-shadow duration-300 ease-out"
-        style={{
-          boxShadow: "0 2px 4px rgba(0,0,0,0.02), inset 0 0 0 1px rgba(0,0,0,0.03)",
-          outline: "2px solid rgba(0, 0, 0, 0.05)",
-          outlineOffset: "-2px",
-        }}
-        animate={{
-          y: isHovered ? -8 : [0, -2, 0],
-          rotate: isHovered ? 1 : 0,
-          boxShadow: isHovered 
-            ? "0 30px 60px -12px rgba(0, 0, 0, 0.15), inset 0 0 0 1px rgba(0,0,0,0.03)" 
-            : "0 2px 4px rgba(0,0,0,0.02), inset 0 0 0 1px rgba(0,0,0,0.03)",
-          outline: isHovered ? "2px solid rgba(0, 0, 0, 0.15)" : "2px solid rgba(0, 0, 0, 0.05)",
-        }}
-        transition={{
-          y: isHovered ? { type: "spring", stiffness: 300, damping: 20 } : { duration: 4, repeat: Infinity, ease: "easeInOut" },
-          rotate: { type: "spring", stiffness: 300, damping: 20 },
-          boxShadow: { duration: 0.3, ease: "easeOut" },
-          outline: { duration: 0.3, ease: "easeOut" },
-        }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: index * 0.05 + 0.2, duration: 0.5, ease: "easeOut" }}
+        whileHover={{ scale: 1.03, y: -4 }}
+        className="group relative flex w-64 shrink-0 cursor-pointer flex-col overflow-hidden rounded-[24px] bg-white p-6 shadow-sm border border-gray-200/60 transition-all duration-300 hover:shadow-[0_12px_40px_rgba(0,0,0,0.06)] hover:border-gray-300"
       >
-        {/* Spotlight Effect */}
-        <div 
-          className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
-          style={{
-            background: `radial-gradient(circle 200px at ${mousePos.x}px ${mousePos.y}px, rgba(0, 0, 0, 0.04), transparent 80%)`
-          }}
-        />
+      {/* Spotlight Effect */}
+      <div 
+        className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
+        style={{
+          background: `radial-gradient(circle 200px at ${mousePos.x}px ${mousePos.y}px, rgba(0,0,0,0.03), transparent 80%)`
+        }}
+      />
+      
+      {/* Decorative inner highlight */}
+      <div className="absolute inset-0 rounded-[24px] shadow-[inset_0_1px_1px_rgba(255,255,255,1)] pointer-events-none z-10" />
+      
+      {/* Noise Texture */}
+      <div className="absolute inset-0 opacity-[0.02] mix-blend-overlay pointer-events-none z-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPjxyZWN0IHdpZHRoPSI0IiBoZWlnaHQ9IjQiIGZpbGw9IiNmZmYiLz48cmVjdCB3aWR0aD0iMSIgaGVpZ2h0PSIxIiBmaWxsPSIjMDAwIi8+PC9zdmc+')]"/>
 
-        <div className="relative z-10">
-          <motion.div 
-            className="mb-6 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-50/80 border border-gray-100/50 text-gray-800"
-            animate={{
-              scale: isHovered ? 1.1 : 1,
-              rotate: isHovered ? [0, -10, 10, -5, 5, 0] : 0,
-            }}
-            transition={{
-              scale: { type: "spring", stiffness: 300, damping: 20 },
-              rotate: { duration: 0.5 }
-            }}
-          >
-            <Icon size={24} strokeWidth={1.5} />
-          </motion.div>
-          
-          <h3 className="text-xl font-semibold text-gray-900 tracking-tight">
-            {category.name}
-          </h3>
-          <p className="mt-2 text-sm text-gray-500 leading-relaxed font-medium">
-            {category.desc}
-          </p>
-        </div>
-
-        <div className="relative z-10 mt-6 flex justify-end">
-          <motion.div
-            className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-gray-400 group-hover:bg-gray-900 group-hover:text-white transition-colors duration-300"
-            animate={{
-              x: isHovered ? 4 : 0,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-          >
-            <ArrowRight size={18} strokeWidth={2} />
+      <div className="relative z-10 mb-6">
+        <motion.div
+          animate={{ y: isHovered ? -4 : 0, scale: isHovered ? 1.05 : 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          {category.icon}
+        </motion.div>
+      </div>
+      
+      <div className="relative z-10 mt-auto">
+        <h3 className="text-lg font-bold tracking-tight text-gray-900 group-hover:text-blue-600 transition-colors">
+          {category.name}
+        </h3>
+        <div className="mt-1 flex items-center justify-between">
+          <p className="text-sm font-medium text-gray-500">{category.desc}</p>
+          <motion.div>
+             <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600 transition-colors" />
           </motion.div>
         </div>
+      </div>
       </motion.div>
     </Link>
   );
@@ -161,7 +189,7 @@ export default function ExploreCategories() {
           }}
         >
           {duplicatedCategories.map((category, index) => (
-            <CarouselCard key={`${category.name}-${index}`} category={category} />
+            <CategoryCard key={`${category.name}-${index}`} category={category} index={index} />
           ))}
         </motion.div>
       </div>
