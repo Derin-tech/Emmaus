@@ -27,7 +27,7 @@ export const mockListings: Listing[] = [
   {
     id: '2',
     userId: 'u2',
-    category: 'Services',
+    category: 'Tickets',
     status: 'Available',
     price: 1000,
     title: 'Assignment & Project Help',
@@ -90,7 +90,7 @@ export const mockListings: Listing[] = [
   {
     id: '6',
     userId: 'u5',
-    category: 'Services',
+    category: 'Tickets',
     status: 'Available',
     price: 500,
     title: 'Presentation Design (PPT)',
@@ -163,7 +163,7 @@ export const mockListings: Listing[] = [
   {
     id: '10',
     userId: 'u9',
-    category: 'Services',
+    category: 'Tickets',
     status: 'Available',
     price: 300,
     title: 'Math Tutoring (Calculus)',

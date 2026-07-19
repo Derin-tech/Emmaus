@@ -17,8 +17,8 @@ export default function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex md:items-center md:gap-6">
-          <Link href="/browse" className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900">
-            Browse
+          <Link href="/marketplace" className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900">
+            Marketplace
           </Link>
           <Link href="/dashboard" className="text-sm font-medium text-gray-600 transition-colors hover:text-gray-900">
             My Listings
@@ -36,8 +36,8 @@ export default function Navbar() {
             className="flex items-center gap-2 rounded-full bg-gray-900 px-4 py-2 text-sm font-medium text-white shadow-sm transition-all hover:bg-gray-800 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
           >
             <PlusCircle size={18} />
-            <span className="hidden sm:inline">Post Ticket</span>
-            <span className="sm:hidden">Post</span>
+            <span className="hidden sm:inline">Sell</span>
+            <span className="sm:hidden">Sell</span>
           </Link>
           
           <Link 

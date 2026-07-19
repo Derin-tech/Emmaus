@@ -44,17 +44,12 @@ const FEATURED_CATEGORIES = [
     color: "bg-emerald-50" 
   },
   { 
-    name: "Event Tickets", 
-    desc: "Concerts & fests", 
+    name: "Tickets", 
+    desc: "Movie, Bus & Train", 
     icon: <CategoryIcon icon={Ticket} bgFrom="from-rose-400" bgTo="to-rose-600" iconColor="#fff" shadowColor="shadow-rose-500/30" />,
     color: "bg-rose-50" 
   },
-  { 
-    name: "Services", 
-    desc: "Tutoring & tasks", 
-    icon: <CategoryIcon icon={Briefcase} bgFrom="from-amber-400" bgTo="to-amber-600" iconColor="#fff" shadowColor="shadow-amber-500/30" />,
-    color: "bg-amber-50" 
-  },
+
   { 
     name: "Headphones", 
     desc: "Audio & pods", 
